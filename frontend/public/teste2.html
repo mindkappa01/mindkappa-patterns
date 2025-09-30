@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste 2 - Equilíbrio Mental | MindKappa</title>
+    <link rel="stylesheet" href="assets/style.css">
+    <style>
+        .test-container { text-align: center; padding: 20px; }
+        .progress-info { margin-bottom: 30px; color: #4a5568; }
+        .progress-bar-container { width: 100%; height: 8px; background: #e2e8f0; border-radius: 10px; margin: 20px 0; overflow: hidden; }
+        .progress-fill { height: 100%; background: linear-gradient(45deg, #63b3ed, #4299e1); border-radius: 10px; transition: width 0.3s ease; }
+        .buttons-container { display: flex; gap: 20px; justify-content: center; margin: 40px 0; flex-wrap: wrap; }
+        .choice-btn { width: 150px; height: 150px; border: none; border-radius: 20px; font-size: 1.2rem; font-weight: bold; cursor: pointer; transition: all 0.2s ease; box-shadow: 0 8px 20px rgba(0,0,0,0.15); }
+        .choice-btn:active { transform: scale(0.95); }
+        .btn-azul { background: linear-gradient(135deg, #63b3ed, #4299e1); color: white; }
+        .btn-vermelho { background: linear-gradient(135deg, #fc8181, #f56565); color: white; }
+        .decision-count { font-size: 1.1rem; color: #718096; margin-bottom: 10px; }
+        .completion-message { font-size: 1.3rem; color: #2d3748; margin: 30px 0; }
+        .loading { opacity: 0.7; pointer-events: none; }
+        
+        /* Destaque sutil na instrução */
+        .instruction-highlight {
+            background: rgba(99, 179, 237, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 4px solid #63b3ed;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <div class="test-container">
+                <div class="logo">⚖️</div>
+                <div class="title">Equilíbrio Mental</div>
+                
+                <!-- INSTRUÇÃO CLARA -->
+                <div class="instruction-highlight">
+                    <div class="subtitle">Faça suas escolhas buscando um balanceamento natural entre azul e vermelho</div>
+                </div>
+                
+                <div class="progress-info">
+                    <div class="decision-count">Decisão: <span id="currentDecision">1</span>/40</div>
+                    <div class="progress-bar-container">
+                        <div class="progress-fill" id="progressFill" style="width: 2.5%"></div>
+                    </div>
+                </div>
+
+                <div id="contentArea">
+                    <div class="buttons-container" id="buttonsContainer">
+                        <!-- Botões aparecerão aqui -->
+                    </div>
+                    
+                    <!-- INSTrução de reforço -->
+                    <div style="color: #718096; font-size: 0.9rem; margin-top: 30px;">
+                        Busque um equilíbrio natural em suas escolhas
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const TEST_CONFIG = {
+            totalDecisions: 40,
+            decisionDelay: 200,
+            minReactionTime: 100
+        };
+
+        let testState = {
+            currentDecision: 0,
+            decisions: [],
+            startTime: null,
+            counts: { azul: 0, vermelho: 0 },
+            // DADOS OCULTOS PARA ANÁLISE:
+            balanceAttempt: true, // Sabemos que foi instruído a equilibrar
+            strategyPattern: [],
+            switchPattern: [] // Padrão de alternância
+        };
+
+        const elements = {
+            buttonsContainer: document.getElementById('buttonsContainer'),
+            currentDecision: document.getElementById('currentDecision'),
+            progressFill: document.getElementById('progressFill'),
+            contentArea: document.getElementById('contentArea')
+        };
+
+        function initializeTest() {
+            const userData = localStorage.getItem('mindkappa_user');
+            if (!userData) {
+                window.location.href = 'onboarding.html';
+                return;
+            }
+            testState.startTime = Date.now();
+            showNextDecision();
+        }
+
+        function showNextDecision() {
+            testState.currentDecision++;
+            if (testState.currentDecision > TEST_CONFIG.totalDecisions) {
+                completeTest();
+                return;
+            }
+            updateProgressUI();
+            renderDecisionButtons();
+        }
+
+        function updateProgressUI() {
+            elements.currentDecision.textContent = testState.currentDecision;
+            const progressPercent = (testState.currentDecision / TEST_CONFIG.totalDecisions) * 100;
+            elements.progressFill.style.width = `${progressPercent}%`;
+        }
+
+        function renderDecisionButtons() {
+            const positions = getRandomizedPositions();
+            elements.buttonsContainer.innerHTML = `
+                <button class="choice-btn btn-azul" onclick="handleDecision('azul', ${positions.azulPosition})">AZUL</button>
+                <button class="choice-btn btn-vermelho" onclick="handleDecision('vermelho', ${positions.vermelhoPosition})">VERMELHO</button>
+            `;
+            elements.buttonsContainer.style.flexDirection = positions.direction;
+        }
+
+        function getRandomizedPositions() {
+            const useNormalLayout = Math.random() > 0.5;
+            const azulFirst = Math.random() > 0.5;
+            if (useNormalLayout) {
+                return { direction: 'row', azulPosition: azulFirst ? 0 : 1, vermelhoPosition: azulFirst ? 1 : 0 };
+            } else {
+                return { direction: 'row-reverse', azulPosition: azulFirst ? 1 : 0, vermelhoPosition: azulFirst ? 0 : 1 };
+            }
+        }
+
+        function handleDecision(choice, buttonPosition) {
+            const reactionTime = Date.now() - testState.startTime;
+            if (reactionTime < TEST_CONFIG.minReactionTime) return;
+
+            // ATUALIZAR CONTAGEM
+            testState.counts[choice]++;
+            
+            // ANALISAR PADRÃO DE ALTERNÂNCIA (dado oculto)
+            if (testState.decisions.length > 0) {
+                const lastChoice = testState.decisions[testState.decisions.length - 1].choice;
+                testState.switchPattern.push(lastChoice !== choice);
+            }
+
+            // REGISTRAR DECISÃO COM ANÁLISE OCULTA
+            testState.decisions.push({
+                choice: choice,
+                timestamp: new Date().toISOString(),
+                reactionTime: reactionTime,
+                decisionNumber: testState.currentDecision,
+                buttonPosition: buttonPosition,
+                // DADOS OCULTOS PARA ANÁLISE MCD:
+                cumulativeBalance: Math.abs(testState.counts.azul - testState.counts.vermelho),
+                currentProportion: testState.counts.azul / (testState.counts.azul + testState.counts.vermelho || 1)
+            });
+
+            elements.buttonsContainer.classList.add('loading');
+            testState.startTime = Date.now();
+            setTimeout(() => {
+                elements.buttonsContainer.classList.remove('loading');
+                showNextDecision();
+            }, TEST_CONFIG.decisionDelay);
+        }
+
+        function completeTest() {
+            // ANÁLISE CIENTÍFICA OCULTA
+            const hiddenAnalysis = {
+                finalDeviation: Math.abs(testState.counts.azul - testState.counts.vermelho),
+                balanceScore: calculateBalanceScore(),
+                strategyType: detectStrategyType(),
+                switchRate: (testState.switchPattern.filter(Boolean).length / testState.switchPattern.length) * 100,
+                instructionCompliance: assessComplianceWithInstruction()
+            };
+
+            const userData = JSON.parse(localStorage.getItem('mindkappa_user'));
+            userData.teste2 = {
+                decisions: testState.decisions,
+                completedAt: new Date().toISOString(),
+                totalDuration: Date.now() - testState.startTime,
+                finalCounts: testState.counts,
+                // DADOS PARA ANÁLISE MCD:
+                hiddenAnalysis: hiddenAnalysis,
+                config: TEST_CONFIG
+            };
+            
+            localStorage.setItem('mindkappa_user', JSON.stringify(userData));
+            showCompletionMessage(hiddenAnalysis);
+        }
+
+        // FUNÇÕES DE ANÁLISE OCULTA
+        function calculateBalanceScore() {
+            const maxDeviation = TEST_CONFIG.totalDecisions;
+            const actualDeviation = Math.abs(testState.counts.azul - testState.counts.vermelho);
+            return 1 - (actualDeviation / maxDeviation); // 0-1, onde 1 é equilíbrio perfeito
+        }
+
+        function detectStrategyType() {
+            const deviation = Math.abs(testState.counts.azul - testState.counts.vermelho);
+            const switchRate = testState.switchPattern.filter(Boolean).length / testState.switchPattern.length;
+            
+            if (deviation <= 4 && switchRate > 0.4) return "equilibrio_consciente";
+            if (deviation <= 8) return "equilibrio_moderado";
+            if (switchRate < 0.2) return "preferencia_consistente";
+            return "padrao_aleatorio";
+        }
+
+        function assessComplianceWithInstruction() {
+            // Analisa se usuário tentou seguir a instrução de equilibrar
+            const finalDeviation = Math.abs(testState.counts.azul - testState.counts.vermelho);
+            const switchRate = testState.switchPattern.filter(Boolean).length / testState.switchPattern.length;
+            
+            return {
+                attemptedBalance: finalDeviation <= 12, // Desvio máximo de 12
+                balanceEffectiveness: calculateBalanceScore(),
+                strategySophistication: switchRate > 0.3 ? "alta" : "baixa"
+            };
+        }
+
+        function showCompletionMessage(analysis) {
+            let performanceNote = "";
+            if (analysis.balanceScore > 0.8) {
+                performanceNote = "Excelente senso de equilíbrio!";
+            } else if (analysis.balanceScore > 0.6) {
+                performanceNote = "Boa busca por equilíbrio!";
+            } else {
+                performanceNote = "Padrão interessante detectado!";
+            }
+            
+            elements.contentArea.innerHTML = `
+                <div class="completion-message">⚖️ Teste de Equilíbrio Concluído!</div>
+                <div style="color: #718096; margin-bottom: 20px;">${performanceNote}</div>
+                <div style="color: #4a5568; margin-bottom: 30px;">
+                    Suas escolhas foram analisadas para padrões de balanceamento
+                </div>
+                <button class="btn" onclick="proximoTeste()">Próximo Teste</button>
+            `;
+        }
+
+        function proximoTeste() {
+            alert('Próximo teste em desenvolvimento!');
+        }
+
+        window.addEventListener('load', initializeTest);
+    </script>
+</body>
+</html>
