@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste 3 - Pressão Temporal | MindKappa</title>
+    <link rel="stylesheet" href="assets/style.css">
+    <style>
+        .test-container { text-align: center; padding: 20px; }
+        .progress-info { margin-bottom: 30px; color: #4a5568; }
+        .progress-bar-container { width: 100%; height: 8px; background: #e2e8f0; border-radius: 10px; margin: 20px 0; overflow: hidden; }
+        .progress-fill { height: 100%; background: linear-gradient(45deg, #63b3ed, #4299e1); border-radius: 10px; transition: width 0.3s ease; }
+        .buttons-container { display: flex; gap: 20px; justify-content: center; margin: 40px 0; flex-wrap: wrap; }
+        .choice-btn { width: 150px; height: 150px; border: none; border-radius: 20px; font-size: 1.2rem; font-weight: bold; cursor: pointer; transition: all 0.2s ease; box-shadow: 0 8px 20px rgba(0,0,0,0.15); }
+        .choice-btn:active { transform: scale(0.95); }
+        .choice-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+        .btn-azul { background: linear-gradient(135deg, #63b3ed, #4299e1); color: white; }
+        .btn-vermelho { background: linear-gradient(135deg, #fc8181, #f56565); color: white; }
+        .decision-count { font-size: 1.1rem; color: #718096; margin-bottom: 10px; }
+        .completion-message { font-size: 1.3rem; color: #2d3748; margin: 30px 0; }
+        
+        /* Timer Styles */
+        .timer-container { margin: 30px 0; }
+        .timer-circle { 
+            width: 100px; 
+            height: 100px; 
+            border-radius: 50%; 
+            background: conic-gradient(#48bb78 0deg, #e2e8f0 0deg); 
+            margin: 0 auto 15px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            font-size: 1.5rem; 
+            font-weight: bold; 
+            color: #2d3748; 
+            transition: background 0.1s linear; 
+        }
+        .timer-text { font-size: 1.1rem; color: #4a5568; margin-bottom: 5px; }
+        .time-limit { font-size: 0.9rem; color: #718096; }
+        
+        /* Timeout State */
+        .timeout-message { 
+            color: #e53e3e; 
+            font-weight: bold; 
+            margin: 10px 0; 
+            font-size: 1.1rem; 
+        }
+        .timeout-recorded { 
+            color: #718096; 
+            font-size: 0.9rem; 
+            margin-bottom: 15px; 
+        }
+        
+        .pressure-level {
+            background: rgba(237, 137, 54, 0.1);
+            padding: 10px 15px;
+            border-radius: 20px;
+            display: inline-block;
+            margin: 15px 0;
+            color: #ed8936;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <div class="test-container">
+                <div class="logo">⏰</div>
+                <div class="title">Pressão Temporal</div>
+                <div class="subtitle">Decisões com tempo limitado - o tempo diminui a cada rodada</div>
+                
+                <div class="progress-info">
+                    <div class="decision-count">Decisão: <span id="currentDecision">1</span>/30</div>
+                    <div class="progress-bar-container">
+                        <div class="progress-fill" id="progressFill" style="width: 3.3%"></div>
+                    </div>
+                </div>
+
+                <!-- Timer Display -->
+                <div class="timer-container">
+                    <div class="timer-text">Tempo Restante:</div>
+                    <div class="timer-circle" id="timerCircle">
+                        <span id="timerValue">3.0</span>s
+                    </div>
+                    <div class="time-limit">Tempo limite: <span id="timeLimit">3.0</span>s</div>
+                    <div class="pressure-level" id="pressureLevel">Nível de Pressão: Baixo</div>
+                </div>
+
+                <div id="contentArea">
+                    <div class="buttons-container" id="buttonsContainer">
+                        <!-- Botões inseridos pelo JavaScript -->
+                    </div>
+                    
+                    <div style="color: #718096; font-size: 0.9rem; margin-top: 30px;">
+                        O tempo para cada decisão vai diminuir gradualmente
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // =============================================
+        // CONFIGURAÇÕES TESTADAS
+        // =============================================
+        const TEST_CONFIG = {
+            totalDecisions: 30,
+            timeProgression: [3000, 2800, 2600, 2400, 2200, 2000, 1800, 1600, 1400, 1200, 1000], // 3.0s → 1.0s
+            decisionDelay: 300,
+            minReactionTime: 100
+        };
+
+        // =============================================
+        // ESTADO DO TESTE
+        // =============================================
+        let testState = {
+            currentDecision: 0,
+            decisions: [],
+            startTime: null,
+            currentTimeLimit: 3000,
+            timerInterval: null,
+            timeRemaining: 3000,
+            timeouts: 0,
+            pressureLevels: []
+        };
+
+        // =============================================
+        // ELEMENTOS DOM
+        // =============================================
+        const elements = {
+            buttonsContainer: document.getElementById('buttonsContainer'),
+            currentDecision: document.getElementById('currentDecision'),
+            progressFill: document.getElementById('progressFill'),
+            contentArea: document.getElementById('contentArea'),
+            timerCircle: document.getElementById('timerCircle'),
+            timerValue: document.getElementById('timerValue'),
+            timeLimit: document.getElementById('timeLimit'),
+            pressureLevel: document.getElementById('pressureLevel')
+        };
+
+        // =============================================
+        // INICIALIZAÇÃO
+        // =============================================
+        function initializeTest() {
+            const userData = localStorage.getItem('mindkappa_user');
+            if (!userData) {
+                window.location.href = 'onboarding.html';
+                return;
+            }
+            showNextDecision();
+        }
+
+        // =============================================
+        // LÓGICA DAS DECISÕES
+        // =============================================
+        function showNextDecision() {
+            testState.currentDecision++;
+            
+            if (testState.currentDecision > TEST_CONFIG.totalDecisions) {
+                completeTest();
+                return;
+            }
+
+            updateProgressUI();
+            updateTimeLimit();
+            renderDecisionButtons();
+            startTimer();
+        }
+
+        function updateProgressUI() {
+            elements.currentDecision.textContent = testState.currentDecision;
+            const progressPercent = (testState.currentDecision / TEST_CONFIG.totalDecisions) * 100;
+            elements.progressFill.style.width = `${progressPercent}%`;
+        }
+
+        function updateTimeLimit() {
+            const progressionIndex = Math.min(testState.currentDecision - 1, TEST_CONFIG.timeProgression.length - 1);
+            testState.currentTimeLimit = TEST_CONFIG.timeProgression[progressionIndex];
+            testState.timeRemaining = testState.currentTimeLimit;
+            
+            elements.timeLimit.textContent = (testState.currentTimeLimit / 1000).toFixed(1);
+            updatePressureLevel();
+        }
+
+        function updatePressureLevel() {
+            const timeInSeconds = testState.currentTimeLimit / 1000;
+            let level, color;
+            
+            if (timeInSeconds >= 2.5) { level = "Baixo"; color = "#48bb78"; }
+            else if (timeInSeconds >= 1.5) { level = "Médio"; color = "#ed8936"; }
+            else { level = "Alto"; color = "#e53e3e"; }
+            
+            elements.pressureLevel.textContent = `Nível de Pressão: ${level}`;
+            elements.pressureLevel.style.background = `rgba(${hexToRgb(color)}, 0.1)`;
+            elements.pressureLevel.style.color = color;
+        }
+
+        function renderDecisionButtons() {
+            const positions = getRandomizedPositions();
+            
+            elements.buttonsContainer.innerHTML = `
+                <button class="choice-btn btn-azul" onclick="handleDecision('azul', ${positions.azulPosition})">AZUL</button>
+                <button class="choice-btn btn-vermelho" onclick="handleDecision('vermelho', ${positions.vermelhoPosition})">VERMELHO</button>
+            `;
+
+            elements.buttonsContainer.style.flexDirection = positions.direction;
+        }
+
+        function getRandomizedPositions() {
+            const useNormalLayout = Math.random() > 0.5;
+            const azulFirst = Math.random() > 0.5;
+            
+            if (useNormalLayout) {
+                return {
+                    direction: 'row',
+                    azulPosition: azulFirst ? 0 : 1,
+                    vermelhoPosition: azulFirst ? 1 : 0
+                };
+            } else {
+                return {
+                    direction: 'row-reverse',
+                    azulPosition: azulFirst ? 1 : 0,
+                    vermelhoPosition: azulFirst ? 0 : 1
+                };
+            }
+        }
+
+        // =============================================
+        // TIMER FUNCTIONS
+        // =============================================
+        function startTimer() {
+            testState.startTime = Date.now();
+            clearInterval(testState.timerInterval);
+            
+            testState.timerInterval = setInterval(() => {
+                testState.timeRemaining -= 100;
+                
+                if (testState.timeRemaining <= 0) {
+                    handleTimeout();
+                    return;
+                }
+                
+                updateTimerDisplay();
+            }, 100);
+        }
+
+        function updateTimerDisplay() {
+            const seconds = (testState.timeRemaining / 1000).toFixed(1);
+            elements.timerValue.textContent = seconds;
+            
+            // Update circle progress
+            const progress = (testState.timeRemaining / testState.currentTimeLimit) * 360;
+            const color = getTimerColor(progress);
+            elements.timerCircle.style.background = `conic-gradient(${color} ${progress}deg, #e2e8f0 ${progress}deg)`;
+        }
+
+        function getTimerColor(progress) {
+            const percentage = progress / 360;
+            if (percentage > 0.6) return "#48bb78"; // Verde
+            if (percentage > 0.3) return "#ed8936"; // Laranja
+            return "#e53e3e"; // Vermelho
+        }
+
+        function handleTimeout() {
+            clearInterval(testState.timerInterval);
+            testState.timeouts++;
+            
+            // Registrar timeout como decisão
+            testState.decisions.push({
+                choice: 'timeout',
+                timestamp: new Date().toISOString(),
+                reactionTime: testState.currentTimeLimit,
+                decisionNumber: testState.currentDecision,
+                buttonPosition: null,
+                timeLimit: testState.currentTimeLimit,
+                timedOut: true
+            });
+
+            // Mostrar feedback
+            elements.contentArea.innerHTML = `
+                <div class="timeout-message">⏰ Tempo esgotado!</div>
+                <div class="timeout-recorded">Decisão registrada como "timeout"</div>
+                <div class="buttons-container">
+                    <button class="choice-btn btn-azul" disabled>AZUL</button>
+                    <button class="choice-btn btn-vermelho" disabled>VERMELHO</button>
+                </div>
+                <div style="color: #718096; font-size: 0.9rem; margin-top: 30px;">
+                    Preparando próxima decisão...
+                </div>
+            `;
+
+            setTimeout(() => {
+                showNextDecision();
+            }, TEST_CONFIG.decisionDelay);
+        }
+
+        function stopTimer() {
+            clearInterval(testState.timerInterval);
+        }
+
+        // =============================================
+        // MANIPULAÇÃO DE DECISÕES
+        // =============================================
+        function handleDecision(choice, buttonPosition) {
+            const reactionTime = Date.now() - testState.startTime;
+            
+            if (reactionTime < TEST_CONFIG.minReactionTime) {
+                return;
+            }
+
+            stopTimer();
+
+            // Registrar pressão sentida
+            testState.pressureLevels.push({
+                decision: testState.currentDecision,
+                timeLimit: testState.currentTimeLimit,
+                reactionTime: reactionTime,
+                pressureIndex: testState.currentTimeLimit / 1000
+            });
+
+            // Registrar decisão
+            testState.decisions.push({
+                choice: choice,
+                timestamp: new Date().toISOString(),
+                reactionTime: reactionTime,
+                decisionNumber: testState.currentDecision,
+                buttonPosition: buttonPosition,
+                timeLimit: testState.currentTimeLimit,
+                timedOut: false,
+                timeRemaining: testState.timeRemaining
+            });
+
+            // Preparar próxima decisão
+            elements.buttonsContainer.classList.add('loading');
+            
+            setTimeout(() => {
+                elements.buttonsContainer.classList.remove('loading');
+                showNextDecision();
+            }, TEST_CONFIG.decisionDelay);
+        }
+
+        // =============================================
+        // FINALIZAÇÃO
+        // =============================================
+        function completeTest() {
+            stopTimer();
+            
+            const pressureAnalysis = {
+                totalTimeouts: testState.timeouts,
+                timeoutRate: (testState.timeouts / TEST_CONFIG.totalDecisions) * 100,
+                avgReactionTime: calculateAverageReactionTime(),
+                adaptationScore: calculateAdaptationScore(),
+                pressureTolerance: calculatePressureTolerance()
+            };
+
+            const userData = JSON.parse(localStorage.getItem('mindkappa_user'));
+            userData.teste3 = {
+                decisions: testState.decisions,
+                completedAt: new Date().toISOString(),
+                totalDuration: Date.now() - testState.startTime,
+                pressureAnalysis: pressureAnalysis,
+                pressureLevels: testState.pressureLevels,
+                config: TEST_CONFIG
+            };
+            
+            localStorage.setItem('mindkappa_user', JSON.stringify(userData));
+            showCompletionMessage(pressureAnalysis);
+        }
+
+        function calculateAverageReactionTime() {
+            const validDecisions = testState.decisions.filter(d => !d.timedOut);
+            if (validDecisions.length === 0) return 0;
+            return validDecisions.reduce((sum, d) => sum + d.reactionTime, 0) / validDecisions.length;
+        }
+
+        function calculateAdaptationScore() {
+            // Analisa se usuário se adaptou ao aumento de pressão
+            const earlyDecisions = testState.decisions.slice(0, 10).filter(d => !d.timedOut);
+            const lateDecisions = testState.decisions.slice(-10).filter(d => !d.timedOut);
+            
+            if (earlyDecisions.length === 0 || lateDecisions.length === 0) return 0;
+            
+            const earlyAvg = earlyDecisions.reduce((sum, d) => sum + d.reactionTime, 0) / earlyDecisions.length;
+            const lateAvg = lateDecisions.reduce((sum, d) => sum + d.reactionTime, 0) / lateDecisions.length;
+            
+            // Quanto menor a diferença, melhor a adaptação
+            return Math.max(0, 1 - (lateAvg / earlyAvg));
+        }
+
+        function calculatePressureTolerance() {
+            const highPressureDecisions = testState.decisions.filter(d => d.timeLimit <= 1500 && !d.timedOut);
+            if (highPressureDecisions.length === 0) return 0;
+            
+            const successRate = highPressureDecisions.length / testState.decisions.filter(d => d.timeLimit <= 1500).length;
+            return successRate;
+        }
+
+        function showCompletionMessage(analysis) {
+            let performanceNote = "";
+            if (analysis.timeoutRate < 10) {
+                performanceNote = "Excelente desempenho sob pressão!";
+            } else if (analysis.timeoutRate < 25) {
+                performanceNote = "Boa adaptação ao aumento de pressão!";
+            } else {
+                performanceNote = "Interessante padrão sob estresse temporal!";
+            }
+            
+            elements.contentArea.innerHTML = `
+                <div class="completion-message">⏰ Teste de Pressão Concluído!</div>
+                <div style="color: #718096; margin-bottom: 20px;">${performanceNote}</div>
+                <div style="color: #4a5568; margin-bottom: 30px;">
+                    Timeouts: ${testState.timeouts}/30 (${analysis.timeoutRate.toFixed(1)}%)<br>
+                    Tempo médio de reação: ${(analysis.avgReactionTime / 1000).toFixed(2)}s
+                </div>
+                <button class="btn" onclick="proximoTeste()">Próximo Teste</button>
+            `;
+        }
+
+        function Ver Relatório() {
+    window.location.href = 'relatorio.html';
+}
+
+        // =============================================
+        // UTILITÁRIOS
+        // =============================================
+        function hexToRgb(hex) {
+            const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+            return result ? 
+                `${parseInt(result[1], 16)}, ${parseInt(result[2], 16)}, ${parseInt(result[3], 16)}` 
+                : '155, 155, 155';
+        }
+
+        // =============================================
+        // INICIAR TESTE
+        // =============================================
+        window.addEventListener('load', initializeTest);
+
+        window.addEventListener('beforeunload', function (e) {
+            if (testState.currentDecision > 0 && testState.currentDecision < TEST_CONFIG.totalDecisions) {
+                e.preventDefault();
+                e.returnValue = 'Seu progresso será perdido. Tem certeza que quer sair?';
+            }
+        });
+    </script>
+</body>
+</html>
