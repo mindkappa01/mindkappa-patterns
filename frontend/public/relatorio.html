@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seu Relatório MindKappa | Resultados</title>
+    <link rel="stylesheet" href="assets/style.css">
+    <style>
+        .report-container { text-align: center; padding: 20px; }
+        .loading-spinner { 
+            width: 60px; height: 60px; border: 6px solid #e2e8f0; 
+            border-top: 6px solid #63b3ed; border-radius: 50%; 
+            animation: spin 1s linear infinite; margin: 30px auto; 
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .report-content { text-align: left; background: white; padding: 30px; border-radius: 15px; margin: 20px 0; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        .premium-cta { 
+            background: linear-gradient(135deg, #ffd89b, #19547b);
+            color: white; padding: 25px; border-radius: 15px; margin: 30px 0;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        }
+        .feature-list { text-align: left; margin: 20px 0; }
+        .feature-item { margin: 12px 0; padding-left: 25px; position: relative; font-size: 1rem; }
+        .feature-item:before { content: "✓"; position: absolute; left: 0; color: #48bb78; font-weight: bold; }
+        .insight-item { background: rgba(99, 179, 237, 0.1); padding: 15px; border-radius: 10px; margin: 15px 0; border-left: 4px solid #63b3ed; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <div class="report-container">
+                <div class="logo">📊</div>
+                <div class="title">Seu Relatório MindKappa</div>
+                <div class="subtitle">Análise personalizada dos seus padrões de decisão</div>
+                
+                <div id="reportContent">
+                    <!-- Conteúdo dinâmico -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const elements = {
+            reportContent: document.getElementById('reportContent')
+        };
+
+        function initializeReport() {
+            const userData = JSON.parse(localStorage.getItem('mindkappa_user'));
+            
+            if (!userData) {
+                window.location.href = 'onboarding.html';
+                return;
+            }
+
+            showGenerateButton();
+        }
+
+        function showGenerateButton() {
+            const userData = JSON.parse(localStorage.getItem('mindkappa_user'));
+            
+            elements.reportContent.innerHTML = `
+                <div style="margin: 40px 0;">
+                    <div style="color: #4a5568; margin-bottom: 30px; line-height: 1.6;">
+                        <strong>${userData.name}</strong>, você completou <strong>3 testes</strong> com <strong>120 decisões</strong> analisadas:<br>
+                        <span style="color: #718096; font-size: 0.95rem;">
+                            ⚡ Instinto Puro • ⚖️ Equilíbrio Mental • ⏰ Pressão Temporal
+                        </span>
+                    </div>
+                    <button class="btn" onclick="generateReport()" style="font-size: 1.2rem; padding: 18px 40px;">
+                        🧠 Gerar Meu Relatório Personalizado
+                    </button>
+                    <div style="color: #718096; font-size: 0.9rem; margin-top: 20px;">
+                        Análise baseada na ciência da coerência decisional
+                    </div>
+                </div>
+            `;
+        }
+
+        function generateReport() {
+            // Por enquanto, mostrar relatório mock (depois integramos GPT)
+            showMockReport();
+        }
+
+        function showMockReport() {
+            const userData = JSON.parse(localStorage.getItem('mindkappa_user'));
+            
+            elements.reportContent.innerHTML = `
+                <div class="report-content">
+                    <h3 style="color: #2d3748; margin-bottom: 20px; text-align: center;">Seu Relatório de Autoconhecimento</h3>
+                    
+                    <div class="insight-item">
+                        <strong>🎯 Seu Perfil Decisional:</strong><br>
+                        Baseado em 120 escolhas, você demonstra padrões consistentes entre instinto e controle intencional.
+                    </div>
+                    
+                    <div class="insight-item">
+                        <strong>⚡ Instinto vs 🧠 Controle:</strong><br>
+                        Seu equilíbrio entre reações rápidas e decisões ponderadas mostra uma interessante adaptabilidade.
+                    </div>
+                    
+                    <div class="insight-item">
+                        <strong>⏰ Sob Pressão:</strong><br>
+                        Suas escolhas sob estresse temporal revelam resiliência e capacidade de manter a clareza.
+                    </div>
+                    
+                    <div style="background: rgba(72, 187, 120, 0.1); padding: 15px; border-radius: 10px; margin: 20px 0; border-left: 4px solid #48bb78;">
+                        <strong>💡 Próximo Passo:</strong><br>
+                        Estes insights são apenas o início. Os testes premium revelam padrões 3x mais profundos.
+                    </div>
+                </div>
+
+                <!-- CTA PREMIUM -->
+                <div class="premium-cta">
+                    <h3 style="margin-bottom: 15px;">🚀 MindKappa Premium</h3>
+                    <div style="margin-bottom: 20px; line-height: 1.5;">
+                        Descubra padrões mais profundos com +4 testes especializados e análise completa
+                    </div>
+                    
+                    <div class="feature-list">
+                        <div class="feature-item">Testes de Cenários Reais e Padrões Visuais</div>
+                        <div class="feature-item">Análise de 300+ decisões no total</div>
+                        <div class="feature-item">Relatório Completo com MCD Avançado</div>
+                        <div class="feature-item">Acompanhamento de evolução mensal</div>
+                    </div>
+                    
+                    <button class="btn" onclick="goToPremium()" 
+                            style="background: white; color: #2d3748; margin-top: 20px; font-weight: bold;">
+                        💎 Seja Premium - R$ 19,90/mês
+                    </button>
+                    
+                    <div style="font-size: 0.8rem; margin-top: 10px; opacity: 0.8;">
+                        7 dias de garantia • Cancele quando quiser
+                    </div>
+                </div>
+
+                <div style="margin-top: 30px; display: flex; gap: 10px; justify-content: center;">
+                    <button class="btn" onclick="window.location.href='index.html'" 
+                            style="background: #e2e8f0; color: #4a5568; flex: 1;">
+                        🏠 Voltar ao Início
+                    </button>
+                    <button class="btn" onclick="shareResults()" 
+                            style="background: #63b3ed; color: white; flex: 1;">
+                        📤 Compartilhar
+                    </button>
+                </div>
+            `;
+        }
+
+        function goToPremium() {
+            alert('Página premium em desenvolvimento! Em breve: mais testes e análises avançadas.');
+        }
+
+        function shareResults() {
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Meus Resultados MindKappa',
+                    text: 'Acabei de descobrir meus padrões de decisão com a MindKappa!',
+                    url: 'https://mindkappa.com'
+                });
+            } else {
+                alert('Compartilhe seu link: https://mindkappa.com');
+            }
+        }
+
+        // Inicializar
+        window.addEventListener('load', initializeReport);
+    </script>
+</body>
+</html>
