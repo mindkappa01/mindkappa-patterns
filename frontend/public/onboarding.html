@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MindKappa - Sua Jornada Começa Aqui</title>
+    <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <!-- Logo -->
+            <div class="logo">🧠</div>
+            <div class="title">MindKappa Patterns</div>
+            <div class="subtitle">Vamos conhecer você melhor para personalizar sua experiência</div>
+            
+            <!-- Barra de Progresso -->
+            <div class="progress-bar">
+                <div class="progress-step active">1</div>
+                <div class="progress-step">2</div>
+                <div class="progress-step">3</div>
+                <div class="progress-step">4</div>
+                <div class="progress-line"></div>
+            </div>
+            
+            <!-- Formulário -->
+            <form id="onboardingForm">
+                <div class="form-group">
+                    <label for="name">Como você gostaria de ser chamado?</label>
+                    <input type="text" id="name" name="name" required 
+                           placeholder="Seu nome ou apelido">
+                </div>
+                
+                <div class="form-group">
+                    <label for="age">Qual sua idade?</label>
+                    <input type="number" id="age" name="age" min="12" max="100" required 
+                           placeholder="Ex: 25">
+                </div>
+                
+                <div class="form-group">
+                    <label for="gender">Com qual gênero você mais se identifica?</label>
+                    <select id="gender" name="gender" required>
+                        <option value="">Selecione...</option>
+                        <option value="feminino">Feminino</option>
+                        <option value="masculino">Masculino</option>
+                        <option value="nao-binario">Não-binário</option>
+                        <option value="prefiro-nao-dizer">Prefiro não dizer</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="emotion">Como você está se sentindo agora?</label>
+                    <select id="emotion" name="emotion" required>
+                        <option value="">Selecione...</option>
+                        <option value="animado">😊 Animado/Curioso</option>
+                        <option value="calmo">😌 Calmo/Tranquilo</option>
+                        <option value="ansioso">😰 Ansioso/Nervoso</option>
+                        <option value="cansado">😴 Cansado/Desanimado</option>
+                        <option value="motivado">💪 Motivado/Energizado</option>
+                    </select>
+                </div>
+                
+                <button type="submit" class="btn">
+                    Começar Minha Jornada de Autoconhecimento
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Salvar dados no localStorage e ir para o primeiro teste
+        document.getElementById('onboardingForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const userData = {
+                name: document.getElementById('name').value,
+                age: document.getElementById('age').value,
+                gender: document.getElementById('gender').value,
+                emotion: document.getElementById('emotion').value,
+                sessionId: 'mk-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9)
+            };
+            
+            // Salvar no localStorage
+            localStorage.setItem('mindkappa_user', JSON.stringify(userData));
+            
+            // Redirecionar para o primeiro teste
+            alert(`Perfeito, ${userData.name}! Vamos começar sua jornada.`);
+            window.location.href = 'teste1.html';
+        });
+    </script>
+</body>
+</html>
