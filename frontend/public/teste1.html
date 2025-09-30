@@ -254,21 +254,20 @@
         // FINALIZAÇÃO DO TESTE
         // =============================================
         function completeTest() {
-            // Salvar dados completos
-            const userData = JSON.parse(localStorage.getItem('mindkappa_user'));
-            userData.teste1 = {
-                decisions: testState.decisions,
-                completedAt: new Date().toISOString(),
-                totalDuration: Date.now() - testState.startTime,
-                config: TEST_CONFIG
-            };
-            
-            localStorage.setItem('mindkappa_user', JSON.stringify(userData));
-            
-            // Mostrar mensagem de conclusão
-            showCompletionMessage();
-        }
-
+    // Salvar dados completos
+    const userData = JSON.parse(localStorage.getItem('mindkappa_user'));
+    userData.teste1 = {
+        decisions: testState.decisions,
+        completedAt: new Date().toISOString(),
+        totalDuration: Date.now() - testState.startTime,
+        config: TEST_CONFIG
+    };
+    
+    localStorage.setItem('mindkappa_user', JSON.stringify(userData));
+    
+    // Mostrar mensagem de conclusão
+    showCompletionMessage();
+}
         function showCompletionMessage() {
             elements.contentArea.innerHTML = `
                 <div class="completion-message">
@@ -301,35 +300,6 @@
                 e.returnValue = 'Seu progresso será perdido. Tem certeza que quer sair?';
             }
         });
-                // =============================================
-        // DEBUG SIMPLES - VERIFICAR DADOS
-        // =============================================
-        console.log('🔍 MindKappa Debug: Script carregado');
-        
-        // Verificar dados a cada decisão
-        const originalHandleDecision = handleDecision;
-        handleDecision = function(choice, buttonPosition) {
-            console.log(`🎯 Decisão registrada: ${choice}, posição: ${buttonPosition}`);
-            originalHandleDecision(choice, buttonPosition);
-            
-            // Verificar dados após salvar
-            setTimeout(() => {
-                const data = JSON.parse(localStorage.getItem('mindkappa_user') || '{}');
-                console.log('📊 Dados atualizados:', data);
-            }, 200);
-        };
-
-        // Verificar se localStorage está funcionando
-        setTimeout(() => {
-            console.log('🛠️ Testando localStorage...');
-            try {
-                localStorage.setItem('teste_mindkappa', 'funcionando');
-                const teste = localStorage.getItem('teste_mindkappa');
-                console.log('✅ localStorage está funcionando:', teste);
-            } catch (e) {
-                console.log('❌ localStorage não funciona:', e);
-            }
-        }, 1000);
     </script>
 </body>
 </html>
