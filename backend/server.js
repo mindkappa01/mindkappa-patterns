@@ -34,7 +34,7 @@ app.post('/api/generate-report', async (req, res) => {
     const prompt = criarPromptPersonalizado(userData);
 
     const completion = await openai.chat.completions.create({
-      model: "gpt-4",
+      model: "gpt-3.5-turbo",
       messages: [
         {
           role: "system",
@@ -221,4 +221,5 @@ const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
   console.log(`🚀 MindKappa Backend rodando na porta ${PORT}`);
   console.log(`📍 Health check: http://localhost:${PORT}/health`);
+
 });
