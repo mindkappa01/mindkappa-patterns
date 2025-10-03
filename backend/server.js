@@ -217,9 +217,17 @@ function analisarTeste3(teste3) {
   };
 }
 
+app.get('/', (req, res) => {
+  res.json({ 
+    status: 'OK', 
+    service: 'MindKappa Backend',
+    timestamp: new Date().toISOString()
+  });
+});
+
 const PORT = process.env.PORT || 3001;
-app.listen(PORT, () => {
+app.listen(PORT, '0.0.0.0', () => {
   console.log(`🚀 MindKappa Backend rodando na porta ${PORT}`);
   console.log(`📍 Health check: http://localhost:${PORT}/health`);
-
 });
+
