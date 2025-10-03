@@ -124,7 +124,7 @@
         async function callGPT4API(userData) {
             try {
                 // URL do seu backend no Railway
-                const response = await fetch('https://mindkappa-backend.railway.app/api/generate-report', {
+                const response = await fetch('https://mindkappa-patterns-production.up.railway.app/api/generate-report', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -323,4 +323,5 @@ Continue acompanhando para receber o relatório completo com IA!
     </script>
 </body>
 </html>
+
 
