@@ -238,8 +238,12 @@ app.post('/api/create-subscription', async (req, res) => {
   try {
     console.log('📦 Criando assinatura...');
     
+    // Data de início: amanhã às 10h (formato correto Mercado Pago)
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    tomorrow.setHours(10, 0, 0, 0);
+    
     const subscriptionData = {
-      preapproval_plan_id: null, // Vamos usar plano simples
       reason: 'MindKappa Premium - Acesso Completo',
       external_reference: 'mindkappa_' + Date.now(),
       auto_recurring: {
@@ -247,11 +251,13 @@ app.post('/api/create-subscription', async (req, res) => {
         frequency_type: 'months',
         transaction_amount: 0.01, // 🚨 MODO TESTE - R$ 0,01
         currency_id: 'BRL',
-        start_date: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString() // Começa amanhã
+        start_date: tomorrow.toISOString().slice(0, 19) + '-03:00' // ✅ FORMATO CORRETO
       },
-      back_url: 'https://patterns.mindkappa.com/success',
+      back_url: 'https://patterns.mindkappa.com',
       status: 'authorized'
     };
+
+    console.log('📅 Data configurada:', subscriptionData.auto_recurring.start_date);
 
     // Criar a assinatura no Mercado Pago
     const subscription = await mercadopago.preapproval.create(subscriptionData);
