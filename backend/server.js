@@ -234,51 +234,45 @@ app.get('/', (req, res) => {
 });
 
 // ==================== 💰 CRIAR ASSINATURA ====================
-app.post('/api/create-subscription', async (req, res) => {
+// ==================== 🔄 ROTA SIMPLES MERCADO PAGO ====================
+app.post('/api/simple-subscription', async (req, res) => {
   try {
-    console.log('📦 Criando assinatura...');
+    console.log('💰 Criando assinatura simples...');
     
-    // ✅ FORMATO CORRETO Mercado Pago: "2024-03-15T10:00:00.000-03:00"
-    const startDate = new Date();
-    startDate.setDate(startDate.getDate() + 1); // Começa amanhã
-    startDate.setHours(10, 0, 0, 0); // Às 10h
-    
-    const formattedDate = startDate.getFullYear() + '-' +
-                         String(startDate.getMonth() + 1).padStart(2, '0') + '-' +
-                         String(startDate.getDate()).padStart(2, '0') + 'T10:00:00.000-03:00';
-
-    const subscriptionData = {
-      reason: 'MindKappa Premium - Acesso Completo',
-      external_reference: 'mindkappa_' + Date.now(),
-      auto_recurring: {
-        frequency: 1,
-        frequency_type: 'months',
-        transaction_amount: 0.01, // 🚨 MODO TESTE - R$ 0,01
-        currency_id: 'BRL',
-        start_date: formattedDate // ✅ FORMATO CORRETO
+    // Configuração MÍNIMA do Mercado Pago
+    const preference = {
+      items: [
+        {
+          title: 'MindKappa Premium - Assinatura Mensal',
+          unit_price: 0.01, // 🚨 MODO TESTE
+          quantity: 1,
+          currency_id: 'BRL'
+        }
+      ],
+      back_urls: {
+        success: 'https://mindkappa-patterns.vercel.app',
+        failure: 'https://mindkappa-patterns.vercel.app', 
+        pending: 'https://mindkappa-patterns.vercel.app'
       },
-      back_url: 'https://mindkappa-patterns.vercel.app', // URL do Vercel
-      status: 'authorized'
+      auto_return: 'approved'
     };
 
-    console.log('📅 Data formatada:', formattedDate);
-
-    // Criar a assinatura no Mercado Pago
-    const subscription = await mercadopago.preapproval.create(subscriptionData);
+    // Criar preferência de pagamento (mais simples que assinatura)
+    const result = await mercadopago.preferences.create(preference);
     
-    console.log('✅ Assinatura criada:', subscription.response.id);
+    console.log('✅ Link de pagamento criado:', result.body.id);
     
     res.json({
       success: true,
-      payment_link: subscription.response.init_point,
-      subscription_id: subscription.response.id
+      payment_link: result.body.init_point,
+      id: result.body.id
     });
 
   } catch (error) {
-    console.error('❌ Erro Mercado Pago:', error);
+    console.error('❌ Erro simples:', error);
     res.status(500).json({
       success: false,
-      error: 'Erro ao criar assinatura: ' + error.message
+      error: 'Erro ao criar pagamento: ' + error.message
     });
   }
 });
@@ -288,4 +282,5 @@ app.listen(PORT, '0.0.0.0', () => {
   console.log(`🚀 MindKappa Backend rodando na porta ${PORT}`);
   console.log(`📍 Health check: http://localhost:${PORT}/health`);
 });
+
 
