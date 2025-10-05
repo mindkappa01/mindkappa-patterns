@@ -355,39 +355,51 @@ function showPremiumOffer() {
 }
 
 // ==================== 🔗 FUNÇÃO DE PAGAMENTO ====================
-async function createSubscription() {
-  const button = event.target;
-  const originalText = button.innerHTML;
-  
-  button.innerHTML = '⏳ Criando assinatura...';
-  button.disabled = true;
-  
+// ==================== 💰 CRIAR ASSINATURA ====================
+app.post('/api/create-subscription', async (req, res) => {
   try {
-    // ✅ URL ABSOLUTA do backend
-    const response = await fetch('https://mindkappa-patterns-production.up.railway.app/api/create-subscription', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      }
+    console.log('📦 Criando assinatura...');
+    
+    // Data de início: amanhã às 10h (formato correto Mercado Pago)
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    tomorrow.setHours(10, 0, 0, 0);
+    
+    const subscriptionData = {
+      reason: 'MindKappa Premium - Acesso Completo',
+      external_reference: 'mindkappa_' + Date.now(),
+      auto_recurring: {
+        frequency: 1,
+        frequency_type: 'months',
+        transaction_amount: 0.01, // 🚨 MODO TESTE - R$ 0,01
+        currency_id: 'BRL',
+        start_date: tomorrow.toISOString().slice(0, 19) + '-03:00' // ✅ FORMATO CORRETO
+      },
+      back_url: 'https://patterns.mindkappa.com',
+      status: 'authorized'
+    };
+
+    console.log('📅 Data configurada:', subscriptionData.auto_recurring.start_date);
+
+    // Criar a assinatura no Mercado Pago
+    const subscription = await mercadopago.preapproval.create(subscriptionData);
+    
+    console.log('✅ Assinatura criada:', subscription.response.id);
+    
+    res.json({
+      success: true,
+      payment_link: subscription.response.init_point,
+      subscription_id: subscription.response.id
     });
-    
-    const data = await response.json();
-    
-    if (data.success) {
-      console.log('✅ Redirecionando para Mercado Pago...');
-      window.location.href = data.payment_link;
-    } else {
-      alert('❌ Erro no servidor: ' + (data.error || 'Tente novamente'));
-      button.innerHTML = originalText;
-      button.disabled = false;
-    }
+
   } catch (error) {
-    console.error('Erro completo:', error);
-    alert('📡 Erro: O servidor não respondeu. Tentando novamente...');
-    button.innerHTML = originalText;
-    button.disabled = false;
+    console.error('❌ Erro Mercado Pago:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Erro ao criar assinatura: ' + error.message
+    });
   }
-}
+});
 
         // Inicializar
         window.addEventListener('load', initializeReport);
