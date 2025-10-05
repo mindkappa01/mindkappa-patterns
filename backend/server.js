@@ -238,11 +238,15 @@ app.post('/api/create-subscription', async (req, res) => {
   try {
     console.log('📦 Criando assinatura...');
     
-    // Data de início: amanhã às 10h (formato correto Mercado Pago)
-    const tomorrow = new Date();
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    tomorrow.setHours(10, 0, 0, 0);
+    // ✅ FORMATO CORRETO Mercado Pago: "2024-03-15T10:00:00.000-03:00"
+    const startDate = new Date();
+    startDate.setDate(startDate.getDate() + 1); // Começa amanhã
+    startDate.setHours(10, 0, 0, 0); // Às 10h
     
+    const formattedDate = startDate.getFullYear() + '-' +
+                         String(startDate.getMonth() + 1).padStart(2, '0') + '-' +
+                         String(startDate.getDate()).padStart(2, '0') + 'T10:00:00.000-03:00';
+
     const subscriptionData = {
       reason: 'MindKappa Premium - Acesso Completo',
       external_reference: 'mindkappa_' + Date.now(),
@@ -251,13 +255,13 @@ app.post('/api/create-subscription', async (req, res) => {
         frequency_type: 'months',
         transaction_amount: 0.01, // 🚨 MODO TESTE - R$ 0,01
         currency_id: 'BRL',
-        start_date: tomorrow.toISOString().slice(0, 19) + '-03:00' // ✅ FORMATO CORRETO
+        start_date: formattedDate // ✅ FORMATO CORRETO
       },
-      back_url: 'https://patterns.mindkappa.com',
+      back_url: 'https://mindkappa-patterns.vercel.app', // URL do Vercel
       status: 'authorized'
     };
 
-    console.log('📅 Data configurada:', subscriptionData.auto_recurring.start_date);
+    console.log('📅 Data formatada:', formattedDate);
 
     // Criar a assinatura no Mercado Pago
     const subscription = await mercadopago.preapproval.create(subscriptionData);
@@ -284,3 +288,4 @@ app.listen(PORT, '0.0.0.0', () => {
   console.log(`🚀 MindKappa Backend rodando na porta ${PORT}`);
   console.log(`📍 Health check: http://localhost:${PORT}/health`);
 });
+
