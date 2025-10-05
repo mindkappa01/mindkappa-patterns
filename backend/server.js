@@ -9,14 +9,11 @@ app.use(express.json());
 // ==================== 🔐 MERCADO PAGO ====================
 const mercadopago = require('mercadopago');
 
-// CONFIGURE COM SUAS CHAVES - SUBSTITUA pelos seus números
+// ✅ CONFIGURAÇÃO SUPER SIMPLES (sem try/catch)
 mercadopago.configure({
   access_token: 'TEST-4776420197323076-100420-7bc09edb85e7e1e7cb76deb8b546988b-608368877'
 });
-console.log('✅ Mercado Pago configurado com sucesso');
-} catch (error) {
-  console.error('❌ Erro configurando Mercado Pago:', error);
-}
+console.log('✅ Mercado Pago configurado');
 
 // OpenAI config - chave vem das variáveis de ambiente
 const openai = new OpenAI({
@@ -296,6 +293,7 @@ app.listen(PORT, '0.0.0.0', () => {
   console.log(`🚀 MindKappa Backend rodando na porta ${PORT}`);
   console.log(`📍 Health check: http://localhost:${PORT}/health`);
 });
+
 
 
 
