@@ -6,6 +6,14 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+// ==================== 🔐 MERCADO PAGO ====================
+const mercadopago = require('mercadopago');
+
+// CONFIGURE COM SUAS CHAVES - SUBSTITUA pelos seus números
+mercadopago.configure({
+  access_token: 'TEST-12345678901234567890123456789012' // SUA ACCESS TOKEN AQUI
+});
+
 // OpenAI config - chave vem das variáveis de ambiente
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY
@@ -225,9 +233,48 @@ app.get('/', (req, res) => {
   });
 });
 
+// ==================== 💰 CRIAR ASSINATURA ====================
+app.post('/api/create-subscription', async (req, res) => {
+  try {
+    console.log('📦 Criando assinatura...');
+    
+    const subscriptionData = {
+      preapproval_plan_id: null, // Vamos usar plano simples
+      reason: 'MindKappa Premium - Acesso Completo',
+      external_reference: 'mindkappa_' + Date.now(),
+      auto_recurring: {
+        frequency: 1,
+        frequency_type: 'months',
+        transaction_amount: 0.01, // 🚨 MODO TESTE - R$ 0,01
+        currency_id: 'BRL',
+        start_date: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString() // Começa amanhã
+      },
+      back_url: 'https://patterns.mindkappa.com/success',
+      status: 'authorized'
+    };
+
+    // Criar a assinatura no Mercado Pago
+    const subscription = await mercadopago.preapproval.create(subscriptionData);
+    
+    console.log('✅ Assinatura criada:', subscription.response.id);
+    
+    res.json({
+      success: true,
+      payment_link: subscription.response.init_point,
+      subscription_id: subscription.response.id
+    });
+
+  } catch (error) {
+    console.error('❌ Erro Mercado Pago:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Erro ao criar assinatura: ' + error.message
+    });
+  }
+});
+
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`🚀 MindKappa Backend rodando na porta ${PORT}`);
   console.log(`📍 Health check: http://localhost:${PORT}/health`);
 });
-
