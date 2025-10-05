@@ -11,8 +11,12 @@ const mercadopago = require('mercadopago');
 
 // CONFIGURE COM SUAS CHAVES - SUBSTITUA pelos seus números
 mercadopago.configure({
-  access_token: 'TEST-12345678901234567890123456789012' // SUA ACCESS TOKEN AQUI
+  access_token: 'TEST-4776420197323076-100420-7bc09edb85e7e1e7cb76deb8b546988b-608368877'
 });
+console.log('✅ Mercado Pago configurado com sucesso');
+} catch (error) {
+  console.error('❌ Erro configurando Mercado Pago:', error);
+}
 
 // OpenAI config - chave vem das variáveis de ambiente
 const openai = new OpenAI({
@@ -234,33 +238,34 @@ app.get('/', (req, res) => {
 });
 
 // ==================== 💰 CRIAR ASSINATURA ====================
-// ==================== 🔄 ROTA SIMPLES MERCADO PAGO ====================
+// ==================== 💰 CHECKOUT BÁSICO MERCADO PAGO ====================
 app.post('/api/simple-subscription', async (req, res) => {
   try {
-    console.log('💰 Criando assinatura simples...');
+    console.log('💰 Criando checkout básico...');
     
-    // Configuração MÍNIMA do Mercado Pago
+    // ✅ CHECKOUT BÁSICO - método mais confiável
     const preference = {
       items: [
         {
-          title: 'MindKappa Premium - Assinatura Mensal',
-          unit_price: 0.01, // 🚨 MODO TESTE
+          title: 'MindKappa Premium - Acesso Mensal',
+          unit_price: 0.01,
           quantity: 1,
           currency_id: 'BRL'
         }
       ],
       back_urls: {
-        success: 'https://mindkappa-patterns.vercel.app',
-        failure: 'https://mindkappa-patterns.vercel.app', 
+        success: 'https://mindkappa-patterns.vercel.app/success.html',
+        failure: 'https://mindkappa-patterns.vercel.app',
         pending: 'https://mindkappa-patterns.vercel.app'
       },
-      auto_return: 'approved'
+      auto_return: 'approved',
+      statement_descriptor: 'MINDKAPPA'
     };
 
-    // Criar preferência de pagamento (mais simples que assinatura)
+    console.log('📦 Criando preferência...');
     const result = await mercadopago.preferences.create(preference);
     
-    console.log('✅ Link de pagamento criado:', result.body.id);
+    console.log('✅ Checkout criado:', result.body.id);
     
     res.json({
       success: true,
@@ -269,11 +274,20 @@ app.post('/api/simple-subscription', async (req, res) => {
     });
 
   } catch (error) {
-    console.error('❌ Erro simples:', error);
-    res.status(500).json({
-      success: false,
-      error: 'Erro ao criar pagamento: ' + error.message
-    });
+    console.error('❌ Erro no checkout:', error);
+    
+    // ✅ DETALHE DO ERRO ESPECÍFICO
+    if (error.message.includes('invalid_token')) {
+      res.status(500).json({
+        success: false,
+        error: 'Token do Mercado Pago inválido. Verifique as credenciais.'
+      });
+    } else {
+      res.status(500).json({
+        success: false,
+        error: 'Erro Mercado Pago: ' + error.message
+      });
+    }
   }
 });
 
@@ -282,5 +296,6 @@ app.listen(PORT, '0.0.0.0', () => {
   console.log(`🚀 MindKappa Backend rodando na porta ${PORT}`);
   console.log(`📍 Health check: http://localhost:${PORT}/health`);
 });
+
 
 
