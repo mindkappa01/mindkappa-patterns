@@ -359,12 +359,12 @@ async function createSubscription() {
   const button = event.target;
   const originalText = button.innerHTML;
   
-  // Mostrar loading
   button.innerHTML = '⏳ Criando assinatura...';
   button.disabled = true;
   
   try {
-    const response = await fetch('/api/create-subscription', {
+    // ✅ URL ABSOLUTA do backend
+    const response = await fetch('https://mindkappa-patterns-production.up.railway.app/api/create-subscription', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -374,28 +374,20 @@ async function createSubscription() {
     const data = await response.json();
     
     if (data.success) {
-      console.log('✅ Redirecionando para:', data.payment_link);
-      // Redireciona para página de pagamento
+      console.log('✅ Redirecionando para Mercado Pago...');
       window.location.href = data.payment_link;
     } else {
-      alert('❌ Erro: ' + (data.error || 'Tente novamente'));
+      alert('❌ Erro no servidor: ' + (data.error || 'Tente novamente'));
       button.innerHTML = originalText;
       button.disabled = false;
     }
   } catch (error) {
-    console.error('Erro:', error);
-    alert('📡 Erro de conexão. Verifique sua internet.');
+    console.error('Erro completo:', error);
+    alert('📡 Erro: O servidor não respondeu. Tentando novamente...');
     button.innerHTML = originalText;
     button.disabled = false;
   }
 }
-
-        function newAnalysis() {
-            if (confirm('Isso irá reiniciar todo o processo. Tem certeza?')) {
-                localStorage.removeItem('mindkappa_user');
-                window.location.href = 'onboarding.html';
-            }
-        }
 
         // Inicializar
         window.addEventListener('load', initializeReport);
