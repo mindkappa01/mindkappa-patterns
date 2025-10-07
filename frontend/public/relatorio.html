@@ -413,6 +413,36 @@ async function createSubscription() {
     button.disabled = false;
   }
 }
+        // ==================== 💾 SALVAR DADOS AUTOMATICAMENTE ====================
+async function saveResearchData(userData, decisions, kappaResults) {
+  try {
+    const response = await fetch('/api/save-research-data', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        userData: userData,
+        decisions: decisions, // 300+ decisões
+        kappaResults: {
+          test1: calculateKappa(decisions.filter(d => d.testNumber === 1)),
+          test2: calculateKappa(decisions.filter(d => d.testNumber === 2)),
+          test3: calculateKappa(decisions.filter(d => d.testNumber === 3)),
+          insights: 'Padrões detectados automaticamente'
+        }
+      })
+    });
+    
+    const data = await response.json();
+    if (data.success) {
+      console.log('✅ Dados salvos para pesquisa. Session:', data.sessionId);
+    }
+  } catch (error) {
+    console.log('📡 Dados não salvos (sem conexão):', error);
+    // Não mostra erro para o usuário - é opcional
+  }
+}
+
         function newAnalysis() {
             if (confirm('Isso irá reiniciar todo o processo. Tem certeza?')) {
                 localStorage.removeItem('mindkappa_user');
@@ -425,6 +455,7 @@ async function createSubscription() {
     </script>
 </body>
 </html>
+
 
 
 
