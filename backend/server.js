@@ -16,7 +16,7 @@ const pool = new Pool({
   port: 24573,
   database: 'railway',
   user: 'postgres',
-  password: 'XCZkvTZkbwnJAnqMHWtzcEVcOUIFmYmf', // ⚠️ SUA SENHA REAL AQUI
+  password: '', // ⚠️ 
   ssl: { rejectUnauthorized: false }
 });
 
@@ -566,6 +566,7 @@ app.listen(PORT, '0.0.0.0', () => {
   console.log(`🚀 MindKappa Backend rodando na porta ${PORT}`);
   console.log(`📍 Health check: http://localhost:${PORT}/health`);
 });
+
 
 
 
