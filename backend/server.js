@@ -360,11 +360,81 @@ app.get('/api/export-research-data', async (req, res) => {
   }
 });
 
+// ==================== 📤 EXPORTAR DADOS CSV ====================
+app.get('/api/export-csv', async (req, res) => {
+  try {
+    console.log('📤 Gerando arquivo CSV...');
+    
+    // 1. Buscar dados das 3 tabelas
+    const sessionsData = await getSessionsData();
+    const kappaData = await getKappaData();
+    
+    // 2. Gerar CSV
+    const csvContent = generateCSV(sessionsData, kappaData);
+    
+    // 3. Enviar como download
+    res.header('Content-Type', 'text/csv');
+    res.attachment('mindkappa_research_data.csv');
+    res.send(csvContent);
+    
+    console.log('✅ CSV gerado com sucesso!');
+    
+  } catch (error) {
+    console.error('❌ Erro ao gerar CSV:', error);
+    res.status(500).json({ 
+      success: false, 
+      error: 'Erro ao exportar dados: ' + error.message 
+    });
+  }
+});
+
+// ==================== 📊 FUNÇÕES AUXILIARES ====================
+async function getSessionsData() {
+  // TODO: Implementar busca no banco
+  // Por enquanto retorna dados de exemplo
+  return [
+    {
+      id: 'session_001',
+      user_data: { name: 'João', age: 25, gender: 'M', emotion: 'curioso' },
+      created_at: '2024-10-05',
+      completed: true,
+      is_premium: false
+    }
+  ];
+}
+
+async function getKappaData() {
+  // TODO: Implementar busca no banco  
+  return [
+    {
+      session_id: 'session_001',
+      test_1_kappa: 0.45,
+      test_2_kappa: 0.67,
+      test_3_kappa: 0.23,
+      insights: { pattern: 'instintivo', consistency: 'alta' }
+    }
+  ];
+}
+
+function generateCSV(sessions, kappaResults) {
+  let csv = 'session_id,age,gender,emotion,test1_kappa,test2_kappa,test3_kappa,completed,is_premium,created_at\n';
+  
+  sessions.forEach(session => {
+    const kappa = kappaResults.find(k => k.session_id === session.id) || {};
+    const user = session.user_data || {};
+    
+    csv += `"${session.id}",${user.age || ''},"${user.gender || ''}","${user.emotion || ''}",${kappa.test_1_kappa || ''},${kappa.test_2_kappa || ''},${kappa.test_3_kappa || ''},${session.completed},${session.is_premium},"${session.created_at}"\n`;
+  });
+  
+  return csv;
+}
+
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`🚀 MindKappa Backend rodando na porta ${PORT}`);
   console.log(`📍 Health check: http://localhost:${PORT}/health`);
 });
+
 
 
 
