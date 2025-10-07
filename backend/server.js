@@ -13,8 +13,6 @@ if (!process.env.DATABASE_URL) {
   console.error('❌ DATABASE_URL não encontrada nas variáveis de ambiente!');
 }
 
-const { Pool } = require('pg');
-
 console.log('🔧 Configurando Pool com variáveis Railway...');
 console.log('PGHOST:', process.env.PGHOST);
 console.log('PGUSER:', process.env.PGUSER);
@@ -548,6 +546,7 @@ app.listen(PORT, '0.0.0.0', () => {
   console.log(`🚀 MindKappa Backend rodando na porta ${PORT}`);
   console.log(`📍 Health check: http://localhost:${PORT}/health`);
 });
+
 
 
 
