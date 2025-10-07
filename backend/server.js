@@ -1,14 +1,13 @@
 const express = require('express');
 const cors = require('cors');
 const OpenAI = require('openai');
+const { Pool } = require('pg');
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
 // ==================== 🗄️ CONEXÃO COM BANCO POSTGRESQL ====================
-const { Pool } = require('pg');
-
 // ✅ VERIFICAR SE A VARIÁVEL EXISTE
 if (!process.env.DATABASE_URL) {
   console.error('❌ DATABASE_URL não encontrada nas variáveis de ambiente!');
@@ -25,6 +24,17 @@ const pool = new Pool({
   idleTimeoutMillis: 30000,
   max: 20
 });
+
+// DEBUG DA CONEXÃO
+console.log('=== 🚨 DEBUG CONEXÃO ===');
+console.log('DATABASE_URL exists:', !!process.env.DATABASE_URL);
+console.log('NODE_ENV:', process.env.NODE_ENV);
+
+// Teste rápido
+pool.query('SELECT NOW() as time')
+  .then(result => console.log('✅ Teste de conexão OK:', result.rows[0].time))
+  .catch(err => console.error('❌ Teste de conexão FALHOU:', err.message));
+
 
 console.log('🔧 Configurando Pool com:', process.env.DATABASE_URL ? 'DATABASE_URL encontrada' : 'DATABASE_URL não encontrada');
 
@@ -514,6 +524,7 @@ app.listen(PORT, '0.0.0.0', () => {
   console.log(`🚀 MindKappa Backend rodando na porta ${PORT}`);
   console.log(`📍 Health check: http://localhost:${PORT}/health`);
 });
+
 
 
 
