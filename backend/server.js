@@ -360,17 +360,12 @@ app.get('/api/export-research-data', async (req, res) => {
   }
 });
 
-// ⬇️ ISSO JÁ DEVE EXISTIR - NÃO MEXER
-const PORT = process.env.PORT || 3001;
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(`🚀 MindKappa Backend rodando na porta ${PORT}`);
-});
-
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`🚀 MindKappa Backend rodando na porta ${PORT}`);
   console.log(`📍 Health check: http://localhost:${PORT}/health`);
 });
+
 
 
 
