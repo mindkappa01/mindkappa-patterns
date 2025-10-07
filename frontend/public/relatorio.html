@@ -96,6 +96,17 @@
             `;
         }
 
+        async function saveResearchData(userData, decisions, kappaResults) {
+  await fetch('/api/save-research-data', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({
+      userData: userData,
+      decisions: decisions, // 300+ decisões
+      kappaResults: kappaResults // cálculos κ
+    })
+  });
+}
         async function generateReport() {
             // Mostrar loading
             elements.reportContent.innerHTML = `
@@ -403,5 +414,6 @@ async function createSubscription() {
     </script>
 </body>
 </html>
+
 
 
