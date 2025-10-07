@@ -407,40 +407,57 @@ app.get('/api/export-csv', async (req, res) => {
 
 // ==================== 📊 FUNÇÕES AUXILIARES ====================
 async function getSessionsData() {
-  // TODO: Implementar busca no banco
-  // Por enquanto retorna dados de exemplo
-  return [
-    {
-      id: 'session_001',
-      user_data: { name: 'João', age: 25, gender: 'M', emotion: 'curioso' },
-      created_at: '2024-10-05',
-      completed: true,
-      is_premium: false
-    }
-  ];
+  try {
+    const result = await pool.query(`
+      SELECT id, user_data, created_at, completed, is_premium 
+      FROM sessions 
+      ORDER BY created_at DESC
+    `);
+    console.log(`📊 Encontradas ${result.rows.length} sessões`);
+    return result.rows;
+  } catch (error) {
+    console.error('❌ Erro ao buscar sessões:', error);
+    return [];
+  }
 }
 
 async function getKappaData() {
-  // TODO: Implementar busca no banco  
-  return [
-    {
-      session_id: 'session_001',
-      test_1_kappa: 0.45,
-      test_2_kappa: 0.67,
-      test_3_kappa: 0.23,
-      insights: { pattern: 'instintivo', consistency: 'alta' }
-    }
-  ];
+  try {
+    const result = await pool.query(`
+      SELECT session_id, test_1_kappa, test_2_kappa, test_3_kappa, insights, calculated_at 
+      FROM kappa_results 
+      ORDER BY calculated_at DESC
+    `);
+    console.log(`📈 Encontrados ${result.rows.length} resultados κ`);
+    return result.rows;
+  } catch (error) {
+    console.error('❌ Erro ao buscar resultados κ:', error);
+    return [];
+  }
 }
 
 function generateCSV(sessions, kappaResults) {
+  if (sessions.length === 0) {
+    return 'session_id,age,gender,emotion,test1_kappa,test2_kappa,test3_kappa,completed,is_premium,created_at\n' +
+           'NO_DATA_FOUND,,,Nenhum dado coletado ainda,,,,,\n';
+  }
+  
   let csv = 'session_id,age,gender,emotion,test1_kappa,test2_kappa,test3_kappa,completed,is_premium,created_at\n';
   
   sessions.forEach(session => {
-    const kappa = kappaResults.find(k => k.session_id === session.id) || {};
-    const user = session.user_data || {};
-    
-    csv += `"${session.id}",${user.age || ''},"${user.gender || ''}","${user.emotion || ''}",${kappa.test_1_kappa || ''},${kappa.test_2_kappa || ''},${kappa.test_3_kappa || ''},${session.completed},${session.is_premium},"${session.created_at}"\n`;
+    try {
+      const kappa = kappaResults.find(k => k.session_id === session.id) || {};
+      const user = session.user_data || {};
+      
+      // Extrair dados do JSONB user_data
+      const age = user.age || user.idade || '';
+      const gender = user.gender || user.genero || '';
+      const emotion = user.emotion || user.emocao || user.emoção || '';
+      
+      csv += `"${session.id}",${age},"${gender}","${emotion}",${kappa.test_1_kappa || ''},${kappa.test_2_kappa || ''},${kappa.test_3_kappa || ''},${session.completed},${session.is_premium},"${session.created_at}"\n`;
+    } catch (error) {
+      console.error('❌ Erro ao processar sessão:', session.id, error);
+    }
   });
   
   return csv;
@@ -451,6 +468,7 @@ app.listen(PORT, '0.0.0.0', () => {
   console.log(`🚀 MindKappa Backend rodando na porta ${PORT}`);
   console.log(`📍 Health check: http://localhost:${PORT}/health`);
 });
+
 
 
 
