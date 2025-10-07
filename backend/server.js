@@ -382,19 +382,51 @@ app.get('/api/test-db-connection', async (req, res) => {
   }
 });
 
-// ==================== 💾 SALVAR DADOS DE PESQUISA ====================
+// ==================== 💾 SALVAR DADOS DE PESQUISA (COMPLETO) ====================
 app.post('/api/save-research-data', async (req, res) => {
   try {
     const { userData, decisions, kappaResults } = req.body;
     
     console.log('💾 Salvando dados de pesquisa...');
-    
-    // TODO: Implementar a lógica de salvar nas 3 tabelas
+    console.log('👤 Usuário:', userData.name);
+    console.log('🎯 Decisões:', decisions.length);
+    console.log('📊 Kappa Results:', kappaResults);
+
+    // 1. Salvar na tabela SESSIONS
+    const sessionResult = await pool.query(
+      `INSERT INTO sessions (user_data, completed) 
+       VALUES ($1, $2) 
+       RETURNING id`,
+      [userData, true]
+    );
+    const sessionId = sessionResult.rows[0].id;
+
+    // 2. Salvar 300+ decisões na tabela DECISIONS
+    for (const decision of decisions) {
+      await pool.query(
+        `INSERT INTO decisions 
+         (session_id, test_number, decision_number, choice, reaction_time, context) 
+         VALUES ($1, $2, $3, $4, $5, $6)`,
+        [sessionId, decision.testNumber, decision.decisionNumber, 
+         decision.choice, decision.reactionTime, decision.context]
+      );
+    }
+
+    // 3. Salvar resultados κ na tabela KAPPA_RESULTS
+    await pool.query(
+      `INSERT INTO kappa_results 
+       (session_id, test_1_kappa, test_2_kappa, test_3_kappa, insights) 
+       VALUES ($1, $2, $3, $4, $5)`,
+      [sessionId, kappaResults.test1, kappaResults.test2, 
+       kappaResults.test3, kappaResults.insights]
+    );
+
+    console.log('✅ Dados salvos com sucesso! Session ID:', sessionId);
     
     res.json({ 
       success: true, 
       message: 'Dados salvos para pesquisa!',
-      sessionId: 'temp_id'
+      sessionId: sessionId
     });
     
   } catch (error) {
@@ -534,6 +566,7 @@ app.listen(PORT, '0.0.0.0', () => {
   console.log(`🚀 MindKappa Backend rodando na porta ${PORT}`);
   console.log(`📍 Health check: http://localhost:${PORT}/health`);
 });
+
 
 
 
