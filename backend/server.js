@@ -13,17 +13,41 @@ if (!process.env.DATABASE_URL) {
   console.error('❌ DATABASE_URL não encontrada nas variáveis de ambiente!');
 }
 
+const { Pool } = require('pg');
+
+console.log('🔧 Configurando Pool com variáveis Railway...');
+console.log('PGHOST:', process.env.PGHOST);
+console.log('PGUSER:', process.env.PGUSER);
+
+// ✅ USAR VARIÁVEIS INDIVIDUAIS DO RAILWAY (já configuradas!)
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  // ✅ FORÇAR SSL E CONFIGURAÇÕES CORRETAS
-  ssl: {
-    rejectUnauthorized: false
-  },
-  // ✅ CONFIGURAÇÕES ADICIONAIS PARA RAILWAY
+  host: process.env.PGHOST,        // 'tramway.proxy.rlwy.net'
+  port: process.env.PGPORT,        // 24573
+  database: process.env.PGDATABASE, // 'railway'
+  user: process.env.PGUSER,        // 'postgres'
+  password: process.env.PGPASSWORD, // ✅ SENHA CORRETA!
+  ssl: { rejectUnauthorized: false },
   connectionTimeoutMillis: 10000,
   idleTimeoutMillis: 30000,
   max: 20
 });
+
+// Teste da conexão
+pool.query('SELECT NOW() as time, version() as version')
+  .then(result => {
+    console.log('✅ Conexão bem-sucedida!');
+    console.log('⏰ Hora do servidor:', result.rows[0].time);
+    console.log('🐘 PostgreSQL:', result.rows[0].version.split(',')[0]);
+  })
+  .catch(err => {
+    console.error('❌ Falha na conexão:', err.message);
+    console.log('Variáveis disponíveis:');
+    console.log('- PGHOST:', process.env.PGHOST);
+    console.log('- PGPORT:', process.env.PGPORT);
+    console.log('- PGUSER:', process.env.PGUSER);
+    console.log('- PGDATABASE:', process.env.PGDATABASE);
+    console.log('- PGPASSWORD:', process.env.PGPASSWORD ? '***CONFIGURADA***' : 'NÃO ENCONTRADA');
+  });
 
 // DEBUG DA CONEXÃO
 console.log('=== 🚨 DEBUG CONEXÃO ===');
@@ -524,6 +548,7 @@ app.listen(PORT, '0.0.0.0', () => {
   console.log(`🚀 MindKappa Backend rodando na porta ${PORT}`);
   console.log(`📍 Health check: http://localhost:${PORT}/health`);
 });
+
 
 
 
