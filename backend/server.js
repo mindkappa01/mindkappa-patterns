@@ -6,6 +6,23 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+// ==================== 🗄️ CONEXÃO COM BANCO POSTGRESQL ====================
+const { Pool } = require('pg');
+
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false
+});
+
+// Testar conexão
+pool.on('connect', () => {
+  console.log('✅ Conectado ao PostgreSQL');
+});
+
+pool.on('error', (err) => {
+  console.error('❌ Erro na conexão PostgreSQL:', err);
+});
+
 // ==================== 🔐 MERCADO PAGO ====================
 const mercadopago = require('mercadopago');
 
@@ -434,6 +451,7 @@ app.listen(PORT, '0.0.0.0', () => {
   console.log(`🚀 MindKappa Backend rodando na porta ${PORT}`);
   console.log(`📍 Health check: http://localhost:${PORT}/health`);
 });
+
 
 
 
