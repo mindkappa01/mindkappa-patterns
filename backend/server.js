@@ -9,42 +9,39 @@ app.use(express.json());
 
 // ==================== 🗄️ CONEXÃO COM BANCO POSTGRESQL ====================
 // ✅ VERIFICAR SE A VARIÁVEL EXISTE
-if (!process.env.DATABASE_URL) {
-  console.error('❌ DATABASE_URL não encontrada nas variáveis de ambiente!');
-}
+console.log('🔧 Testando com URL correta...');
 
-console.log('🔧 Configurando Pool com variáveis Railway...');
-console.log('PGHOST:', process.env.PGHOST);
-console.log('PGUSER:', process.env.PGUSER);
+// ✅ COLE SUA URL CORRETA AQUI (substitua TODO o conteúdo)
+const DATABASE_URL_CORRETA = 'postgresql://postgres:XCZkvTZkbwnJAnqMHWtzcEVcOUIFmYmf@postgres.railway.internal:5432/railway';
 
-// ✅ USAR VARIÁVEIS INDIVIDUAIS DO RAILWAY (já configuradas!)
 const pool = new Pool({
-  host: process.env.PGHOST,        // 'tramway.proxy.rlwy.net'
-  port: process.env.PGPORT,        // 24573
-  database: process.env.PGDATABASE, // 'railway'
-  user: process.env.PGUSER,        // 'postgres'
-  password: process.env.PGPASSWORD, // ✅ SENHA CORRETA!
-  ssl: { rejectUnauthorized: false },
-  connectionTimeoutMillis: 10000,
-  idleTimeoutMillis: 30000,
-  max: 20
+  connectionString: DATABASE_URL_CORRETA,
+  ssl: { 
+    rejectUnauthorized: false 
+  },
+  connectionTimeoutMillis: 15000, // 15 segundos
+  idleTimeoutMillis: 30000
 });
 
-// Teste da conexão
-pool.query('SELECT NOW() as time, version() as version')
+// Teste DETALHADO
+console.log('🧪 Iniciando teste de conexão...');
+console.log('🔗 URL:', DATABASE_URL_CORRETA.replace(/:[^:]*@/, ':****@')); // Esconde senha nos logs
+
+pool.query('SELECT NOW() as server_time, version() as pg_version, current_database() as db_name')
   .then(result => {
-    console.log('✅ Conexão bem-sucedida!');
-    console.log('⏰ Hora do servidor:', result.rows[0].time);
-    console.log('🐘 PostgreSQL:', result.rows[0].version.split(',')[0]);
+    const row = result.rows[0];
+    console.log('🎉 🎉 🎉 CONEXÃO BEM-SUCEDIDA! 🎉 🎉 🎉');
+    console.log('⏰ Hora do servidor:', row.server_time);
+    console.log('🐘 PostgreSQL:', row.pg_version.split(',')[0]);
+    console.log('🗄️ Banco:', row.db_name);
+    console.log('✅ BANCO DE DADOS CONECTADO COM SUCESSO!');
   })
   .catch(err => {
-    console.error('❌ Falha na conexão:', err.message);
-    console.log('Variáveis disponíveis:');
-    console.log('- PGHOST:', process.env.PGHOST);
-    console.log('- PGPORT:', process.env.PGPORT);
-    console.log('- PGUSER:', process.env.PGUSER);
-    console.log('- PGDATABASE:', process.env.PGDATABASE);
-    console.log('- PGPASSWORD:', process.env.PGPASSWORD ? '***CONFIGURADA***' : 'NÃO ENCONTRADA');
+    console.error('❌ FALHA NA CONEXÃO:', err.message);
+    console.log('🔧 Dicas:');
+    console.log('   • Verifique se a senha está correta');
+    console.log('   • Verifique se o host/port estão corretos');
+    console.log('   • Verifique se o banco "railway" existe');
   });
 
 // DEBUG DA CONEXÃO
@@ -546,6 +543,7 @@ app.listen(PORT, '0.0.0.0', () => {
   console.log(`🚀 MindKappa Backend rodando na porta ${PORT}`);
   console.log(`📍 Health check: http://localhost:${PORT}/health`);
 });
+
 
 
 
