@@ -121,6 +121,17 @@
                 </div>
             `;
 
+              try {
+    // ✅ SALVAR DADOS AUTOMATICAMENTE
+    await saveResearchData(userData, decisions, kappaResults);
+  } catch (error) {
+    console.log('⚠️ Dados não salvos (modo desenvolvimento):', error);
+  }
+  
+  // Mostrar relatório normalmente
+  showFinalReport(gptResponse, userData);
+}
+        
             try {
                 const userData = JSON.parse(localStorage.getItem('mindkappa_user'));
                 const gptResponse = await callGPT4API(userData);
@@ -414,6 +425,7 @@ async function createSubscription() {
     </script>
 </body>
 </html>
+
 
 
 
