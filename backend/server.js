@@ -436,6 +436,21 @@ app.get('/api/export-csv', async (req, res) => {
   }
 });
 
+// ==================== 🔍 DEBUG DATABASE_URL ====================
+app.get('/api/debug-db', async (req, res) => {
+  const hasDbUrl = !!process.env.DATABASE_URL;
+  const dbUrlPreview = process.env.DATABASE_URL 
+    ? process.env.DATABASE_URL.substring(0, 50) + '...' 
+    : 'NÃO ENCONTRADA';
+  
+  res.json({
+    has_database_url: hasDbUrl,
+    database_url_preview: dbUrlPreview,
+    node_env: process.env.NODE_ENV,
+    all_variables: process.env
+  });
+});
+
 // ==================== 📊 FUNÇÕES AUXILIARES ====================
 async function getSessionsData() {
   try {
@@ -499,6 +514,7 @@ app.listen(PORT, '0.0.0.0', () => {
   console.log(`🚀 MindKappa Backend rodando na porta ${PORT}`);
   console.log(`📍 Health check: http://localhost:${PORT}/health`);
 });
+
 
 
 
