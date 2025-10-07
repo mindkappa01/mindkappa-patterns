@@ -9,19 +9,24 @@ app.use(express.json());
 // ==================== 🗄️ CONEXÃO COM BANCO POSTGRESQL ====================
 const { Pool } = require('pg');
 
+// ✅ VERIFICAR SE A VARIÁVEL EXISTE
+if (!process.env.DATABASE_URL) {
+  console.error('❌ DATABASE_URL não encontrada nas variáveis de ambiente!');
+}
+
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
-  ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false
+  // ✅ FORÇAR SSL E CONFIGURAÇÕES CORRETAS
+  ssl: {
+    rejectUnauthorized: false
+  },
+  // ✅ CONFIGURAÇÕES ADICIONAIS PARA RAILWAY
+  connectionTimeoutMillis: 10000,
+  idleTimeoutMillis: 30000,
+  max: 20
 });
 
-// Testar conexão
-pool.on('connect', () => {
-  console.log('✅ Conectado ao PostgreSQL');
-});
-
-pool.on('error', (err) => {
-  console.error('❌ Erro na conexão PostgreSQL:', err);
-});
+console.log('🔧 Configurando Pool com:', process.env.DATABASE_URL ? 'DATABASE_URL encontrada' : 'DATABASE_URL não encontrada');
 
 // ==================== 🔐 MERCADO PAGO ====================
 const mercadopago = require('mercadopago');
@@ -331,6 +336,32 @@ app.get('/api/test-database', async (req, res) => {
   }
 });
 
+// ==================== 🧪 TESTE DE CONEXÃO REAL ====================
+app.get('/api/test-db-connection', async (req, res) => {
+  try {
+    console.log('🧪 Testando conexão REAL com banco...');
+    
+    // Teste SIMPLES - contar sessões
+    const result = await pool.query('SELECT COUNT(*) as total FROM sessions');
+    const totalSessions = result.rows[0].total;
+    
+    res.json({
+      success: true,
+      message: `✅ Conexão OK! Encontradas ${totalSessions} sessões`,
+      database_url: process.env.DATABASE_URL ? 'Configurada' : 'NÃO ENCONTRADA',
+      total_sessions: totalSessions
+    });
+    
+  } catch (error) {
+    console.error('❌ Erro na conexão REAL:', error);
+    res.status(500).json({ 
+      success: false, 
+      error: 'Erro de conexão: ' + error.message,
+      database_url: process.env.DATABASE_URL ? 'Configurada' : 'NÃO ENCONTRADA'
+    });
+  }
+});
+
 // ==================== 💾 SALVAR DADOS DE PESQUISA ====================
 app.post('/api/save-research-data', async (req, res) => {
   try {
@@ -468,6 +499,7 @@ app.listen(PORT, '0.0.0.0', () => {
   console.log(`🚀 MindKappa Backend rodando na porta ${PORT}`);
   console.log(`📍 Health check: http://localhost:${PORT}/health`);
 });
+
 
 
 
