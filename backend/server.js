@@ -8,40 +8,31 @@ app.use(cors());
 app.use(express.json());
 
 // ==================== 🗄️ CONEXÃO COM BANCO POSTGRESQL ====================
-// ✅ VERIFICAR SE A VARIÁVEL EXISTE
-console.log('🔧 Testando com URL correta...');
+console.log('🔧 Conectando via URL pública...');
 
-// ✅ COLE SUA URL CORRETA AQUI (substitua TODO o conteúdo)
-const DATABASE_URL_CORRETA = 'postgresql://postgres:XCZkvTZkbwnJAnqMHWtzcEVcOUIFmYmf@postgres.railway.internal:5432/railway';
-
+// ✅ URL PÚBLICA - tramway.proxy.rlwy.net
 const pool = new Pool({
-  connectionString: DATABASE_URL_CORRETA,
-  ssl: { 
-    rejectUnauthorized: false 
-  },
-  connectionTimeoutMillis: 15000, // 15 segundos
-  idleTimeoutMillis: 30000
+  host: 'tramway.proxy.rlwy.net',
+  port: 24573,
+  database: 'railway',
+  user: 'postgres',
+  password: 'XCZkvTZkbwnJAnqMHWtzcEVcOUIFmYmf', // ⚠️ SUA SENHA REAL AQUI
+  ssl: { rejectUnauthorized: false }
 });
 
-// Teste DETALHADO
-console.log('🧪 Iniciando teste de conexão...');
-console.log('🔗 URL:', DATABASE_URL_CORRETA.replace(/:[^:]*@/, ':****@')); // Esconde senha nos logs
+console.log('🧪 Testando conexão pública...');
 
-pool.query('SELECT NOW() as server_time, version() as pg_version, current_database() as db_name')
+pool.query('SELECT NOW() as time')
   .then(result => {
-    const row = result.rows[0];
-    console.log('🎉 🎉 🎉 CONEXÃO BEM-SUCEDIDA! 🎉 🎉 🎉');
-    console.log('⏰ Hora do servidor:', row.server_time);
-    console.log('🐘 PostgreSQL:', row.pg_version.split(',')[0]);
-    console.log('🗄️ Banco:', row.db_name);
-    console.log('✅ BANCO DE DADOS CONECTADO COM SUCESSO!');
+    console.log('🎉 ✅ CONEXÃO PÚBLICA FUNCIONOU!');
+    console.log('⏰ Hora:', result.rows[0].time);
   })
   .catch(err => {
-    console.error('❌ FALHA NA CONEXÃO:', err.message);
-    console.log('🔧 Dicas:');
-    console.log('   • Verifique se a senha está correta');
-    console.log('   • Verifique se o host/port estão corretos');
-    console.log('   • Verifique se o banco "railway" existe');
+    console.error('❌ Falha pública:', err.message);
+    console.log('💡 Certifique-se que:');
+    console.log('   • Host: tramway.proxy.rlwy.net');
+    console.log('   • Port: 24573'); 
+    console.log('   • Senha está CORRETA');
   });
 
 // DEBUG DA CONEXÃO
@@ -543,6 +534,7 @@ app.listen(PORT, '0.0.0.0', () => {
   console.log(`🚀 MindKappa Backend rodando na porta ${PORT}`);
   console.log(`📍 Health check: http://localhost:${PORT}/health`);
 });
+
 
 
 
