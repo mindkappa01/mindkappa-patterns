@@ -288,11 +288,90 @@ app.post('/api/simple-subscription', async (req, res) => {
   }
 });
 
+// ... suas rotas atuais (health, generate-report, simple-subscription) ...
+
+// ==================== 🗄️ BANCO DE DADOS ====================
+// 🔧 1. PRECISAMOS CONFIGURAR A CONEXÃO COM BANCO
+app.get('/api/test-database', async (req, res) => {
+  try {
+    console.log('🧪 Testando conexão com banco...');
+    
+    // Teste simples - contar tabelas
+    // TODO: Implementar teste real
+    
+    res.json({
+      success: true,
+      message: 'Conexão com banco OK!',
+      tables: ['sessions', 'decisions', 'kappa_results']
+    });
+    
+  } catch (error) {
+    console.error('❌ Erro na conexão:', error);
+    res.status(500).json({ 
+      success: false, 
+      error: 'Erro de conexão: ' + error.message 
+    });
+  }
+});
+
+// ==================== 💾 SALVAR DADOS DE PESQUISA ====================
+app.post('/api/save-research-data', async (req, res) => {
+  try {
+    const { userData, decisions, kappaResults } = req.body;
+    
+    console.log('💾 Salvando dados de pesquisa...');
+    
+    // TODO: Implementar a lógica de salvar nas 3 tabelas
+    
+    res.json({ 
+      success: true, 
+      message: 'Dados salvos para pesquisa!',
+      sessionId: 'temp_id'
+    });
+    
+  } catch (error) {
+    console.error('❌ Erro ao salvar dados:', error);
+    res.status(500).json({ 
+      success: false, 
+      error: 'Erro ao salvar dados: ' + error.message 
+    });
+  }
+});
+
+// ==================== 📤 EXPORTAR DADOS ====================
+app.get('/api/export-research-data', async (req, res) => {
+  try {
+    console.log('📤 Exportando dados de pesquisa...');
+    
+    // TODO: Implementar exportação CSV/JSON
+    
+    res.json({
+      success: true,
+      message: 'Exportação em desenvolvimento',
+      data: []
+    });
+    
+  } catch (error) {
+    console.error('❌ Erro ao exportar:', error);
+    res.status(500).json({ 
+      success: false, 
+      error: 'Erro ao exportar dados' 
+    });
+  }
+});
+
+// ⬇️ ISSO JÁ DEVE EXISTIR - NÃO MEXER
+const PORT = process.env.PORT || 3001;
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`🚀 MindKappa Backend rodando na porta ${PORT}`);
+});
+
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`🚀 MindKappa Backend rodando na porta ${PORT}`);
   console.log(`📍 Health check: http://localhost:${PORT}/health`);
 });
+
 
 
 
