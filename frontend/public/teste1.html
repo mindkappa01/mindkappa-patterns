@@ -72,7 +72,6 @@
             margin-bottom: 10px;
         }
 
-        /* Estados de loading e conclusão */
         .completion-message {
             font-size: 1.3rem;
             color: #2d3748;
@@ -83,35 +82,38 @@
             opacity: 0.7;
             pointer-events: none;
         }
+
+        .kappa-preview {
+            background: rgba(99, 179, 237, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 4px solid #63b3ed;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="card">
             <div class="test-container">
-                <!-- Cabeçalho -->
                 <div class="logo">⚡</div>
                 <div class="title">Instinto Puro</div>
-                <div class="subtitle">Escolha rapidamente - siga sua primeira intuição</div>
+                <div class="subtitle">Siga sua primeira intuição - não pense muito</div>
                 
-                <!-- Progresso -->
                 <div class="progress-info">
-                    <div class="decision-count">Decisão: <span id="currentDecision">1</span>/50</div>
+                    <div class="decision-count">Decisão: <span id="currentDecision">1</span>/15</div>
                     <div class="progress-bar-container">
-                        <div class="progress-fill" id="progressFill" style="width: 2%"></div>
+                        <div class="progress-fill" id="progressFill" style="width: 6.66%"></div>
                     </div>
                 </div>
 
-                <!-- Área de Conteúdo Dinâmico -->
                 <div id="contentArea">
-                    <!-- Botões de Escolha -->
                     <div class="buttons-container" id="buttonsContainer">
                         <!-- Botões serão inseridos pelo JavaScript -->
                     </div>
 
-                    <!-- Instrução -->
                     <div style="color: #718096; font-size: 0.9rem; margin-top: 30px;">
-                        Não pense muito - clique na sua primeira reação
+                        ⚡ Clique na sua primeira reação
                     </div>
                 </div>
             </div>
@@ -120,12 +122,12 @@
 
     <script>
         // =============================================
-        // CONFIGURAÇÕES DO TESTE - FÁCIL DE AJUSTAR
+        // ✅ CONFIGURAÇÕES OTIMIZADAS - TESTE RÁPIDO
         // =============================================
         const TEST_CONFIG = {
-            totalDecisions: 50,
-            decisionDelay: 150, // ms entre decisões
-            minReactionTime: 100 // ms (evita clicks acidentais)
+            totalDecisions: 15, // ✅ REDUZIDO: De 50 para 15 (mais rápido)
+            decisionDelay: 100,  // ✅ ACELERADO
+            minReactionTime: 50  // ✅ MAIS RESPONSIVO
         };
 
         // =============================================
@@ -138,9 +140,6 @@
             lastPosition: null
         };
 
-        // =============================================
-        // ELEMENTOS DOM
-        // =============================================
         const elements = {
             buttonsContainer: document.getElementById('buttonsContainer'),
             currentDecision: document.getElementById('currentDecision'),
@@ -149,14 +148,15 @@
         };
 
         // =============================================
-        // INICIALIZAÇÃO
+        // ✅ INICIALIZAÇÃO ATUALIZADA
         // =============================================
         function initializeTest() {
-            // Verificar se veio do onboarding
-            const userData = localStorage.getItem('mindkappa_user');
-            if (!userData) {
-                window.location.href = 'onboarding.html';
-                return;
+            // ✅ CORRIGIDO: Verifica session, não user data completo
+            const sessionId = localStorage.getItem('mindkappa_session');
+            if (!sessionId) {
+                // Se não tem session, cria uma e continua
+                const newSessionId = 'mk-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+                localStorage.setItem('mindkappa_session', newSessionId);
             }
 
             testState.startTime = Date.now();
@@ -164,12 +164,11 @@
         }
 
         // =============================================
-        // LÓGICA DAS DECISÕES
+        // LÓGICA DAS DECISÕES (MANTIDA)
         // =============================================
         function showNextDecision() {
             testState.currentDecision++;
             
-            // Verificar se teste acabou
             if (testState.currentDecision > TEST_CONFIG.totalDecisions) {
                 completeTest();
                 return;
@@ -197,7 +196,6 @@
                 </button>
             `;
 
-            // Aplicar posições aleatórias
             elements.buttonsContainer.style.flexDirection = positions.direction;
         }
 
@@ -220,18 +218,13 @@
             }
         }
 
-        // =============================================
-        // MANIPULAÇÃO DE DECISÕES
-        // =============================================
         function handleDecision(choice, buttonPosition) {
             const reactionTime = Date.now() - testState.startTime;
             
-            // Validar tempo de reação (evitar clicks acidentais)
             if (reactionTime < TEST_CONFIG.minReactionTime) {
-                return; // Ignorar click muito rápido
+                return;
             }
 
-            // Registrar decisão
             testState.decisions.push({
                 choice: choice,
                 timestamp: new Date().toISOString(),
@@ -240,7 +233,6 @@
                 buttonPosition: buttonPosition
             });
 
-            // Preparar próxima decisão
             elements.buttonsContainer.classList.add('loading');
             testState.startTime = Date.now();
             
@@ -251,40 +243,56 @@
         }
 
         // =============================================
-        // FINALIZAÇÃO DO TESTE
+        // ✅ FINALIZAÇÃO ATUALIZADA
         // =============================================
         function completeTest() {
-    // Salvar dados completos
-    const userData = JSON.parse(localStorage.getItem('mindkappa_user'));
-    userData.teste1 = {
-        decisions: testState.decisions,
-        completedAt: new Date().toISOString(),
-        totalDuration: Date.now() - testState.startTime,
-        config: TEST_CONFIG
-    };
-    
-    localStorage.setItem('mindkappa_user', JSON.stringify(userData));
-    
-    // Mostrar mensagem de conclusão
-    showCompletionMessage();
-}
+            // ✅ SALVAR DADOS DE FORMA MAIS SIMPLES
+            let userData = JSON.parse(localStorage.getItem('mindkappa_user')) || {};
+            userData.teste1 = {
+                decisions: testState.decisions,
+                completedAt: new Date().toISOString(),
+                totalDuration: Date.now() - testState.startTime
+            };
+            
+            localStorage.setItem('mindkappa_user', JSON.stringify(userData));
+            
+            // ✅ MOSTRAR PRÉVIA DO KAPPA
+            showCompletionMessage();
+        }
+
         function showCompletionMessage() {
+            // ✅ CALCULAR PRÉVIA DO PADRÃO
+            const azulCount = testState.decisions.filter(d => d.choice === 'azul').length;
+            const vermelhoCount = testState.decisions.filter(d => d.choice === 'vermelho').length;
+            const total = azulCount + vermelhoCount;
+            
+            let pattern = "Equilibrado";
+            if (azulCount > vermelhoCount * 1.3) pattern = "Preferência por Azul";
+            else if (vermelhoCount > azulCount * 1.3) pattern = "Preferência por Vermelho";
+
             elements.contentArea.innerHTML = `
                 <div class="completion-message">
-                    🎉 Teste Concluído!
+                    ✅ Teste Concluído!
                 </div>
+                
+                <div class="kappa-preview">
+                    <strong>Padrão Detectado:</strong> ${pattern}<br>
+                    <small>${azulCount} azuis • ${vermelhoCount} vermelhos</small>
+                </div>
+                
                 <div style="color: #718096; margin-bottom: 30px;">
-                    Você completou 50 decisões instintivas
+                    Seu padrão de instinto foi mapeado com sucesso
                 </div>
+                
                 <button class="btn" onclick="proximoTeste()">
-                    Próximo Teste
+                    ➡️ Ir para o Teste 2
                 </button>
             `;
         }
 
         function proximoTeste() {
-    window.location.href = 'teste2.html';
-}
+            window.location.href = 'teste2.html';
+        }
 
         // =============================================
         // INICIAR TESTE
