@@ -61,11 +61,12 @@
             reportContent: document.getElementById('reportContent')
         };
 
+        // ✅ CORRIGIDO: Inicialização correta
         function initializeReport() {
             const userData = JSON.parse(localStorage.getItem('mindkappa_user'));
             
             if (!userData) {
-                window.location.href = 'onboarding.html';
+                window.location.href = 'index.html'; // ✅ CORRIGIDO: Vai para index, não onboarding
                 return;
             }
 
@@ -96,17 +97,7 @@
             `;
         }
 
-        async function saveResearchData(userData, decisions, kappaResults) {
-  await fetch('/api/save-research-data', {
-    method: 'POST',
-    headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({
-      userData: userData,
-      decisions: decisions, // 300+ decisões
-      kappaResults: kappaResults // cálculos κ
-    })
-  });
-}
+        // ✅ CORRIGIDO: Função generateReport completa e funcional
         async function generateReport() {
             // Mostrar loading
             elements.reportContent.innerHTML = `
@@ -121,19 +112,17 @@
                 </div>
             `;
 
-              try {
-    // ✅ SALVAR DADOS AUTOMATICAMENTE
-    await saveResearchData(userData, decisions, kappaResults);
-  } catch (error) {
-    console.log('⚠️ Dados não salvos (modo desenvolvimento):', error);
-  }
-  
-  // Mostrar relatório normalmente
-  showFinalReport(gptResponse, userData);
-}
-        
             try {
                 const userData = JSON.parse(localStorage.getItem('mindkappa_user'));
+                
+                // ✅ CORRIGIDO: Salvar dados primeiro (se disponível)
+                try {
+                    await saveResearchData(userData);
+                } catch (error) {
+                    console.log('⚠️ Dados não salvos (modo desenvolvimento):', error);
+                }
+                
+                // ✅ CORRIGIDO: Chamar API para gerar relatório
                 const gptResponse = await callGPT4API(userData);
                 showFinalReport(gptResponse, userData);
             } catch (error) {
@@ -142,10 +131,31 @@
             }
         }
 
-        // 🎯 FUNÇÃO SEGURA - CHAMA BACKEND
+        // ✅ CORRIGIDO: Função de salvar dados simplificada
+        async function saveResearchData(userData) {
+            try {
+                const response = await fetch('https://mindkappa-patterns-production.up.railway.app/api/save-research-data', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        userData: userData,
+                        timestamp: new Date().toISOString()
+                    })
+                });
+                
+                if (response.ok) {
+                    console.log('✅ Dados salvos para pesquisa');
+                }
+            } catch (error) {
+                console.log('📡 Dados não salvos (sem conexão):', error);
+            }
+        }
+
+        // ✅ CORRIGIDO: Função da API GPT
         async function callGPT4API(userData) {
             try {
-                // URL do seu backend no Railway
                 const response = await fetch('https://mindkappa-patterns-production.up.railway.app/api/generate-report', {
                     method: 'POST',
                     headers: {
@@ -167,8 +177,8 @@
             }
         }
 
+        // ✅ CORRIGIDO: Funções de análise (mantidas como estavam)
         function generateFallbackReport(userData) {
-            // Relatório básico enquanto backend não está pronto
             const teste1 = analyzeTest1(userData.teste1);
             const teste2 = analyzeTest2(userData.teste2);
             const teste3 = analyzeTest3(userData.teste3);
@@ -192,10 +202,10 @@ TESTE 3 - PRESSÃO TEMPORAL:
 • Performance sob pressão: ${teste3.performance}
 
 💡 Seus Padrões Únicos:
-Seus resultados mostram padrões interessantes de tomada de decisão. Quando o sistema estiver completo, você receberá uma análise detalhada com comparações e insights personalizados.
+Seus resultados mostram padrões interessantes de tomada de decisão. 
 
 🎯 Próximos Passos:
-Continue acompanhando para receber o relatório completo com IA!
+Continue para receber o relatório completo com IA!
                 `,
                 insights: [
                     "Seus dados foram salvos para análise futura",
@@ -256,6 +266,7 @@ Continue acompanhando para receber o relatório completo com IA!
             };
         }
 
+        // ✅ CORRIGIDO: Função showFinalReport com CTA único
         function showFinalReport(gptResponse, userData) {
             elements.reportContent.innerHTML = `
                 <div class="user-header">
@@ -269,49 +280,18 @@ Continue acompanhando para receber o relatório completo com IA!
                     </div>
                 </div>
 
-                <!-- 🚀 BOTÃO DE ASSINATURA - ADICIONE ISSO -->
-    <div style="background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 25px; border-radius: 15px; margin: 30px 0; text-align: center;">
-      <h3 style="margin: 0 0 10px 0;">🚀 ACESSO COMPLETO MINDKAPPA</h3>
-      <p style="margin: 0 0 15px 0; opacity: 0.9;">Desbloqueie todos os 7 testes + relatórios detalhados</p>
-      
-      <div style="font-size: 2rem; font-weight: bold; margin: 15px 0;">
-        R$ 0,01/mês 🎯
-      </div>
-      <div style="font-size: 0.9rem; margin-bottom: 20px; opacity: 0.8;">
-        (Modo teste - depois será R$ 19,90)
-      </div>
-      
-      <button onclick="createSubscription()" 
-              style="background: white; color: #2d3748; border: none; padding: 15px 30px; font-size: 1.1rem; border-radius: 50px; cursor: pointer; font-weight: bold; transition: all 0.3s;">
-        💳 TESTAR ASSINATURA (R$ 0,01)
-      </button>
-      
-      <div style="font-size: 0.8rem; margin-top: 15px; opacity: 0.7;">
-        ✅ Modo teste • Cancele quando quiser
-      </div>
-    </div>
-                <!-- CTA PREMIUM -->
-                <div class="premium-cta">
-                    <h3 style="margin-bottom: 15px;">🚀 SEJA UM DOS PRIMEIROS!</h3>
-                    <div style="margin-bottom: 20px; line-height: 1.5;">
-                        <strong>Antecipe seu acesso ao MindKappa Complete</strong><br>
-                        Antes do lançamento oficial, garanta acesso privilegiado:
-                    </div>
+                <!-- ✅ CORRIGIDO: CTA ÚNICO PARA KAPITTY -->
+                <div style="background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 25px; border-radius: 15px; margin: 30px 0; text-align: center;">
+                    <h3 style="margin: 0 0 10px 0;">🚀 CONTINUE SUA JORNADA NO KAPITTY</h3>
+                    <p style="margin: 0 0 15px 0; opacity: 0.9;">+20 exercícios imersivos • Trilha sonora • Labirintos de escolha</p>
                     
-                    <div class="feature-list">
-                        <div class="feature-item">+4 testes exclusivos (7 no total)</div>
-                        <div class="feature-item">Análise com 300+ decisões</div>
-                        <div class="feature-item">Preço especial de fundador</div>
-                        <div class="feature-item">Suporte prioritário</div>
-                    </div>
+                    <a href="https://kapitty.fit" 
+                       style="background: white; color: #2d3748; border: none; padding: 15px 30px; font-size: 1.1rem; border-radius: 50px; cursor: pointer; font-weight: bold; transition: all 0.3s; text-decoration: none; display: inline-block;">
+                        🎮 EXPLORAR KAPITTY.FIT
+                    </a>
                     
-                    <button class="btn" onclick="anteciparAcesso()" 
-                            style="background: white; color: #2d3748; margin-top: 20px; font-weight: bold;">
-                        🎯 QUERO SER UM DOS PRIMEIROS!
-                    </button>
-                    
-                    <div style="font-size: 0.8rem; margin-top: 10px; opacity: 0.8;">
-                        Vagas limitadas para testadores fundadores
+                    <div style="font-size: 0.8rem; margin-top: 15px; opacity: 0.7;">
+                        ✅ Experiência imersiva • Testes especiais • Relatórios avançados
                     </div>
                 </div>
 
@@ -350,113 +330,15 @@ Continue acompanhando para receber o relatório completo com IA!
             showFinalReport(fallback, userData);
         }
 
-        // ==================== 💳 BOTÃO DE ASSINATURA ====================
-function showPremiumOffer() {
-  return `
-  <div style="background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 25px; border-radius: 15px; margin: 30px 0; text-align: center;">
-    <h3 style="margin: 0 0 10px 0;">🚀 ACESSO COMPLETO MINDKAPPA</h3>
-    <p style="margin: 0 0 15px 0; opacity: 0.9;">Desbloqueie todos os 7 testes + relatórios detalhados</p>
-    
-    <div style="font-size: 2rem; font-weight: bold; margin: 15px 0;">
-      R$ 0,01/mês 🎯
-    </div>
-    <div style="font-size: 0.9rem; margin-bottom: 20px; opacity: 0.8;">
-      (Modo teste - depois será R$ 19,90)
-    </div>
-    
-    <button onclick="createSubscription()" 
-            style="background: white; color: #2d3748; border: none; padding: 15px 30px; font-size: 1.1rem; border-radius: 50px; cursor: pointer; font-weight: bold; transition: all 0.3s;">
-      💳 TESTAR ASSINATURA (R$ 0,01)
-    </button>
-    
-    <div style="font-size: 0.8rem; margin-top: 15px; opacity: 0.7;">
-      ✅ Modo teste • Cancele quando quiser
-    </div>
-  </div>
-  `;
-}
-
-// ==================== 🔗 FUNÇÃO DE PAGAMENTO ====================
-async function createSubscription() {
-  const button = event.target;
-  const originalText = button.innerHTML;
-  
-  button.innerHTML = '⏳ Criando assinatura...';
-  button.disabled = true;
-  
-  try {
-    // ✅ USA A NOVA ROTA SIMPLES NO BACKEND
-    const response = await fetch('https://mindkappa-patterns-production.up.railway.app/api/simple-subscription', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    });
-    
-    const data = await response.json();
-    
-    if (data.success) {
-      console.log('✅ Redirecionando para Mercado Pago...');
-      window.location.href = data.payment_link;
-    } else {
-      alert('❌ Erro: ' + (data.error || 'Tente novamente'));
-      button.innerHTML = originalText;
-      button.disabled = false;
-    }
-  } catch (error) {
-    console.error('Erro:', error);
-    alert('📡 Erro de conexão. Tentando método direto...');
-    
-    // ✅ FALLBACK: Abre Mercado Pago diretamente
-    window.open('https://www.mercadopago.com.br/assinaturas', '_blank');
-    button.innerHTML = originalText;
-    button.disabled = false;
-  }
-}
-        // ==================== 💾 SALVAR DADOS AUTOMATICAMENTE ====================
-async function saveResearchData(userData, decisions, kappaResults) {
-  try {
-    const response = await fetch('/api/save-research-data', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        userData: userData,
-        decisions: decisions, // 300+ decisões
-        kappaResults: {
-          test1: calculateKappa(decisions.filter(d => d.testNumber === 1)),
-          test2: calculateKappa(decisions.filter(d => d.testNumber === 2)),
-          test3: calculateKappa(decisions.filter(d => d.testNumber === 3)),
-          insights: 'Padrões detectados automaticamente'
-        }
-      })
-    });
-    
-    const data = await response.json();
-    if (data.success) {
-      console.log('✅ Dados salvos para pesquisa. Session:', data.sessionId);
-    }
-  } catch (error) {
-    console.log('📡 Dados não salvos (sem conexão):', error);
-    // Não mostra erro para o usuário - é opcional
-  }
-}
-
         function newAnalysis() {
             if (confirm('Isso irá reiniciar todo o processo. Tem certeza?')) {
                 localStorage.removeItem('mindkappa_user');
-                window.location.href = 'onboarding.html';
+                window.location.href = 'index.html';
             }
         }
 
-        // Inicializar
+        // ✅ CORRIGIDO: Inicialização correta
         window.addEventListener('load', initializeReport);
     </script>
 </body>
 </html>
-
-
-
-
-
