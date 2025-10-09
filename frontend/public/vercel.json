@@ -18,4 +18,4 @@
     {
       "source": "/(.*)",
       "destination": "/index.html"
-    }
+    }
