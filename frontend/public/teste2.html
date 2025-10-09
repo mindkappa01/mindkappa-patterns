@@ -19,13 +19,20 @@
         .completion-message { font-size: 1.3rem; color: #2d3748; margin: 30px 0; }
         .loading { opacity: 0.7; pointer-events: none; }
         
-        /* Destaque sutil na instrução */
         .instruction-highlight {
             background: rgba(99, 179, 237, 0.1);
             padding: 15px;
             border-radius: 10px;
             margin: 20px 0;
             border-left: 4px solid #63b3ed;
+        }
+
+        .balance-preview {
+            background: rgba(102, 126, 234, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 4px solid #667eea;
         }
     </style>
 </head>
@@ -36,15 +43,15 @@
                 <div class="logo">⚖️</div>
                 <div class="title">Equilíbrio Mental</div>
                 
-                <!-- INSTRUÇÃO CLARA -->
+                <!-- INSTRUÇÃO CLARA E DIRETA -->
                 <div class="instruction-highlight">
-                    <div class="subtitle">Faça suas escolhas buscando um balanceamento natural entre azul e vermelho</div>
+                    <div class="subtitle">Busque um equilíbrio natural entre azul e vermelho</div>
                 </div>
                 
                 <div class="progress-info">
-                    <div class="decision-count">Decisão: <span id="currentDecision">1</span>/40</div>
+                    <div class="decision-count">Decisão: <span id="currentDecision">1</span>/20</div>
                     <div class="progress-bar-container">
-                        <div class="progress-fill" id="progressFill" style="width: 2.5%"></div>
+                        <div class="progress-fill" id="progressFill" style="width: 5%"></div>
                     </div>
                 </div>
 
@@ -53,9 +60,8 @@
                         <!-- Botões aparecerão aqui -->
                     </div>
                     
-                    <!-- INSTrução de reforço -->
                     <div style="color: #718096; font-size: 0.9rem; margin-top: 30px;">
-                        Busque um equilíbrio natural em suas escolhas
+                        Encontre seu próprio ritmo de balanceamento
                     </div>
                 </div>
             </div>
@@ -63,21 +69,24 @@
     </div>
 
     <script>
+        // =============================================
+        // ✅ CONFIGURAÇÕES OTIMIZADAS
+        // =============================================
         const TEST_CONFIG = {
-            totalDecisions: 40,
-            decisionDelay: 200,
-            minReactionTime: 100
+            totalDecisions: 20, // ✅ REDUZIDO: De 40 para 20
+            decisionDelay: 150,  // ✅ MAIS RÁPIDO
+            minReactionTime: 50  // ✅ MAIS RESPONSIVO
         };
 
+        // =============================================
+        // ✅ ESTADO SIMPLIFICADO
+        // =============================================
         let testState = {
             currentDecision: 0,
             decisions: [],
             startTime: null,
             counts: { azul: 0, vermelho: 0 },
-            // DADOS OCULTOS PARA ANÁLISE:
-            balanceAttempt: true, // Sabemos que foi instruído a equilibrar
-            strategyPattern: [],
-            switchPattern: [] // Padrão de alternância
+            switchPattern: [] // Mantido para análise, mas simplificado
         };
 
         const elements = {
@@ -87,16 +96,24 @@
             contentArea: document.getElementById('contentArea')
         };
 
+        // =============================================
+        // ✅ INICIALIZAÇÃO ATUALIZADA
+        // =============================================
         function initializeTest() {
-            const userData = localStorage.getItem('mindkappa_user');
-            if (!userData) {
-                window.location.href = 'onboarding.html';
-                return;
+            // ✅ VERIFICAÇÃO SIMPLIFICADA - apenas session
+            const sessionId = localStorage.getItem('mindkappa_session');
+            if (!sessionId) {
+                const newSessionId = 'mk-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+                localStorage.setItem('mindkappa_session', newSessionId);
             }
+
             testState.startTime = Date.now();
             showNextDecision();
         }
 
+        // =============================================
+        // ✅ LÓGICA PRINCIPAL (MANTIDA MAS SIMPLIFICADA)
+        // =============================================
         function showNextDecision() {
             testState.currentDecision++;
             if (testState.currentDecision > TEST_CONFIG.totalDecisions) {
@@ -136,25 +153,23 @@
             const reactionTime = Date.now() - testState.startTime;
             if (reactionTime < TEST_CONFIG.minReactionTime) return;
 
-            // ATUALIZAR CONTAGEM
+            // ✅ CONTAGEM SIMPLIFICADA
             testState.counts[choice]++;
             
-            // ANALISAR PADRÃO DE ALTERNÂNCIA (dado oculto)
+            // ✅ ANÁLISE SIMPLIFICADA
             if (testState.decisions.length > 0) {
                 const lastChoice = testState.decisions[testState.decisions.length - 1].choice;
                 testState.switchPattern.push(lastChoice !== choice);
             }
 
-            // REGISTRAR DECISÃO COM ANÁLISE OCULTA
+            // ✅ REGISTRO SIMPLIFICADO
             testState.decisions.push({
                 choice: choice,
                 timestamp: new Date().toISOString(),
                 reactionTime: reactionTime,
                 decisionNumber: testState.currentDecision,
                 buttonPosition: buttonPosition,
-                // DADOS OCULTOS PARA ANÁLISE MCD:
-                cumulativeBalance: Math.abs(testState.counts.azul - testState.counts.vermelho),
-                currentProportion: testState.counts.azul / (testState.counts.azul + testState.counts.vermelho || 1)
+                cumulativeBalance: Math.abs(testState.counts.azul - testState.counts.vermelho)
             });
 
             elements.buttonsContainer.classList.add('loading');
@@ -165,83 +180,88 @@
             }, TEST_CONFIG.decisionDelay);
         }
 
+        // =============================================
+        // ✅ FINALIZAÇÃO SIMPLIFICADA
+        // =============================================
         function completeTest() {
-            // ANÁLISE CIENTÍFICA OCULTA
-            const hiddenAnalysis = {
-                finalDeviation: Math.abs(testState.counts.azul - testState.counts.vermelho),
-                balanceScore: calculateBalanceScore(),
-                strategyType: detectStrategyType(),
-                switchRate: (testState.switchPattern.filter(Boolean).length / testState.switchPattern.length) * 100,
-                instructionCompliance: assessComplianceWithInstruction()
-            };
+            // ✅ ANÁLISE RÁPIDA
+            const balanceScore = calculateQuickBalanceScore();
+            const strategyType = detectQuickStrategy();
 
-            const userData = JSON.parse(localStorage.getItem('mindkappa_user'));
+            // ✅ SALVAMENTO SIMPLES
+            let userData = JSON.parse(localStorage.getItem('mindkappa_user')) || {};
             userData.teste2 = {
                 decisions: testState.decisions,
                 completedAt: new Date().toISOString(),
                 totalDuration: Date.now() - testState.startTime,
                 finalCounts: testState.counts,
-                // DADOS PARA ANÁLISE MCD:
-                hiddenAnalysis: hiddenAnalysis,
-                config: TEST_CONFIG
+                quickAnalysis: {
+                    balanceScore: balanceScore,
+                    strategyType: strategyType,
+                    finalDeviation: Math.abs(testState.counts.azul - testState.counts.vermelho)
+                }
             };
             
             localStorage.setItem('mindkappa_user', JSON.stringify(userData));
-            showCompletionMessage(hiddenAnalysis);
+            showCompletionMessage(balanceScore, strategyType);
         }
 
-        // FUNÇÕES DE ANÁLISE OCULTA
-        function calculateBalanceScore() {
+        // ✅ FUNÇÕES DE ANÁLISE SIMPLIFICADAS
+        function calculateQuickBalanceScore() {
             const maxDeviation = TEST_CONFIG.totalDecisions;
             const actualDeviation = Math.abs(testState.counts.azul - testState.counts.vermelho);
-            return 1 - (actualDeviation / maxDeviation); // 0-1, onde 1 é equilíbrio perfeito
+            return Math.round((1 - (actualDeviation / maxDeviation)) * 100); // 0-100
         }
 
-        function detectStrategyType() {
+        function detectQuickStrategy() {
             const deviation = Math.abs(testState.counts.azul - testState.counts.vermelho);
-            const switchRate = testState.switchPattern.filter(Boolean).length / testState.switchPattern.length;
+            const switchCount = testState.switchPattern.filter(Boolean).length;
             
-            if (deviation <= 4 && switchRate > 0.4) return "equilibrio_consciente";
-            if (deviation <= 8) return "equilibrio_moderado";
-            if (switchRate < 0.2) return "preferencia_consistente";
-            return "padrao_aleatorio";
+            if (deviation <= 3 && switchCount > 5) return "equilibrio_consciente";
+            if (deviation <= 6) return "equilibrio_moderado";
+            return "preferencia_definida";
         }
 
-        function assessComplianceWithInstruction() {
-            // Analisa se usuário tentou seguir a instrução de equilibrar
-            const finalDeviation = Math.abs(testState.counts.azul - testState.counts.vermelho);
-            const switchRate = testState.switchPattern.filter(Boolean).length / testState.switchPattern.length;
-            
-            return {
-                attemptedBalance: finalDeviation <= 12, // Desvio máximo de 12
-                balanceEffectiveness: calculateBalanceScore(),
-                strategySophistication: switchRate > 0.3 ? "alta" : "baixa"
-            };
-        }
-
-        function showCompletionMessage(analysis) {
+        // =============================================
+        // ✅ FEEDBACK MELHORADO COM PRÉVIA
+        // =============================================
+        function showCompletionMessage(balanceScore, strategyType) {
             let performanceNote = "";
-            if (analysis.balanceScore > 0.8) {
-                performanceNote = "Excelente senso de equilíbrio!";
-            } else if (analysis.balanceScore > 0.6) {
-                performanceNote = "Boa busca por equilíbrio!";
+            let strategyDescription = "";
+            
+            if (balanceScore > 80) {
+                performanceNote = "🎯 Excelente equilíbrio!";
+                strategyDescription = "Você buscou ativamente o balanceamento";
+            } else if (balanceScore > 60) {
+                performanceNote = "⚖️ Bom senso de equilíbrio!";
+                strategyDescription = "Você manteve uma distribuição equilibrada";
             } else {
-                performanceNote = "Padrão interessante detectado!";
+                performanceNote = "🔍 Padrão interessante!";
+                strategyDescription = "Sua estratégia revela preferências consistentes";
             }
             
             elements.contentArea.innerHTML = `
-                <div class="completion-message">⚖️ Teste de Equilíbrio Concluído!</div>
-                <div style="color: #718096; margin-bottom: 20px;">${performanceNote}</div>
-                <div style="color: #4a5568; margin-bottom: 30px;">
-                    Suas escolhas foram analisadas para padrões de balanceamento
+                <div class="completion-message">✅ Teste de Equilíbrio Concluído!</div>
+                
+                <div class="balance-preview">
+                    <strong>Seu Resultado:</strong> ${performanceNote}<br>
+                    <small>${testState.counts.azul} azuis • ${testState.counts.vermelho} vermelhos</small><br>
+                    <small>${strategyDescription}</small>
                 </div>
-                <button class="btn" onclick="proximoTeste()">Próximo Teste</button>
+                
+                <div style="color: #718096; margin-bottom: 30px;">
+                    Seu padrão de balanceamento foi mapeado
+                </div>
+                
+                <button class="btn" onclick="proximoTeste()">
+                    ➡️ Ir para o Teste 3
+                </button>
             `;
         }
 
         function proximoTeste() {
-    window.location.href = 'teste3.html';
-}
+            window.location.href = 'teste3.html';
+        }
 
         window.addEventListener('load', initializeTest);
     </script>
