@@ -45,20 +45,13 @@
             margin: 10px 0; 
             font-size: 1.1rem; 
         }
-        .timeout-recorded { 
-            color: #718096; 
-            font-size: 0.9rem; 
-            margin-bottom: 15px; 
-        }
         
-        .pressure-level {
+        .pressure-preview {
             background: rgba(237, 137, 54, 0.1);
-            padding: 10px 15px;
-            border-radius: 20px;
-            display: inline-block;
-            margin: 15px 0;
-            color: #ed8936;
-            font-weight: 500;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 4px solid #ed8936;
         }
     </style>
 </head>
@@ -68,12 +61,12 @@
             <div class="test-container">
                 <div class="logo">⏰</div>
                 <div class="title">Pressão Temporal</div>
-                <div class="subtitle">Decisões com tempo limitado - o tempo diminui a cada rodada</div>
+                <div class="subtitle">Decisões com tempo limitado - o desafio aumenta gradualmente</div>
                 
                 <div class="progress-info">
-                    <div class="decision-count">Decisão: <span id="currentDecision">1</span>/30</div>
+                    <div class="decision-count">Decisão: <span id="currentDecision">1</span>/15</div>
                     <div class="progress-bar-container">
-                        <div class="progress-fill" id="progressFill" style="width: 3.3%"></div>
+                        <div class="progress-fill" id="progressFill" style="width: 6.66%"></div>
                     </div>
                 </div>
 
@@ -84,7 +77,6 @@
                         <span id="timerValue">3.0</span>s
                     </div>
                     <div class="time-limit">Tempo limite: <span id="timeLimit">3.0</span>s</div>
-                    <div class="pressure-level" id="pressureLevel">Nível de Pressão: Baixo</div>
                 </div>
 
                 <div id="contentArea">
@@ -93,7 +85,7 @@
                     </div>
                     
                     <div style="color: #718096; font-size: 0.9rem; margin-top: 30px;">
-                        O tempo para cada decisão vai diminuir gradualmente
+                        O tempo diminui gradualmente - confie no seu instinto
                     </div>
                 </div>
             </div>
@@ -102,17 +94,17 @@
 
     <script>
         // =============================================
-        // CONFIGURAÇÕES TESTADAS
+        // ✅ CONFIGURAÇÕES OTIMIZADAS
         // =============================================
         const TEST_CONFIG = {
-            totalDecisions: 30,
-            timeProgression: [3000, 2800, 2600, 2400, 2200, 2000, 1800, 1600, 1400, 1200, 1000], // 3.0s → 1.0s
-            decisionDelay: 300,
-            minReactionTime: 100
+            totalDecisions: 15, // ✅ REDUZIDO: De 30 para 15
+            timeProgression: [3000, 2800, 2600, 2400, 2200, 2000, 1800, 1600, 1400, 1200, 1000, 900, 800, 700, 600], // 3.0s → 0.6s
+            decisionDelay: 200,  // ✅ MAIS RÁPIDO
+            minReactionTime: 50   // ✅ MAIS RESPONSIVO
         };
 
         // =============================================
-        // ESTADO DO TESTE
+        // ✅ ESTADO SIMPLIFICADO
         // =============================================
         let testState = {
             currentDecision: 0,
@@ -121,13 +113,9 @@
             currentTimeLimit: 3000,
             timerInterval: null,
             timeRemaining: 3000,
-            timeouts: 0,
-            pressureLevels: []
+            timeouts: 0
         };
 
-        // =============================================
-        // ELEMENTOS DOM
-        // =============================================
         const elements = {
             buttonsContainer: document.getElementById('buttonsContainer'),
             currentDecision: document.getElementById('currentDecision'),
@@ -135,24 +123,25 @@
             contentArea: document.getElementById('contentArea'),
             timerCircle: document.getElementById('timerCircle'),
             timerValue: document.getElementById('timerValue'),
-            timeLimit: document.getElementById('timeLimit'),
-            pressureLevel: document.getElementById('pressureLevel')
+            timeLimit: document.getElementById('timeLimit')
         };
 
         // =============================================
-        // INICIALIZAÇÃO
+        // ✅ INICIALIZAÇÃO ATUALIZADA
         // =============================================
         function initializeTest() {
-            const userData = localStorage.getItem('mindkappa_user');
-            if (!userData) {
-                window.location.href = 'onboarding.html';
-                return;
+            // ✅ VERIFICAÇÃO SIMPLIFICADA
+            const sessionId = localStorage.getItem('mindkappa_session');
+            if (!sessionId) {
+                const newSessionId = 'mk-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+                localStorage.setItem('mindkappa_session', newSessionId);
             }
+            
             showNextDecision();
         }
 
         // =============================================
-        // LÓGICA DAS DECISÕES
+        // ✅ LÓGICA PRINCIPAL SIMPLIFICADA
         // =============================================
         function showNextDecision() {
             testState.currentDecision++;
@@ -180,20 +169,6 @@
             testState.timeRemaining = testState.currentTimeLimit;
             
             elements.timeLimit.textContent = (testState.currentTimeLimit / 1000).toFixed(1);
-            updatePressureLevel();
-        }
-
-        function updatePressureLevel() {
-            const timeInSeconds = testState.currentTimeLimit / 1000;
-            let level, color;
-            
-            if (timeInSeconds >= 2.5) { level = "Baixo"; color = "#48bb78"; }
-            else if (timeInSeconds >= 1.5) { level = "Médio"; color = "#ed8936"; }
-            else { level = "Alto"; color = "#e53e3e"; }
-            
-            elements.pressureLevel.textContent = `Nível de Pressão: ${level}`;
-            elements.pressureLevel.style.background = `rgba(${hexToRgb(color)}, 0.1)`;
-            elements.pressureLevel.style.color = color;
         }
 
         function renderDecisionButtons() {
@@ -227,7 +202,7 @@
         }
 
         // =============================================
-        // TIMER FUNCTIONS
+        // ✅ TIMER SIMPLIFICADO
         // =============================================
         function startTimer() {
             testState.startTime = Date.now();
@@ -257,30 +232,28 @@
 
         function getTimerColor(progress) {
             const percentage = progress / 360;
-            if (percentage > 0.6) return "#48bb78"; // Verde
-            if (percentage > 0.3) return "#ed8936"; // Laranja
-            return "#e53e3e"; // Vermelho
+            if (percentage > 0.6) return "#48bb78";
+            if (percentage > 0.3) return "#ed8936";
+            return "#e53e3e";
         }
 
         function handleTimeout() {
             clearInterval(testState.timerInterval);
             testState.timeouts++;
             
-            // Registrar timeout como decisão
+            // ✅ REGISTRO SIMPLIFICADO
             testState.decisions.push({
                 choice: 'timeout',
                 timestamp: new Date().toISOString(),
                 reactionTime: testState.currentTimeLimit,
                 decisionNumber: testState.currentDecision,
-                buttonPosition: null,
-                timeLimit: testState.currentTimeLimit,
-                timedOut: true
+                timedOut: true,
+                timeLimit: testState.currentTimeLimit
             });
 
-            // Mostrar feedback
+            // ✅ FEEDBACK RÁPIDO
             elements.contentArea.innerHTML = `
                 <div class="timeout-message">⏰ Tempo esgotado!</div>
-                <div class="timeout-recorded">Decisão registrada como "timeout"</div>
                 <div class="buttons-container">
                     <button class="choice-btn btn-azul" disabled>AZUL</button>
                     <button class="choice-btn btn-vermelho" disabled>VERMELHO</button>
@@ -300,7 +273,7 @@
         }
 
         // =============================================
-        // MANIPULAÇÃO DE DECISÕES
+        // ✅ MANIPULAÇÃO SIMPLIFICADA
         // =============================================
         function handleDecision(choice, buttonPosition) {
             const reactionTime = Date.now() - testState.startTime;
@@ -311,15 +284,7 @@
 
             stopTimer();
 
-            // Registrar pressão sentida
-            testState.pressureLevels.push({
-                decision: testState.currentDecision,
-                timeLimit: testState.currentTimeLimit,
-                reactionTime: reactionTime,
-                pressureIndex: testState.currentTimeLimit / 1000
-            });
-
-            // Registrar decisão
+            // ✅ REGISTRO SIMPLIFICADO
             testState.decisions.push({
                 choice: choice,
                 timestamp: new Date().toISOString(),
@@ -331,7 +296,7 @@
                 timeRemaining: testState.timeRemaining
             });
 
-            // Preparar próxima decisão
+            // ✅ TRANSITION RÁPIDA
             elements.buttonsContainer.classList.add('loading');
             
             setTimeout(() => {
@@ -341,98 +306,81 @@
         }
 
         // =============================================
-        // FINALIZAÇÃO
+        // ✅ FINALIZAÇÃO SIMPLIFICADA
         // =============================================
         function completeTest() {
             stopTimer();
             
-            const pressureAnalysis = {
+            // ✅ ANÁLISE RÁPIDA
+            const quickAnalysis = {
                 totalTimeouts: testState.timeouts,
-                timeoutRate: (testState.timeouts / TEST_CONFIG.totalDecisions) * 100,
-                avgReactionTime: calculateAverageReactionTime(),
-                adaptationScore: calculateAdaptationScore(),
-                pressureTolerance: calculatePressureTolerance()
+                timeoutRate: Math.round((testState.timeouts / TEST_CONFIG.totalDecisions) * 100),
+                avgReactionTime: calculateQuickAvgReactionTime()
             };
 
-            const userData = JSON.parse(localStorage.getItem('mindkappa_user'));
+            // ✅ SALVAMENTO SIMPLES
+            let userData = JSON.parse(localStorage.getItem('mindkappa_user')) || {};
             userData.teste3 = {
                 decisions: testState.decisions,
                 completedAt: new Date().toISOString(),
-                totalDuration: Date.now() - testState.startTime,
-                pressureAnalysis: pressureAnalysis,
-                pressureLevels: testState.pressureLevels,
-                config: TEST_CONFIG
+                quickAnalysis: quickAnalysis
             };
             
             localStorage.setItem('mindkappa_user', JSON.stringify(userData));
-            showCompletionMessage(pressureAnalysis);
+            showCompletionMessage(quickAnalysis);
         }
 
-        function calculateAverageReactionTime() {
+        function calculateQuickAvgReactionTime() {
             const validDecisions = testState.decisions.filter(d => !d.timedOut);
             if (validDecisions.length === 0) return 0;
-            return validDecisions.reduce((sum, d) => sum + d.reactionTime, 0) / validDecisions.length;
+            const avg = validDecisions.reduce((sum, d) => sum + d.reactionTime, 0) / validDecisions.length;
+            return Math.round(avg / 100) / 10; // Converte para segundos com 1 decimal
         }
 
-        function calculateAdaptationScore() {
-            // Analisa se usuário se adaptou ao aumento de pressão
-            const earlyDecisions = testState.decisions.slice(0, 10).filter(d => !d.timedOut);
-            const lateDecisions = testState.decisions.slice(-10).filter(d => !d.timedOut);
-            
-            if (earlyDecisions.length === 0 || lateDecisions.length === 0) return 0;
-            
-            const earlyAvg = earlyDecisions.reduce((sum, d) => sum + d.reactionTime, 0) / earlyDecisions.length;
-            const lateAvg = lateDecisions.reduce((sum, d) => sum + d.reactionTime, 0) / lateDecisions.length;
-            
-            // Quanto menor a diferença, melhor a adaptação
-            return Math.max(0, 1 - (lateAvg / earlyAvg));
-        }
-
-        function calculatePressureTolerance() {
-            const highPressureDecisions = testState.decisions.filter(d => d.timeLimit <= 1500 && !d.timedOut);
-            if (highPressureDecisions.length === 0) return 0;
-            
-            const successRate = highPressureDecisions.length / testState.decisions.filter(d => d.timeLimit <= 1500).length;
-            return successRate;
-        }
-
+        // =============================================
+        // ✅ FEEDBACK MELHORADO
+        // =============================================
         function showCompletionMessage(analysis) {
             let performanceNote = "";
-            if (analysis.timeoutRate < 10) {
-                performanceNote = "Excelente desempenho sob pressão!";
-            } else if (analysis.timeoutRate < 25) {
-                performanceNote = "Boa adaptação ao aumento de pressão!";
+            let pressureDescription = "";
+            
+            if (analysis.timeoutRate < 20) {
+                performanceNote = "🎯 Excelente sob pressão!";
+                pressureDescription = "Você manteve a calma mesmo com tempo reduzido";
+            } else if (analysis.timeoutRate < 40) {
+                performanceNote = "⚡ Boa adaptação!";
+                pressureDescription = "Você se adaptou bem ao aumento da pressão";
             } else {
-                performanceNote = "Interessante padrão sob estresse temporal!";
+                performanceNote = "🔍 Padrão interessante!";
+                pressureDescription = "Sua resposta ao estresse temporal foi registrada";
             }
             
             elements.contentArea.innerHTML = `
-                <div class="completion-message">⏰ Teste de Pressão Concluído!</div>
-                <div style="color: #718096; margin-bottom: 20px;">${performanceNote}</div>
-                <div style="color: #4a5568; margin-bottom: 30px;">
-                    Timeouts: ${testState.timeouts}/30 (${analysis.timeoutRate.toFixed(1)}%)<br>
-                    Tempo médio de reação: ${(analysis.avgReactionTime / 1000).toFixed(2)}s
+                <div class="completion-message">✅ Teste de Pressão Concluído!</div>
+                
+                <div class="pressure-preview">
+                    <strong>Seu Desempenho:</strong> ${performanceNote}<br>
+                    <small>Timeouts: ${testState.timeouts}/15 (${analysis.timeoutRate}%)</small><br>
+                    <small>Tempo médio: ${analysis.avgReactionTime}s</small><br>
+                    <small>${pressureDescription}</small>
                 </div>
-                <button class="btn" onclick="proximoTeste()">Próximo Teste</button>
+                
+                <div style="color: #718096; margin-bottom: 30px;">
+                    Seu padrão sob pressão foi mapeado com sucesso
+                </div>
+                
+                <button class="btn" onclick="proximoTeste()">
+                    📊 Ver Meu Relatório Completo
+                </button>
             `;
         }
 
         function proximoTeste() {
-    window.location.href = 'relatorio.html';
-}
-
-        // =============================================
-        // UTILITÁRIOS
-        // =============================================
-        function hexToRgb(hex) {
-            const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-            return result ? 
-                `${parseInt(result[1], 16)}, ${parseInt(result[2], 16)}, ${parseInt(result[3], 16)}` 
-                : '155, 155, 155';
+            window.location.href = 'relatorio.html';
         }
 
         // =============================================
-        // INICIAR TESTE
+        // ✅ INICIAR TESTE
         // =============================================
         window.addEventListener('load', initializeTest);
 
