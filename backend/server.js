@@ -137,7 +137,7 @@ app.post('/api/save-research-data', async (req, res) => {
         
         // ✅ SALVAMENTO SIMPLES - SEM TABELAS COMPLEXAS
         const result = await pool.query(
-            `INSERT INTO user_sessions 
+            `INSERT INTO sessions 
              (user_data, created_at) 
              VALUES ($1, $2) 
              RETURNING id`,
@@ -322,3 +322,4 @@ app.listen(PORT, '0.0.0.0', () => {
     console.log(`📍 Health: http://localhost:${PORT}/health`);
     console.log(`🔧 NODE_ENV: ${process.env.NODE_ENV || 'development'}`);
 });
+
