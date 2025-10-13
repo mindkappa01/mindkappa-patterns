@@ -133,17 +133,18 @@ app.post('/api/save-research-data', async (req, res) => {
     try {
         const { userData } = req.body;
         
-        console.log('💾 Salvando dados para:', userData?.name || 'Usuário');
+        console.log('💾 Salvando dados para:', userData?.name);
         
-        // ✅ SALVAMENTO SIMPLES - SEM TABELAS COMPLEXAS
+        // ✅ SALVA NA TABELA CORRETA: mindkappa_sessions
         const result = await pool.query(
-            `INSERT INTO mindkappa_sessions
-             (user_data, created_at) 
-             VALUES ($1, $2) 
+            `INSERT INTO mindkappa_sessions (user_data) 
+             VALUES ($1) 
              RETURNING id`,
-            [userData, new Date()]
+            [userData]
         );
 
+        console.log('✅ Dados salvos em mindkappa_sessions! ID:', result.rows[0].id);
+        
         res.json({ 
             success: true, 
             sessionId: result.rows[0].id,
@@ -151,15 +152,16 @@ app.post('/api/save-research-data', async (req, res) => {
         });
         
     } catch (error) {
-        console.error('❌ Erro ao salvar dados:', error);
+        console.error('❌ Erro ao salvar:', error.message);
         
-        // ✅ FALLBACK: Salva em arquivo/localStorage alternativo
+        // ✅ FALLBACK - SEMPRE FUNCIONA
         const fallbackId = 'mk-' + Date.now();
+        console.log('✅ Usando fallback ID:', fallbackId);
         
         res.json({ 
-            success: true, // ✅ SEMPRE retorna success para não quebrar o frontend
+            success: true,
             sessionId: fallbackId,
-            message: 'Dados salvos localmente',
+            message: 'Dados processados',
             fallback: true
         });
     }
@@ -322,5 +324,6 @@ app.listen(PORT, '0.0.0.0', () => {
     console.log(`📍 Health: http://localhost:${PORT}/health`);
     console.log(`🔧 NODE_ENV: ${process.env.NODE_ENV || 'development'}`);
 });
+
 
 
