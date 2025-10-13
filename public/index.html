@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MindKappa - Descubra Seus Padrões Mentais em 3 Minutos</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: white;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            text-align: center;
+        }
+
+        .logo {
+            font-size: 4rem;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+
+        .subtitle {
+            font-size: 1.3rem;
+            opacity: 0.9;
+            margin-bottom: 40px;
+        }
+
+        .value-props {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 25px;
+            margin: 30px 0;
+            text-align: left;
+        }
+
+        .prop {
+            margin: 15px 0;
+            font-size: 1.1rem;
+        }
+
+        .prop::before {
+            content: "✓ ";
+            color: #68d391;
+            font-weight: bold;
+        }
+
+        .cta-button {
+            background: white;
+            color: #667eea;
+            border: none;
+            padding: 20px 50px;
+            font-size: 1.4rem;
+            font-weight: 700;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            display: inline-block;
+            text-decoration: none;
+            margin: 20px 0;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+        }
+
+        .footer {
+            margin-top: 50px;
+            opacity: 0.7;
+            font-size: 0.9rem;
+        }
+
+        .no-commitment {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">🧠</div>
+        
+        <h1>Descubra os Padrões da Sua Mente</h1>
+        <div class="subtitle">Teste rápido e gratuito • Resultado em 3 minutos</div>
+
+        <div class="value-props">
+            <div class="prop">Veja o padrão por trás de suas escolhas</div>
+            <div class="prop">Descubra seu perfil único de decisão</div>
+            <div class="prop">Relatório personalizado instantâneo</div>
+            <div class="prop">Sem cadastro • 100% confidencial</div>
+        </div>
+
+        <!-- CTA DIRETO PARA OS TESTES -->
+        <a href="teste1.html" class="cta-button">
+            🔍 Descobrir Meus Padrões Agora
+        </a>
+
+        <div class="no-commitment">
+            Comece agora - adicione seus dados depois, se quiser
+        </div>
+
+        <div class="footer">
+            MindKappa Patterns • Ferramenta científica de autoconhecimento
+        </div>
+    </div>
+
+    <script>
+        // Geração automática de sessionId
+        const sessionId = 'mk-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+        localStorage.setItem('mindkappa_session', sessionId);
+    </script>
+</body>
+</html>
