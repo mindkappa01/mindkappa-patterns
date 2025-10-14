@@ -247,6 +247,28 @@ app.post('/api/generate-report', async (req, res) => {
         console.error('❌ Erro no relatório:', error.message);
         
         // ✅ FALLBACK GARANTIDO
+        const fallbackReport = gerarRelatorioFallback(req.body.userData || {});
+        
+        res.json({
+            success: true,
+            relatorio: fallbackReport,
+            source: 'fallback',
+            error: error.message
+        });
+    }
+});
+        console.log('✅ Relatório gerado com sucesso');
+        
+        res.json({ 
+            success: true,
+            relatorio: completion.choices[0].message.content,
+            source: 'openai'
+        });
+
+    } catch (error) {
+        console.error('❌ Erro no relatório:', error.message);
+        
+        // ✅ FALLBACK GARANTIDO
         const fallbackReport = gerarRelatorioFallback(req.body.userData);
         
         res.json({
@@ -381,6 +403,7 @@ app.listen(PORT, '0.0.0.0', () => {
     console.log(`📍 Health: http://localhost:${PORT}/health`);
     console.log(`🔧 NODE_ENV: ${process.env.NODE_ENV || 'development'}`);
 });
+
 
 
 
