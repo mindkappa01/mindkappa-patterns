@@ -186,37 +186,77 @@ app.post('/api/save-research-data', async (req, res) => {
 
 // 🧠 GERAR RELATÓRIO (COM FALLBACK GARANTIDO)
 app.post('/api/generate-report', async (req, res) => {
+    // ✅ SET TIMEOUT EXPLÍCITO
+    req.setTimeout(25000); // 25 segundos
+    
     try {
         const { userData } = req.body;
-        
         console.log('🧠 Gerando relatório para:', userData?.name);
-
-        // ✅ TENTATIVA COM OPENAI
-        if (openai) {
-            const prompt = criarPromptPersonalizado(userData);
-            
-            const completion = await openai.chat.completions.create({
-                model: "gpt-3.5-turbo",
-                messages: [
-                    {
-                        role: "system",
-                        content: `Você é um especialista em análise de padrões mentais. Gere relatórios motivadores e personalizados.`
-                    },
-                    {
-                        role: "user", 
-                        content: prompt
-                    }
-                ],
-                max_tokens: 1500,
-                temperature: 0.7
-            });
-
+        
+        // ✅ VERIFICA SE OPENAI ESTÁ DISPONÍVEL
+        if (!openai) {
+            console.log('⚠️ OpenAI não disponível, usando fallback');
+            const fallbackReport = gerarRelatorioFallback(userData);
             return res.json({ 
                 success: true,
-                relatorio: completion.choices[0].message.content,
-                source: 'openai'
+                relatorio: fallbackReport,
+                source: 'fallback'
             });
         }
+
+        // ✅ PROMPT MAIS CURTO E EFICIENTE
+        const prompt = `
+            Gere um relatório MUITO CURTO (máximo 500 caracteres) sobre:
+
+            NOME: ${userData.name}
+            IDADE: ${userData.age}
+            TESTES: 3 completos
+
+            Foco: destaque 1-2 insights principais de forma motivadora.
+            Estilo: direto e positivo.
+        `;
+
+        console.log('📤 Enviando para OpenAI...');
+        
+        const completion = await openai.chat.completions.create({
+            model: "gpt-3.5-turbo",
+            messages: [
+                {
+                    role: "system",
+                    content: "Você é um analista de padrões mentais. Seja conciso (máximo 500 caracteres)."
+                },
+                {
+                    role: "user",
+                    content: prompt
+                }
+            ],
+            max_tokens: 300,  // ✅ REDUZIDO
+            temperature: 0.7,
+            timeout: 20000    // ✅ TIMEOUT DA OPENAI
+        });
+
+        console.log('✅ Relatório gerado com sucesso');
+        
+        res.json({ 
+            success: true,
+            relatorio: completion.choices[0].message.content,
+            source: 'openai'
+        });
+
+    } catch (error) {
+        console.error('❌ Erro no relatório:', error.message);
+        
+        // ✅ FALLBACK GARANTIDO
+        const fallbackReport = gerarRelatorioFallback(req.body.userData);
+        
+        res.json({
+            success: true,
+            relatorio: fallbackReport,
+            source: 'fallback',
+            error: error.message
+        });
+    }
+});
         
         // ✅ FALLBACK: RELATÓRIO LOCAL
         throw new Error('OpenAI não disponível - usando fallback');
@@ -341,6 +381,7 @@ app.listen(PORT, '0.0.0.0', () => {
     console.log(`📍 Health: http://localhost:${PORT}/health`);
     console.log(`🔧 NODE_ENV: ${process.env.NODE_ENV || 'development'}`);
 });
+
 
 
 
