@@ -137,7 +137,7 @@ app.post('/api/save-research-data', async (req, res) => {
         
         // ✅ SALVA NA TABELA CORRETA: mindkappa_sessions
         const result = await pool.query(
-            `INSERT INTO mindkappa_sessions (user_data) 
+            `INSERT INTO mindkappa_sessions1 (user_data) 
              VALUES ($1) 
              RETURNING id`,
             [userData]
@@ -324,6 +324,7 @@ app.listen(PORT, '0.0.0.0', () => {
     console.log(`📍 Health: http://localhost:${PORT}/health`);
     console.log(`🔧 NODE_ENV: ${process.env.NODE_ENV || 'development'}`);
 });
+
 
 
 
