@@ -155,27 +155,33 @@
 
         // ✅ CORRIGIDO: Função da API GPT
         async function callGPT4API(userData) {
-            try {
-                const response = await fetch('https://mindkappa-patterns-production.up.railway.app/api/generate-report', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ userData })
-                });
-                
-                if (!response.ok) {
-                    throw new Error('Servidor indisponível');
-                }
-                
-                const data = await response.json();
-                return data;
-            } catch (error) {
-                console.error('Erro backend:', error);
-                // Fallback seguro
-                return generateFallbackReport(userData);
-            }
-        }
+    console.log('🔗 Iniciando chamada API...');
+    console.log('🌐 Origin atual:', window.location.origin);
+    console.log('📦 Dados enviados:', userData);
+    
+    try {
+        const response = await fetch('https://mindkappa-patterns-production.up.railway.app/api/generate-report', {
+            method: 'POST',
+            headers: { 
+                'Content-Type': 'application/json',
+                'Origin': window.location.origin
+            },
+            body: JSON.stringify({ userData })
+        });
+        
+        console.log('📡 Status da resposta:', response.status);
+        console.log('📊 Response headers:', [...response.headers]);
+        
+        const data = await response.json();
+        console.log('✅ Dados recebidos:', data);
+        
+        return data;
+        
+    } catch (error) {
+        console.error('❌ Erro detalhado:', error);
+        throw error;
+    }
+}
 
         // ✅ CORRIGIDO: Funções de análise (mantidas como estavam)
         function generateFallbackReport(userData) {
