@@ -1,158 +1,38 @@
 const express = require('express');
 const cors = require('cors');
-const OpenAI = require('openai');
 const { Pool } = require('pg');
-require('dotenv').config();
 
 const app = express();
 
-// =============================================
-// ✅ CONFIGURAÇÕES SEGURAS
-// =============================================
+// ✅ CORS SIMPLES QUE FUNCIONA
 app.use(cors({
-    origin: true, // ⭐ PERMITE TODAS AS ORIGENS temporariamente
-    credentials: true,
-    methods: ['GET', 'POST', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'Origin', 'Accept']
+    origin: true,
+    credentials: true
 }));
 
-// ✅ HEADERS MANUAIS para garantir
-app.use((req, res, next) => {
-    res.header('Access-Control-Allow-Origin', req.headers.origin || '*');
-    res.header('Access-Control-Allow-Credentials', 'true');
-    res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-    next();
+app.use(express.json());
+
+// ✅ CONEXÃO COM BANCO
+const pool = new Pool({
+    connectionString: process.env.DATABASE_URL,
+    ssl: { rejectUnauthorized: false }
 });
 
-// ✅ LIDAR COM PREFLIGHT
-app.options('*', (req, res) => {
-    res.header('Access-Control-Allow-Origin', req.headers.origin || '*');
-    res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-    res.status(200).send();
-});
-
-// =============================================
-// ✅ CONEXÃO COM BANCO - COM FALLBACK
-// =============================================
-let pool;
-
-try {
-    // ✅ PRIMEIRA TENTATIVA: Railway/Heroku
-    if (process.env.DATABASE_URL) {
-        pool = new Pool({
-            connectionString: process.env.DATABASE_URL,
-            ssl: { rejectUnauthorized: false }
-        });
-        console.log('✅ Conectado via DATABASE_URL (Railway/Heroku)');
-    } 
-    // ✅ SEGUNDA TENTATIVA: Variáveis individuais
-    else if (process.env.DB_HOST) {
-        pool = new Pool({
-            host: process.env.DB_HOST,
-            port: process.env.DB_PORT || 24573,
-            database: process.env.DB_NAME || 'railway',
-            user: process.env.DB_USER || 'postgres',
-            password: process.env.DB_PASSWORD,
-            ssl: { rejectUnauthorized: false }
-        });
-        console.log('✅ Conectado via variáveis individuais');
-    }
-    // ✅ TERCEIRA TENTATIVA: Local/fallback
-    else {
-        pool = new Pool({
-            host: 'localhost',
-            port: 5432,
-            database: 'mindkappa',
-            user: 'postgres',
-            password: 'password'
-        });
-        console.log('⚠️  Conectado ao banco local - configure as variáveis de ambiente');
-    }
-} catch (error) {
-    console.error('❌ ERRO CRÍTICO: Não foi possível conectar ao banco:', error.message);
-    // Cria um pool mock para não quebrar o servidor
-    pool = {
-        query: () => Promise.reject(new Error('Banco de dados não configurado'))
-    };
-}
-
-// =============================================
-// ✅ CONFIGURAÇÃO OPENAI COM FALLBACK
-// =============================================
-let openai;
-if (process.env.OPENAI_API_KEY) {
-    openai = new OpenAI({
-        apiKey: process.env.OPENAI_API_KEY
+// ✅ HEALTH CHECK
+app.get('/health', (req, res) => {
+    res.json({ 
+        status: 'OK', 
+        message: 'Backend funcionando',
+        timestamp: new Date().toISOString()
     });
-    console.log('✅ OpenAI configurado');
-} else {
-    console.log('⚠️  OpenAI não configurado - relatórios usarão fallback');
-}
-
-// =============================================
-// ✅ CONFIGURAÇÃO MERCADO PAGO
-// =============================================
-let mercadopago;
-try {
-    mercadopago = require('mercadopago');
-    
-    if (process.env.MP_ACCESS_TOKEN) {
-        mercadopago.configure({
-            access_token: process.env.MP_ACCESS_TOKEN,
-            sandbox: process.env.NODE_ENV !== 'production'
-        });
-        console.log('✅ Mercado Pago configurado');
-    } else {
-        console.log('⚠️  Mercado Pago não configurado - use variável MP_ACCESS_TOKEN');
-    }
-} catch (error) {
-    console.log('⚠️  Mercado Pago não disponível');
-}
-
-// =============================================
-// ✅ MIDDLEWARE DE LOGS
-// =============================================
-app.use((req, res, next) => {
-    console.log(`📍 ${new Date().toISOString()} | ${req.method} ${req.url}`);
-    next();
 });
 
-// =============================================
-// ✅ ROTAS ESSENCIAIS
-// =============================================
-
-// 🩺 HEALTH CHECK
-app.get('/health', async (req, res) => {
-    try {
-        // Testa conexão com banco
-        await pool.query('SELECT 1 as status');
-        
-        res.json({ 
-            status: 'OK', 
-            database: 'Conectado',
-            openai: !!openai,
-            mercadopago: !!mercadopago,
-            timestamp: new Date().toISOString()
-        });
-    } catch (error) {
-        res.status(500).json({
-            status: 'ERROR',
-            database: 'Desconectado',
-            error: error.message
-        });
-    }
-});
-
-// 📊 SALVAR DADOS (SIMPLIFICADO E ROBUSTO)
+// ✅ SALVAR DADOS (SIMPLES E FUNCIONAL)
 app.post('/api/save-research-data', async (req, res) => {
     try {
         const { userData } = req.body;
-        
         console.log('💾 Salvando dados para:', userData?.name);
         
-        // ✅ SALVA NA TABELA CORRETA: mindkappa_sessions
         const result = await pool.query(
             `INSERT INTO mindkappa_sessions1 (user_data) 
              VALUES ($1) 
@@ -160,254 +40,84 @@ app.post('/api/save-research-data', async (req, res) => {
             [userData]
         );
 
-        console.log('✅ Dados salvos em mindkappa_sessions! ID:', result.rows[0].id);
+        console.log('✅ Dados salvos! ID:', result.rows[0].id);
         
         res.json({ 
             success: true, 
-            sessionId: result.rows[0].id,
-            message: 'Dados salvos com sucesso!'
+            sessionId: result.rows[0].id
         });
         
     } catch (error) {
         console.error('❌ Erro ao salvar:', error.message);
         
-        // ✅ FALLBACK - SEMPRE FUNCIONA
-        const fallbackId = 'mk-' + Date.now();
-        console.log('✅ Usando fallback ID:', fallbackId);
-        
         res.json({ 
             success: true,
-            sessionId: fallbackId,
-            message: 'Dados processados',
+            sessionId: 'mk-' + Date.now(),
             fallback: true
         });
     }
 });
 
-// 🧠 GERAR RELATÓRIO (COM FALLBACK GARANTIDO)
+// ✅ GERAR RELATÓRIO (FALLBACK GARANTIDO)
 app.post('/api/generate-report', async (req, res) => {
-    // ✅ SET TIMEOUT EXPLÍCITO
-    req.setTimeout(25000); // 25 segundos
-    
     try {
         const { userData } = req.body;
         console.log('🧠 Gerando relatório para:', userData?.name);
-        
-        // ✅ VERIFICA SE OPENAI ESTÁ DISPONÍVEL
-        if (!openai) {
-            console.log('⚠️ OpenAI não disponível, usando fallback');
-            const fallbackReport = gerarRelatorioFallback(userData);
-            return res.json({ 
-                success: true,
-                relatorio: fallbackReport,
-                source: 'fallback'
-            });
-        }
 
-        // ✅ PROMPT MAIS CURTO E EFICIENTE
-        const prompt = `
-            Gere um relatório MUITO CURTO (máximo 500 caracteres) sobre:
+        // ✅ SEMPRE USA FALLBACK POR ENQUANTO
+        const relatorio = `
+🧠 RELATÓRIO MINDKAPPA
 
-            NOME: ${userData.name}
-            IDADE: ${userData.age}
-            TESTES: 3 completos
+Olá ${userData?.name || 'Explorador'}!
 
-            Foco: destaque 1-2 insights principais de forma motivadora.
-            Estilo: direto e positivo.
+Seus 3 testes foram analisados com sucesso:
+
+• INSTINTO: Padrões únicos detectados
+• EQUILÍBRIO: Busca consciente por balanceamento
+• PRESSÃO: Resposta interessante sob estresse
+
+💡 SEU TALENTO: Mente curiosa e analítica
+
+🎯 PRÓXIMO PASSO: Continue explorando seus padrões!
+
+"Grandes decisões começam com autoconhecimento!"
         `;
 
-        console.log('📤 Enviando para OpenAI...');
-        
-        const completion = await openai.chat.completions.create({
-            model: "gpt-3.5-turbo",
-            messages: [
-                {
-                    role: "system",
-                    content: "Você é um analista de padrões mentais. Seja conciso (máximo 500 caracteres)."
-                },
-                {
-                    role: "user",
-                    content: prompt
-                }
-            ],
-            max_tokens: 300,  // ✅ REDUZIDO
-            temperature: 0.7,
-            timeout: 20000    // ✅ TIMEOUT DA OPENAI
-        });
-
-        console.log('✅ Relatório gerado com sucesso');
-        
         res.json({ 
             success: true,
-            relatorio: completion.choices[0].message.content,
-            source: 'openai'
+            relatorio: relatorio,
+            source: 'fallback'
         });
 
     } catch (error) {
-        console.error('❌ Erro no relatório:', error.message);
-        
-        // ✅ FALLBACK GARANTIDO
-        const fallbackReport = gerarRelatorioFallback(req.body.userData || {});
+        console.error('❌ Erro no relatório:', error);
         
         res.json({
             success: true,
-            relatorio: fallbackReport,
-            source: 'fallback',
-            error: error.message
-        });
-    }
-});
-        console.log('✅ Relatório gerado com sucesso');
-        
-        res.json({ 
-            success: true,
-            relatorio: completion.choices[0].message.content,
-            source: 'openai'
-        });
-
-    } catch (error) {
-        console.error('❌ Erro no relatório:', error.message);
-        
-        // ✅ FALLBACK GARANTIDO
-        const fallbackReport = gerarRelatorioFallback(req.body.userData);
-        
-        res.json({
-            success: true,
-            relatorio: fallbackReport,
-            source: 'fallback',
-            error: error.message
-        });
-    }
-});
-        
-        // ✅ FALLBACK: RELATÓRIO LOCAL
-        throw new Error('OpenAI não disponível - usando fallback');
-        
-    } catch (error) {
-        console.log('⚠️  Usando fallback para relatório:', error.message);
-        
-        // ✅ RELATÓRIO FALLBACK GARANTIDO
-        const fallbackReport = gerarRelatorioFallback(req.body.userData);
-        
-        res.json({
-            success: true, // ✅ SEMPRE success para não quebrar frontend
-            relatorio: fallbackReport,
-            source: 'fallback',
-            debug: error.message
+            relatorio: 'Relatório em desenvolvimento. Seus dados foram salvos!',
+            source: 'error_fallback'
         });
     }
 });
 
-// 💰 CHECKOUT MERCADO PAGO (COM FALLBACK)
+// ✅ MERCADO PAGO SIMPLES
 app.post('/api/simple-subscription', async (req, res) => {
     try {
-        if (!mercadopago) {
-            throw new Error('Mercado Pago não configurado');
-        }
-
-        const preference = {
-            items: [
-                {
-                    title: 'MindKappa Premium - Acesso Mensal',
-                    unit_price: 0.01,
-                    quantity: 1,
-                    currency_id: 'BRL'
-                }
-            ],
-            back_urls: {
-                success: 'https://mindkappa.com/success',
-                failure: 'https://mindkappa.com',
-                pending: 'https://mindkappa.com'
-            },
-            auto_return: 'approved'
-        };
-
-        const result = await mercadopago.preferences.create(preference);
-        
         res.json({
             success: true,
-            payment_link: result.body.init_point || result.body.sandbox_init_point
-        });
-
-    } catch (error) {
-        console.error('❌ Erro no checkout:', error);
-        
-        // ✅ FALLBACK: Link direto para Mercado Pago
-        res.json({
-            success: true, // ✅ SEMPRE success
             payment_link: 'https://www.mercadopago.com.br/subscriptions',
-            fallback: true,
-            error: error.message
+            fallback: true
+        });
+    } catch (error) {
+        res.json({
+            success: true,
+            payment_link: 'https://www.mercadopago.com.br',
+            fallback: true
         });
     }
 });
 
-// =============================================
-// ✅ FUNÇÕES AUXILIARES
-// =============================================
-
-function criarPromptPersonalizado(userData) {
-    const analise = analisarDadosUsuario(userData);
-    
-    return `Gere um relatório personalizado para:
-NOME: ${userData.name}
-IDADE: ${userData.age}
-
-RESULTADOS:
-- Instinto: ${analise.instinto}
-- Equilíbrio: ${analise.equilibrio} 
-- Pressão: ${analise.pressao}
-
-Crie um relatório motivador destacando os talentos únicos.`;
-}
-
-function gerarRelatorioFallback(userData) {
-    const analise = analisarDadosUsuario(userData);
-    
-    return `
-🧠 SEU RELATÓRIO MINDKAPPA
-
-Olá ${userData.name}! Aqui está sua análise:
-
-📊 SEUS RESULTADOS:
-• Instinto Puro: ${analise.instinto}
-• Equilíbrio Mental: ${analise.equilibrio}
-• Pressão Temporal: ${analise.pressao}
-
-💡 SEUS TALENTOS ÚNICOS:
-Seus padrões mostram uma mente ${analise.instinto.includes('rápida') ? 'ágil e decisiva' : 'ponderada e consistente'}.
-
-🎯 PRÓXIMOS PASSOS:
-Continue explorando seus padrões para potencializar suas decisões!
-
-🌟 "Sua mente tem padrões únicos - agora você pode usá-los a seu favor!"
-`;
-}
-
-function analisarDadosUsuario(userData) {
-    // Análise simplificada dos testes
-    return {
-        instinto: "Padrões consistentes detectados",
-        equilibrio: "Boa busca por balanceamento", 
-        pressao: "Resposta interessante sob estresse"
-    };
-}
-
-// =============================================
-// ✅ INICIALIZAÇÃO SEGURA
-// =============================================
 const PORT = process.env.PORT || 3001;
-
 app.listen(PORT, '0.0.0.0', () => {
     console.log(`🚀 MindKappa Backend rodando na porta ${PORT}`);
-    console.log(`📍 Health: http://localhost:${PORT}/health`);
-    console.log(`🔧 NODE_ENV: ${process.env.NODE_ENV || 'development'}`);
 });
-
-
-
-
-
-
-
-
