@@ -10,11 +10,33 @@ const app = express();
 // ✅ CONFIGURAÇÕES SEGURAS
 // =============================================
 app.use(cors({
-    origin: ['https://mindkappa.com', 'http://localhost:3000', 'https://mindkappa-patterns.vercel.app'],
-    credentials: true
+    origin: function (origin, callback) {
+        // ✅ Permite requisições sem origin (mobile apps, etc)
+        if (!origin) return callback(null, true);
+        
+        // ✅ Lista de domínios permitidos
+        const allowedOrigins = [
+            'https://mindkappa.com',
+            'https://www.mindkappa.com',
+            'https://mindkappa-patterns.vercel.app',
+            'https://mindkappa.vercel.app',
+            'http://localhost:3000'
+        ];
+        
+        if (allowedOrigins.indexOf(origin) !== -1) {
+            callback(null, true);
+        } else {
+            console.log('🚫 Origem bloqueada:', origin);
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
 }));
-app.use(express.json({ limit: '10mb' }));
-app.use(express.urlencoded({ extended: true }));
+
+// ✅ Handle preflight requests
+app.options('*', cors());
 
 // =============================================
 // ✅ CONEXÃO COM BANCO - COM FALLBACK
@@ -324,6 +346,7 @@ app.listen(PORT, '0.0.0.0', () => {
     console.log(`📍 Health: http://localhost:${PORT}/health`);
     console.log(`🔧 NODE_ENV: ${process.env.NODE_ENV || 'development'}`);
 });
+
 
 
 
