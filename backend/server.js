@@ -19,7 +19,7 @@ const OPENAI_TIMEOUT = parseInt(process.env.OPENAI_TIMEOUT) || 10000;
 
 console.log('🔧 Configurações Seguras:', {
     OPENAI_ENABLED=true,
-    OPENAI_TIMEOUT15000
+    OPENAI_TIMEOUT=15000
 });
 
 // ✅ CONEXÃO COM BANCO
@@ -159,4 +159,5 @@ app.listen(PORT, '0.0.0.0', () => {
     console.log(`🚀 MindKappa Backend SEGURO rodando na porta ${PORT}`);
     console.log(`🔧 OpenAI: ${OPENAI_ENABLED ? 'LIGADO' : 'DESLIGADO'}`);
 });
+
 
