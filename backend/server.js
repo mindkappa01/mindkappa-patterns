@@ -11,6 +11,15 @@ app.use(cors({
     credentials: true
 }));
 
+app.get('/healthz', (req, res) => {
+  res.json({ 
+    status: 'ok', 
+    timestamp: new Date().toISOString(),
+    service: 'mindkappa-backend',
+    version: '1.0.0'
+  });
+});
+
 app.use(express.json());
 
 // ✅ CONFIGURAÇÕES CONTROLADAS (INTERRUPTORES)
