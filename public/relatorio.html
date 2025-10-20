@@ -346,5 +346,48 @@ Continue para receber o relatório completo com IA!
         // ✅ CORRIGIDO: Inicialização correta
         window.addEventListener('load', initializeReport);
     </script>
+    <!-- LGPD Modal -->
+<div id="lgpdModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 10000; justify-content: center; align-items: center; font-family: Arial, sans-serif;">
+  <div style="background: white; padding: 2rem; border-radius: 15px; max-width: 500px; margin: 1rem; box-shadow: 0 10px 30px rgba(0,0,0,0.3);">
+    <h3 style="color: #2c3e50; margin-bottom: 1rem;">📋 Termo de Consentimento</h3>
+    
+    <p style="margin-bottom: 1rem;"><strong>O MindKappa respeita sua privacidade:</strong></p>
+    
+    <ul style="margin-bottom: 1rem; padding-left: 1.5rem;">
+      <li><strong>Coletamos:</strong> suas escolhas (Azul/Vermelho) e índice de coerência (κ)</li>
+      <li><strong>NÃO coletamos:</strong> dados pessoais, localização, IP ou informações do dispositivo</li>
+      <li><strong>Finalidade:</strong> melhorar nosso produto e pesquisa científica agregada</li>
+    </ul>
+
+    <p style="font-size: 0.9rem; color: #666; margin-bottom: 1.5rem;">
+      Conforme Lei Geral de Proteção de Dados (LGPD), você pode solicitar exclusão a qualquer momento.
+    </p>
+
+    <button onclick="acceptLGPD()" style="background: #007bff; color: white; border: none; padding: 12px 30px; border-radius: 8px; cursor: pointer; font-size: 1rem; width: 100%;">
+      ✅ Concordo e quero continuar
+    </button>
+  </div>
+</div>
+
+<script>
+// Verificar se já aceitou o LGPD
+function checkLGPD() {
+  if (!localStorage.getItem('lgpd_accepted')) {
+    document.getElementById('lgpdModal').style.display = 'flex';
+    // Bloquear scroll quando modal aberto
+    document.body.style.overflow = 'hidden';
+  }
+}
+
+// Aceitar LGPD
+function acceptLGPD() {
+  localStorage.setItem('lgpd_accepted', 'true');
+  document.getElementById('lgpdModal').style.display = 'none';
+  document.body.style.overflow = 'auto';
+}
+
+// Executar quando página carregar
+window.addEventListener('load', checkLGPD);
+</script>
 </body>
 </html>
