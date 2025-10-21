@@ -73,20 +73,21 @@
         // ✅ CONFIGURAÇÕES OTIMIZADAS
         // =============================================
         const TEST_CONFIG = {
-            totalDecisions: 20, // ✅ REDUZIDO: De 40 para 20
-            decisionDelay: 150,  // ✅ MAIS RÁPIDO
-            minReactionTime: 50  // ✅ MAIS RESPONSIVO
+            totalDecisions: 20,
+            decisionDelay: 150,
+            minReactionTime: 50
         };
 
         // =============================================
-        // ✅ ESTADO SIMPLIFICADO
+        // ✅ ESTADO ATUALIZADO
         // =============================================
         let testState = {
             currentDecision: 0,
             decisions: [],
             startTime: null,
             counts: { azul: 0, vermelho: 0 },
-            switchPattern: [] // Mantido para análise, mas simplificado
+            switchPattern: [],
+            sessionId: null
         };
 
         const elements = {
@@ -100,19 +101,21 @@
         // ✅ INICIALIZAÇÃO ATUALIZADA
         // =============================================
         function initializeTest() {
-            // ✅ VERIFICAÇÃO SIMPLIFICADA - apenas session
-            const sessionId = localStorage.getItem('mindkappa_session');
+            console.log('🧠 Iniciando Teste 2 - Equilíbrio Mental');
+            
+            let sessionId = localStorage.getItem('mindkappa_session');
             if (!sessionId) {
-                const newSessionId = 'mk-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
-                localStorage.setItem('mindkappa_session', newSessionId);
+                sessionId = 'mk-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+                localStorage.setItem('mindkappa_session', sessionId);
             }
-
+            testState.sessionId = sessionId;
+            
             testState.startTime = Date.now();
             showNextDecision();
         }
 
         // =============================================
-        // ✅ LÓGICA PRINCIPAL (MANTIDA MAS SIMPLIFICADA)
+        // ✅ LÓGICA PRINCIPAL
         // =============================================
         function showNextDecision() {
             testState.currentDecision++;
@@ -153,16 +156,13 @@
             const reactionTime = Date.now() - testState.startTime;
             if (reactionTime < TEST_CONFIG.minReactionTime) return;
 
-            // ✅ CONTAGEM SIMPLIFICADA
             testState.counts[choice]++;
             
-            // ✅ ANÁLISE SIMPLIFICADA
             if (testState.decisions.length > 0) {
                 const lastChoice = testState.decisions[testState.decisions.length - 1].choice;
                 testState.switchPattern.push(lastChoice !== choice);
             }
 
-            // ✅ REGISTRO SIMPLIFICADO
             testState.decisions.push({
                 choice: choice,
                 timestamp: new Date().toISOString(),
@@ -181,36 +181,64 @@
         }
 
         // =============================================
-        // ✅ FINALIZAÇÃO SIMPLIFICADA
+        // ✅ FINALIZAÇÃO COM MCD CORE
         // =============================================
         function completeTest() {
-            // ✅ ANÁLISE RÁPIDA
-            const balanceScore = calculateQuickBalanceScore();
-            const strategyType = detectQuickStrategy();
-
-            // ✅ SALVAMENTO SIMPLES
             let userData = JSON.parse(localStorage.getItem('mindkappa_user')) || {};
             userData.teste2 = {
                 decisions: testState.decisions,
                 completedAt: new Date().toISOString(),
                 totalDuration: Date.now() - testState.startTime,
-                finalCounts: testState.counts,
-                quickAnalysis: {
-                    balanceScore: balanceScore,
-                    strategyType: strategyType,
-                    finalDeviation: Math.abs(testState.counts.azul - testState.counts.vermelho)
-                }
+                finalCounts: testState.counts
             };
             
             localStorage.setItem('mindkappa_user', JSON.stringify(userData));
-            showCompletionMessage(balanceScore, strategyType);
+            showCompletionMessage();
         }
 
-        // ✅ FUNÇÕES DE ANÁLISE SIMPLIFICADAS
+        /**
+         * 🧠 CALCULAR κ VIA BACKEND MCD CORE
+         */
+        async function calcularKappaBackend(choices, testType, sessionId) {
+            const backendUrl = 'https://mindkappa-backend.onrender.com/api/calculate-coherence';
+            
+            try {
+                console.log(`📊 Enviando ${choices.length} escolhas para análise...`);
+                
+                const response = await fetch(backendUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        choices: choices,
+                        testType: testType,
+                        sessionId: sessionId || 'mk-' + Date.now()
+                    })
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`Erro HTTP ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                if (!data.success) {
+                    throw new Error(data.error || 'Erro no cálculo');
+                }
+                
+                console.log('✅ Análise concluída:', data.coherence);
+                return data;
+                
+            } catch (error) {
+                console.error('❌ Erro na comunicação:', error.message);
+                throw error;
+            }
+        }
+
+        // ✅ ANÁLISE DE EQUILÍBRIO SIMPLIFICADA
         function calculateQuickBalanceScore() {
             const maxDeviation = TEST_CONFIG.totalDecisions;
             const actualDeviation = Math.abs(testState.counts.azul - testState.counts.vermelho);
-            return Math.round((1 - (actualDeviation / maxDeviation)) * 100); // 0-100
+            return Math.round((1 - (actualDeviation / maxDeviation)) * 100);
         }
 
         function detectQuickStrategy() {
@@ -223,90 +251,148 @@
         }
 
         // =============================================
-        // ✅ FEEDBACK MELHORADO COM PRÉVIA
+        // ✅ FEEDBACK COM MCD CORE
         // =============================================
-        function showCompletionMessage(balanceScore, strategyType) {
-            let performanceNote = "";
-            let strategyDescription = "";
-            
-            if (balanceScore > 80) {
-                performanceNote = "🎯 Excelente equilíbrio!";
-                strategyDescription = "Você buscou ativamente o balanceamento";
-            } else if (balanceScore > 60) {
-                performanceNote = "⚖️ Bom senso de equilíbrio!";
-                strategyDescription = "Você manteve uma distribuição equilibrada";
-            } else {
-                performanceNote = "🔍 Padrão interessante!";
-                strategyDescription = "Sua estratégia revela preferências consistentes";
+        async function showCompletionMessage() {
+            try {
+                console.log('🧠 Calculando coerência com MCD Core...');
+                
+                const choices = testState.decisions.map(d => 
+                    d.choice === 'azul' ? 'Azul' : 'Vermelho'
+                );
+                
+                const resultado = await calcularKappaBackend(choices, 'equilibrio', testState.sessionId);
+                
+                const kappa = resultado.coherence.kappa;
+                const nivel = resultado.coherence.level;
+                const descricao = resultado.coherence.description;
+                const emoji = resultado.coherence.emoji;
+                const cor = resultado.coherence.color;
+                
+                // ✅ ANÁLISE DE EQUILÍBRIO ESPECÍFICA
+                const balanceScore = calculateQuickBalanceScore();
+                const strategyType = detectQuickStrategy();
+                
+                let performanceNote = "";
+                if (kappa < 0.3) {
+                    performanceNote = "🎯 Excelente equilíbrio!";
+                } else if (kappa < 0.6) {
+                    performanceNote = "⚖️ Bom senso de equilíbrio!";
+                } else {
+                    performanceNote = "🔍 Padrão interessante!";
+                }
+
+                console.log(`✅ κ = ${kappa} (${nivel}) - Equilíbrio: ${balanceScore}%`);
+
+                elements.contentArea.innerHTML = `
+                    <div class="completion-message">✅ Teste de Equilíbrio Concluído!</div>
+                    
+                    <div class="balance-preview" style="background: ${cor}15; border-left: 4px solid ${cor};">
+                        <div style="font-size: 24px; margin-bottom: 5px;">${emoji}</div>
+                        <strong>${performanceNote}</strong><br>
+                        <strong>Coerência ${nivel}:</strong> ${descricao}<br>
+                        <strong>κ = ${kappa.toFixed(3)}</strong> • 
+                        ${resultado.statistics.blueCount} azuis • ${resultado.statistics.redCount} vermelhos<br>
+                        <small>Score de equilíbrio: ${balanceScore}%</small>
+                    </div>
+                    
+                    <div style="color: #718096; margin-bottom: 30px;">
+                        Análise científica de padrão decisional concluída
+                    </div>
+                    
+                    <button class="btn" onclick="proximoTeste()">
+                        ➡️ Ir para o Teste 3
+                    </button>
+                `;
+
+            } catch (error) {
+                console.error('❌ Erro no cálculo MCD:', error);
+                
+                // ✅ FALLBACK LOCAL
+                const balanceScore = calculateQuickBalanceScore();
+                const strategyType = detectQuickStrategy();
+                
+                let performanceNote = "";
+                if (balanceScore > 80) {
+                    performanceNote = "🎯 Excelente equilíbrio!";
+                } else if (balanceScore > 60) {
+                    performanceNote = "⚖️ Bom senso de equilíbrio!";
+                } else {
+                    performanceNote = "🔍 Padrão interessante!";
+                }
+                
+                elements.contentArea.innerHTML = `
+                    <div class="completion-message">✅ Teste de Equilíbrio Concluído!</div>
+                    
+                    <div class="balance-preview">
+                        <strong>Seu Resultado:</strong> ${performanceNote}<br>
+                        <small>${testState.counts.azul} azuis • ${testState.counts.vermelho} vermelhos</small><br>
+                        <small>Score de equilíbrio: ${balanceScore}%</small>
+                    </div>
+                    
+                    <div style="color: #718096; margin-bottom: 30px;">
+                        Seu padrão de balanceamento foi mapeado
+                    </div>
+                    
+                    <button class="btn" onclick="proximoTeste()">
+                        ➡️ Ir para o Teste 3
+                    </button>
+                `;
             }
-            
-            elements.contentArea.innerHTML = `
-                <div class="completion-message">✅ Teste de Equilíbrio Concluído!</div>
-                
-                <div class="balance-preview">
-                    <strong>Seu Resultado:</strong> ${performanceNote}<br>
-                    <small>${testState.counts.azul} azuis • ${testState.counts.vermelho} vermelhos</small><br>
-                    <small>${strategyDescription}</small>
-                </div>
-                
-                <div style="color: #718096; margin-bottom: 30px;">
-                    Seu padrão de balanceamento foi mapeado
-                </div>
-                
-                <button class="btn" onclick="proximoTeste()">
-                    ➡️ Ir para o Teste 3
-                </button>
-            `;
         }
 
         function proximoTeste() {
             window.location.href = 'teste3.html';
         }
 
-        window.addEventListener('load', initializeTest);
+        // =============================================
+        // ✅ INICIALIZAÇÃO AUTOMÁTICA
+        // =============================================
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initializeTest);
+        } else {
+            initializeTest();
+        }
     </script>
+
     <!-- LGPD Modal -->
-<div id="lgpdModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 10000; justify-content: center; align-items: center; font-family: Arial, sans-serif;">
-  <div style="background: white; padding: 2rem; border-radius: 15px; max-width: 500px; margin: 1rem; box-shadow: 0 10px 30px rgba(0,0,0,0.3);">
-    <h3 style="color: #2c3e50; margin-bottom: 1rem;">📋 Termo de Consentimento</h3>
-    
-    <p style="margin-bottom: 1rem;"><strong>O MindKappa respeita sua privacidade:</strong></p>
-    
-    <ul style="margin-bottom: 1rem; padding-left: 1.5rem;">
-      <li><strong>Coletamos:</strong> suas escolhas (Azul/Vermelho) e índice de coerência (κ)</li>
-      <li><strong>NÃO coletamos:</strong> dados pessoais, localização, IP ou informações do dispositivo</li>
-      <li><strong>Finalidade:</strong> melhorar nosso produto e pesquisa científica agregada</li>
-    </ul>
+    <div id="lgpdModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 10000; justify-content: center; align-items: center; font-family: Arial, sans-serif;">
+        <div style="background: white; padding: 2rem; border-radius: 15px; max-width: 500px; margin: 1rem; box-shadow: 0 10px 30px rgba(0,0,0,0.3);">
+            <h3 style="color: #2c3e50; margin-bottom: 1rem;">📋 Termo de Consentimento</h3>
+            
+            <p style="margin-bottom: 1rem;"><strong>O MindKappa respeita sua privacidade:</strong></p>
+            
+            <ul style="margin-bottom: 1rem; padding-left: 1.5rem;">
+                <li><strong>Coletamos:</strong> suas escolhas (Azul/Vermelho) e índice de coerência (κ)</li>
+                <li><strong>NÃO coletamos:</strong> dados pessoais, localização, IP ou informações do dispositivo</li>
+                <li><strong>Finalidade:</strong> melhorar nosso produto e pesquisa científica agregada</li>
+            </ul>
 
-    <p style="font-size: 0.9rem; color: #666; margin-bottom: 1.5rem;">
-      Conforme Lei Geral de Proteção de Dados (LGPD), você pode solicitar exclusão a qualquer momento.
-    </p>
+            <p style="font-size: 0.9rem; color: #666; margin-bottom: 1.5rem;">
+                Conforme Lei Geral de Proteção de Dados (LGPD), você pode solicitar exclusão a qualquer momento.
+            </p>
 
-    <button onclick="acceptLGPD()" style="background: #007bff; color: white; border: none; padding: 12px 30px; border-radius: 8px; cursor: pointer; font-size: 1rem; width: 100%;">
-      ✅ Concordo e quero continuar
-    </button>
-  </div>
-</div>
+            <button onclick="acceptLGPD()" style="background: #007bff; color: white; border: none; padding: 12px 30px; border-radius: 8px; cursor: pointer; font-size: 1rem; width: 100%;">
+                ✅ Concordo e quero continuar
+            </button>
+        </div>
+    </div>
 
-<script>
-// Verificar se já aceitou o LGPD
-function checkLGPD() {
-  if (!localStorage.getItem('lgpd_accepted')) {
-    document.getElementById('lgpdModal').style.display = 'flex';
-    // Bloquear scroll quando modal aberto
-    document.body.style.overflow = 'hidden';
-  }
-}
+    <script>
+    function checkLGPD() {
+        if (!localStorage.getItem('lgpd_accepted')) {
+            document.getElementById('lgpdModal').style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+    }
 
-// Aceitar LGPD
-function acceptLGPD() {
-  localStorage.setItem('lgpd_accepted', 'true');
-  document.getElementById('lgpdModal').style.display = 'none';
-  document.body.style.overflow = 'auto';
-}
+    function acceptLGPD() {
+        localStorage.setItem('lgpd_accepted', 'true');
+        document.getElementById('lgpdModal').style.display = 'none';
+        document.body.style.overflow = 'auto';
+    }
 
-// Executar quando página carregar
-window.addEventListener('load', checkLGPD);
-</script>
+    window.addEventListener('load', checkLGPD);
+    </script>
 </body>
 </html>

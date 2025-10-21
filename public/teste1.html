@@ -125,9 +125,9 @@
         // ✅ CONFIGURAÇÕES OTIMIZADAS - TESTE RÁPIDO
         // =============================================
         const TEST_CONFIG = {
-            totalDecisions: 15, // ✅ REDUZIDO: De 50 para 15 (mais rápido)
-            decisionDelay: 100,  // ✅ ACELERADO
-            minReactionTime: 50  // ✅ MAIS RESPONSIVO
+            totalDecisions: 15,
+            decisionDelay: 100,
+            minReactionTime: 50
         };
 
         // =============================================
@@ -137,7 +137,8 @@
             currentDecision: 0,
             decisions: [],
             startTime: null,
-            lastPosition: null
+            lastPosition: null,
+            sessionId: null
         };
 
         const elements = {
@@ -151,20 +152,21 @@
         // ✅ INICIALIZAÇÃO ATUALIZADA
         // =============================================
         function initializeTest() {
-            // ✅ CORRIGIDO: Verifica session, não user data completo
-            const sessionId = localStorage.getItem('mindkappa_session');
+            console.log('🧠 Iniciando Teste 1 - Instinto Puro');
+            
+            let sessionId = localStorage.getItem('mindkappa_session');
             if (!sessionId) {
-                // Se não tem session, cria uma e continua
-                const newSessionId = 'mk-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
-                localStorage.setItem('mindkappa_session', newSessionId);
+                sessionId = 'mk-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+                localStorage.setItem('mindkappa_session', sessionId);
             }
-
+            testState.sessionId = sessionId;
+            
             testState.startTime = Date.now();
             showNextDecision();
         }
 
         // =============================================
-        // LÓGICA DAS DECISÕES (MANTIDA)
+        // LÓGICA DAS DECISÕES
         // =============================================
         function showNextDecision() {
             testState.currentDecision++;
@@ -246,7 +248,6 @@
         // ✅ FINALIZAÇÃO ATUALIZADA
         // =============================================
         function completeTest() {
-            // ✅ SALVAR DADOS DE FORMA MAIS SIMPLES
             let userData = JSON.parse(localStorage.getItem('mindkappa_user')) || {};
             userData.teste1 = {
                 decisions: testState.decisions,
@@ -255,39 +256,115 @@
             };
             
             localStorage.setItem('mindkappa_user', JSON.stringify(userData));
-            
-            // ✅ MOSTRAR PRÉVIA DO KAPPA
             showCompletionMessage();
         }
 
-        function showCompletionMessage() {
-            // ✅ CALCULAR PRÉVIA DO PADRÃO
-            const azulCount = testState.decisions.filter(d => d.choice === 'azul').length;
-            const vermelhoCount = testState.decisions.filter(d => d.choice === 'vermelho').length;
-            const total = azulCount + vermelhoCount;
+        /**
+         * 🧠 CALCULAR κ VIA BACKEND MCD CORE
+         */
+        async function calcularKappaBackend(choices, testType, sessionId) {
+            const backendUrl = 'https://mindkappa-backend.onrender.com/api/calculate-coherence';
             
-            let pattern = "Equilibrado";
-            if (azulCount > vermelhoCount * 1.3) pattern = "Preferência por Azul";
-            else if (vermelhoCount > azulCount * 1.3) pattern = "Preferência por Vermelho";
+            try {
+                console.log(`📊 Enviando ${choices.length} escolhas para análise...`);
+                
+                const response = await fetch(backendUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        choices: choices,
+                        testType: testType,
+                        sessionId: sessionId || 'mk-' + Date.now()
+                    })
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`Erro HTTP ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                if (!data.success) {
+                    throw new Error(data.error || 'Erro no cálculo');
+                }
+                
+                console.log('✅ Análise concluída:', data.coherence);
+                return data;
+                
+            } catch (error) {
+                console.error('❌ Erro na comunicação:', error.message);
+                throw error;
+            }
+        }
 
-            elements.contentArea.innerHTML = `
-                <div class="completion-message">
-                    ✅ Teste Concluído!
-                </div>
+        async function showCompletionMessage() {
+            try {
+                console.log('🧠 Calculando coerência com MCD Core...');
                 
-                <div class="kappa-preview">
-                    <strong>Padrão Detectado:</strong> ${pattern}<br>
-                    <small>${azulCount} azuis • ${vermelhoCount} vermelhos</small>
-                </div>
+                const choices = testState.decisions.map(d => 
+                    d.choice === 'azul' ? 'Azul' : 'Vermelho'
+                );
                 
-                <div style="color: #718096; margin-bottom: 30px;">
-                    Seu padrão de instinto foi mapeado com sucesso
-                </div>
+                const resultado = await calcularKappaBackend(choices, 'instinto', testState.sessionId);
                 
-                <button class="btn" onclick="proximoTeste()">
-                    ➡️ Ir para o Teste 2
-                </button>
-            `;
+                const kappa = resultado.coherence.kappa;
+                const nivel = resultado.coherence.level;
+                const descricao = resultado.coherence.description;
+                const emoji = resultado.coherence.emoji;
+                const cor = resultado.coherence.color;
+                
+                console.log(`✅ κ = ${kappa} (${nivel})`);
+
+                elements.contentArea.innerHTML = `
+                    <div class="completion-message">
+                        ✅ Teste Concluído!
+                    </div>
+                    
+                    <div class="kappa-preview" style="background: ${cor}15; border-left: 4px solid ${cor}; padding: 15px; border-radius: 8px; margin: 15px 0;">
+                        <div style="font-size: 24px; margin-bottom: 5px;">${emoji}</div>
+                        <strong>Coerência ${nivel}:</strong> ${descricao}<br>
+                        <strong>κ = ${kappa.toFixed(3)}</strong> • 
+                        ${resultado.statistics.blueCount} azuis • ${resultado.statistics.redCount} vermelhos
+                    </div>
+                    
+                    <div style="color: #718096; margin-bottom: 30px;">
+                        Análise científica de padrão decisional concluída
+                    </div>
+                    
+                    <button class="btn" onclick="proximoTeste()">
+                        ➡️ Ir para o Teste 2
+                    </button>
+                `;
+
+            } catch (error) {
+                console.error('❌ Erro no cálculo MCD:', error);
+                
+                const azulCount = testState.decisions.filter(d => d.choice === 'azul').length;
+                const vermelhoCount = testState.decisions.filter(d => d.choice === 'vermelho').length;
+                
+                let pattern = "Equilibrado";
+                if (azulCount > vermelhoCount * 1.3) pattern = "Preferência por Azul";
+                else if (vermelhoCount > azulCount * 1.3) pattern = "Preferência por Vermelho";
+
+                elements.contentArea.innerHTML = `
+                    <div class="completion-message">
+                        ✅ Teste Concluído!
+                    </div>
+                    
+                    <div class="kappa-preview">
+                        <strong>Padrão Detectado:</strong> ${pattern}<br>
+                        <small>${azulCount} azuis • ${vermelhoCount} vermelhos</small>
+                    </div>
+                    
+                    <div style="color: #718096; margin-bottom: 30px;">
+                        Seu padrão de instinto foi mapeado com sucesso
+                    </div>
+                    
+                    <button class="btn" onclick="proximoTeste()">
+                        ➡️ Ir para o Teste 2
+                    </button>
+                `;
+            }
         }
 
         function proximoTeste() {
@@ -295,60 +372,53 @@
         }
 
         // =============================================
-        // INICIAR TESTE
+        // ✅ INICIALIZAÇÃO AUTOMÁTICA
         // =============================================
-        window.addEventListener('load', initializeTest);
-
-        // Prevenir ações acidentais
-        window.addEventListener('beforeunload', function (e) {
-            if (testState.currentDecision > 0 && testState.currentDecision < TEST_CONFIG.totalDecisions) {
-                e.preventDefault();
-                e.returnValue = 'Seu progresso será perdido. Tem certeza que quer sair?';
-            }
-        });
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initializeTest);
+        } else {
+            initializeTest();
+        }
     </script>
+
     <!-- LGPD Modal -->
-<div id="lgpdModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 10000; justify-content: center; align-items: center; font-family: Arial, sans-serif;">
-  <div style="background: white; padding: 2rem; border-radius: 15px; max-width: 500px; margin: 1rem; box-shadow: 0 10px 30px rgba(0,0,0,0.3);">
-    <h3 style="color: #2c3e50; margin-bottom: 1rem;">📋 Termo de Consentimento</h3>
-    
-    <p style="margin-bottom: 1rem;"><strong>O MindKappa respeita sua privacidade:</strong></p>
-    
-    <ul style="margin-bottom: 1rem; padding-left: 1.5rem;">
-      <li><strong>Coletamos:</strong> suas escolhas (Azul/Vermelho) e índice de coerência (κ)</li>
-      <li><strong>NÃO coletamos:</strong> dados pessoais, localização, IP ou informações do dispositivo</li>
-      <li><strong>Finalidade:</strong> melhorar nosso produto e pesquisa científica agregada</li>
-    </ul>
+    <div id="lgpdModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 10000; justify-content: center; align-items: center; font-family: Arial, sans-serif;">
+        <div style="background: white; padding: 2rem; border-radius: 15px; max-width: 500px; margin: 1rem; box-shadow: 0 10px 30px rgba(0,0,0,0.3);">
+            <h3 style="color: #2c3e50; margin-bottom: 1rem;">📋 Termo de Consentimento</h3>
+            
+            <p style="margin-bottom: 1rem;"><strong>O MindKappa respeita sua privacidade:</strong></p>
+            
+            <ul style="margin-bottom: 1rem; padding-left: 1.5rem;">
+                <li><strong>Coletamos:</strong> suas escolhas (Azul/Vermelho) e índice de coerência (κ)</li>
+                <li><strong>NÃO coletamos:</strong> dados pessoais, localização, IP ou informações do dispositivo</li>
+                <li><strong>Finalidade:</strong> melhorar nosso produto e pesquisa científica agregada</li>
+            </ul>
 
-    <p style="font-size: 0.9rem; color: #666; margin-bottom: 1.5rem;">
-      Conforme Lei Geral de Proteção de Dados (LGPD), você pode solicitar exclusão a qualquer momento.
-    </p>
+            <p style="font-size: 0.9rem; color: #666; margin-bottom: 1.5rem;">
+                Conforme Lei Geral de Proteção de Dados (LGPD), você pode solicitar exclusão a qualquer momento.
+            </p>
 
-    <button onclick="acceptLGPD()" style="background: #007bff; color: white; border: none; padding: 12px 30px; border-radius: 8px; cursor: pointer; font-size: 1rem; width: 100%;">
-      ✅ Concordo e quero continuar
-    </button>
-  </div>
-</div>
+            <button onclick="acceptLGPD()" style="background: #007bff; color: white; border: none; padding: 12px 30px; border-radius: 8px; cursor: pointer; font-size: 1rem; width: 100%;">
+                ✅ Concordo e quero continuar
+            </button>
+        </div>
+    </div>
 
-<script>
-// Verificar se já aceitou o LGPD
-function checkLGPD() {
-  if (!localStorage.getItem('lgpd_accepted')) {
-    document.getElementById('lgpdModal').style.display = 'flex';
-    // Bloquear scroll quando modal aberto
-    document.body.style.overflow = 'hidden';
-  }
-}
+    <script>
+    function checkLGPD() {
+        if (!localStorage.getItem('lgpd_accepted')) {
+            document.getElementById('lgpdModal').style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+    }
 
-// Aceitar LGPD
-function acceptLGPD() {
-  localStorage.setItem('lgpd_accepted', 'true');
-  document.getElementById('lgpdModal').style.display = 'none';
-  document.body.style.overflow = 'auto';
-}
+    function acceptLGPD() {
+        localStorage.setItem('lgpd_accepted', 'true');
+        document.getElementById('lgpdModal').style.display = 'none';
+        document.body.style.overflow = 'auto';
+    }
 
-// Executar quando página carregar
-window.addEventListener('load', checkLGPD);
-</script>
+    window.addEventListener('load', checkLGPD);
+    </script>
 </body>
 </html>
