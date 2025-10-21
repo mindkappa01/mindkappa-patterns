@@ -3,6 +3,7 @@ const cors = require('cors');
 const { Pool } = require('pg');
 const OpenAI = require('openai');
 const MCDCore = require('./mcd-core');
+const mercadopago = require('mercadopago');
 
 const app = express();
 
