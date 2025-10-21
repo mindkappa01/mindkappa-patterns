@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const { Pool } = require('pg');
 const OpenAI = require('openai');
+const MCDCore = require('./mcd-core');
 
 const app = express();
 
@@ -82,6 +83,60 @@ app.post('/api/save-research-data', async (req, res) => {
             success: true,
             sessionId: 'mk-' + Date.now(),
             fallback: true
+        });
+    }
+});
+
+// ✅ NOVA ROTA: CÁLCULO DE COERÊNCIA COM MCD CORE
+app.post('/api/calculate-coherence', async (req, res) => {
+    try {
+        const { choices, testType, sessionId } = req.body;
+        
+        console.log(`🧠 Calculando coerência: ${testType}, ${choices.length} escolhas`);
+
+        // ✅ VALIDAR E CALCULAR COM MCD CORE
+        MCDCore.validateChoices(choices);
+        const report = MCDCore.generateReport(choices);
+
+        // ✅ SALVAR NO BANCO (OPCIONAL)
+        let dbResult;
+        try {
+            dbResult = await pool.query(
+                `INSERT INTO mindkappa_coherence (session_id, test_type, choices, kappa_value, r_value, coherence_level) 
+                 VALUES ($1, $2, $3, $4, $5, $6) RETURNING id`,
+                [sessionId, testType, choices, report.kappa, report.R, report.coherenceLevel]
+            );
+            console.log('✅ Coerência salva no BD:', dbResult.rows[0].id);
+        } catch (dbError) {
+            console.log('📝 Coerência calculada (não salva no BD):', dbError.message);
+        }
+
+        res.json({
+            success: true,
+            testType: testType || 'unknown',
+            sessionId: sessionId || 'anonymous',
+            coherence: {
+                kappa: report.kappa,
+                level: report.coherenceLevel,
+                description: report.description,
+                emoji: report.emoji,
+                color: report.color
+            },
+            statistics: report.statistics,
+            metrics: {
+                R: report.R,
+                N: report.N,
+                timestamp: report.timestamp
+            },
+            savedToDb: !!dbResult
+        });
+
+    } catch (error) {
+        console.error('❌ Erro no cálculo de coerência:', error);
+        res.status(400).json({
+            success: false,
+            error: error.message,
+            timestamp: new Date().toISOString()
         });
     }
 });
