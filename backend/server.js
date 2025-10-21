@@ -23,6 +23,10 @@ app.get('/healthz', (req, res) => {
 
 app.use(express.json());
 
+mercadopago.configure({
+  access_token: process.env.MERCADOPAGO_ACCESS_TOKEN
+});
+
 // ✅ CONFIGURAÇÕES CONTROLADAS (INTERRUPTORES)
 const OPENAI_ENABLED = process.env.OPENAI_ENABLED === 'true';
 const OPENAI_TIMEOUT = parseInt(process.env.OPENAI_TIMEOUT) || 10000;
@@ -203,25 +207,46 @@ app.post('/api/generate-report', async (req, res) => {
 
 // ✅ MERCADO PAGO (JÁ FUNCIONA)
 app.post('/api/simple-subscription', async (req, res) => {
-    try {
-        res.json({
-            success: true,
-            payment_link: 'https://www.mercadopago.com.br/subscriptions',
-            fallback: true
-        });
-    } catch (error) {
-        res.json({
-            success: true,
-            payment_link: 'https://www.mercadopago.com.br',
-            fallback: true
-        });
-    }
-});
+  try {
+    console.log('🔄 Criando pagamento real...');
+    
+    const preference = {
+      items: [
+        {
+          title: 'Relatório Premium MindKappa',
+          unit_price: 9.90,
+          quantity: 1,
+          currency_id: 'BRL',
+          description: 'Análise profunda do seu padrão decisional com relatório PDF completo'
+        }
+      ],
+      back_urls: {
+        success: `${process.env.FRONTEND_URL}/success`,
+        failure: `${process.env.FRONTEND_URL}/failure`,
+        pending: `${process.env.FRONTEND_URL}/pending`
+      },
+      auto_return: 'approved',
+      statement_descriptor: 'MINDKAPPA PREMIUM'
+    };
 
-const PORT = process.env.PORT || 3001;
-app.listen(PORT, '0.0.0.0', () => {
-    console.log(`🚀 MindKappa Backend SEGURO rodando na porta ${PORT}`);
-    console.log(`🔧 OpenAI: ${OPENAI_ENABLED ? 'LIGADO' : 'DESLIGADO'}`);
+    const response = await mercadopago.preferences.create(preference);
+    
+    console.log('✅ Pagamento criado:', response.body.id);
+    
+    res.json({
+      success: true,
+      payment_link: response.body.init_point, // URL REAL de pagamento
+      fallback: false // AGORA É REAL!
+    });
+
+  } catch (error) {
+    console.error('❌ Erro Mercado Pago:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Erro ao criar pagamento',
+      fallback: true
+    });
+  }
 });
 
 
