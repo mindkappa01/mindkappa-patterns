@@ -97,14 +97,14 @@
         // ✅ CONFIGURAÇÕES OTIMIZADAS
         // =============================================
         const TEST_CONFIG = {
-            totalDecisions: 15, // ✅ REDUZIDO: De 30 para 15
-            timeProgression: [3000, 2800, 2600, 2400, 2200, 2000, 1800, 1600, 1400, 1200, 1000, 900, 800, 700, 600], // 3.0s → 0.6s
-            decisionDelay: 200,  // ✅ MAIS RÁPIDO
-            minReactionTime: 50   // ✅ MAIS RESPONSIVO
+            totalDecisions: 15,
+            timeProgression: [3000, 2800, 2600, 2400, 2200, 2000, 1800, 1600, 1400, 1200, 1000, 900, 800, 700, 600],
+            decisionDelay: 200,
+            minReactionTime: 50
         };
 
         // =============================================
-        // ✅ ESTADO SIMPLIFICADO
+        // ✅ ESTADO DO TESTE
         // =============================================
         let testState = {
             currentDecision: 0,
@@ -113,7 +113,8 @@
             currentTimeLimit: 3000,
             timerInterval: null,
             timeRemaining: 3000,
-            timeouts: 0
+            timeouts: 0,
+            sessionId: null
         };
 
         const elements = {
@@ -127,21 +128,23 @@
         };
 
         // =============================================
-        // ✅ INICIALIZAÇÃO ATUALIZADA
+        // ✅ INICIALIZAÇÃO
         // =============================================
         function initializeTest() {
-            // ✅ VERIFICAÇÃO SIMPLIFICADA
-            const sessionId = localStorage.getItem('mindkappa_session');
+            console.log('🧠 Iniciando Teste 3 - Pressão Temporal');
+            
+            let sessionId = localStorage.getItem('mindkappa_session');
             if (!sessionId) {
-                const newSessionId = 'mk-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
-                localStorage.setItem('mindkappa_session', newSessionId);
+                sessionId = 'mk-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+                localStorage.setItem('mindkappa_session', sessionId);
             }
+            testState.sessionId = sessionId;
             
             showNextDecision();
         }
 
         // =============================================
-        // ✅ LÓGICA PRINCIPAL SIMPLIFICADA
+        // ✅ LÓGICA PRINCIPAL
         // =============================================
         function showNextDecision() {
             testState.currentDecision++;
@@ -158,9 +161,11 @@
         }
 
         function updateProgressUI() {
-            elements.currentDecision.textContent = testState.currentDecision;
-            const progressPercent = (testState.currentDecision / TEST_CONFIG.totalDecisions) * 100;
-            elements.progressFill.style.width = `${progressPercent}%`;
+            if (elements.currentDecision) {
+                elements.currentDecision.textContent = testState.currentDecision;
+                const progressPercent = (testState.currentDecision / TEST_CONFIG.totalDecisions) * 100;
+                elements.progressFill.style.width = `${progressPercent}%`;
+            }
         }
 
         function updateTimeLimit() {
@@ -168,18 +173,22 @@
             testState.currentTimeLimit = TEST_CONFIG.timeProgression[progressionIndex];
             testState.timeRemaining = testState.currentTimeLimit;
             
-            elements.timeLimit.textContent = (testState.currentTimeLimit / 1000).toFixed(1);
+            if (elements.timeLimit) {
+                elements.timeLimit.textContent = (testState.currentTimeLimit / 1000).toFixed(1);
+            }
         }
 
         function renderDecisionButtons() {
             const positions = getRandomizedPositions();
             
-            elements.buttonsContainer.innerHTML = `
-                <button class="choice-btn btn-azul" onclick="handleDecision('azul', ${positions.azulPosition})">AZUL</button>
-                <button class="choice-btn btn-vermelho" onclick="handleDecision('vermelho', ${positions.vermelhoPosition})">VERMELHO</button>
-            `;
+            if (elements.buttonsContainer) {
+                elements.buttonsContainer.innerHTML = `
+                    <button class="choice-btn btn-azul" onclick="handleDecision('azul', ${positions.azulPosition})">AZUL</button>
+                    <button class="choice-btn btn-vermelho" onclick="handleDecision('vermelho', ${positions.vermelhoPosition})">VERMELHO</button>
+                `;
 
-            elements.buttonsContainer.style.flexDirection = positions.direction;
+                elements.buttonsContainer.style.flexDirection = positions.direction;
+            }
         }
 
         function getRandomizedPositions() {
@@ -202,7 +211,7 @@
         }
 
         // =============================================
-        // ✅ TIMER SIMPLIFICADO
+        // ✅ TIMER
         // =============================================
         function startTimer() {
             testState.startTime = Date.now();
@@ -221,13 +230,14 @@
         }
 
         function updateTimerDisplay() {
-            const seconds = (testState.timeRemaining / 1000).toFixed(1);
-            elements.timerValue.textContent = seconds;
-            
-            // Update circle progress
-            const progress = (testState.timeRemaining / testState.currentTimeLimit) * 360;
-            const color = getTimerColor(progress);
-            elements.timerCircle.style.background = `conic-gradient(${color} ${progress}deg, #e2e8f0 ${progress}deg)`;
+            if (elements.timerValue) {
+                const seconds = (testState.timeRemaining / 1000).toFixed(1);
+                elements.timerValue.textContent = seconds;
+                
+                const progress = (testState.timeRemaining / testState.currentTimeLimit) * 360;
+                const color = getTimerColor(progress);
+                elements.timerCircle.style.background = `conic-gradient(${color} ${progress}deg, #e2e8f0 ${progress}deg)`;
+            }
         }
 
         function getTimerColor(progress) {
@@ -241,7 +251,6 @@
             clearInterval(testState.timerInterval);
             testState.timeouts++;
             
-            // ✅ REGISTRO SIMPLIFICADO
             testState.decisions.push({
                 choice: 'timeout',
                 timestamp: new Date().toISOString(),
@@ -251,17 +260,18 @@
                 timeLimit: testState.currentTimeLimit
             });
 
-            // ✅ FEEDBACK RÁPIDO
-            elements.contentArea.innerHTML = `
-                <div class="timeout-message">⏰ Tempo esgotado!</div>
-                <div class="buttons-container">
-                    <button class="choice-btn btn-azul" disabled>AZUL</button>
-                    <button class="choice-btn btn-vermelho" disabled>VERMELHO</button>
-                </div>
-                <div style="color: #718096; font-size: 0.9rem; margin-top: 30px;">
-                    Preparando próxima decisão...
-                </div>
-            `;
+            if (elements.contentArea) {
+                elements.contentArea.innerHTML = `
+                    <div class="timeout-message">⏰ Tempo esgotado!</div>
+                    <div class="buttons-container">
+                        <button class="choice-btn btn-azul" disabled>AZUL</button>
+                        <button class="choice-btn btn-vermelho" disabled>VERMELHO</button>
+                    </div>
+                    <div style="color: #718096; font-size: 0.9rem; margin-top: 30px;">
+                        Preparando próxima decisão...
+                    </div>
+                `;
+            }
 
             setTimeout(() => {
                 showNextDecision();
@@ -273,7 +283,7 @@
         }
 
         // =============================================
-        // ✅ MANIPULAÇÃO SIMPLIFICADA
+        // ✅ MANIPULAÇÃO DE DECISÕES
         // =============================================
         function handleDecision(choice, buttonPosition) {
             const reactionTime = Date.now() - testState.startTime;
@@ -284,7 +294,6 @@
 
             stopTimer();
 
-            // ✅ REGISTRO SIMPLIFICADO
             testState.decisions.push({
                 choice: choice,
                 timestamp: new Date().toISOString(),
@@ -296,83 +305,175 @@
                 timeRemaining: testState.timeRemaining
             });
 
-            // ✅ TRANSITION RÁPIDA
-            elements.buttonsContainer.classList.add('loading');
+            if (elements.buttonsContainer) {
+                elements.buttonsContainer.classList.add('loading');
+            }
             
             setTimeout(() => {
-                elements.buttonsContainer.classList.remove('loading');
+                if (elements.buttonsContainer) {
+                    elements.buttonsContainer.classList.remove('loading');
+                }
                 showNextDecision();
             }, TEST_CONFIG.decisionDelay);
         }
 
         // =============================================
-        // ✅ FINALIZAÇÃO SIMPLIFICADA
+        // ✅ FINALIZAÇÃO COM MCD CORE
         // =============================================
         function completeTest() {
             stopTimer();
             
-            // ✅ ANÁLISE RÁPIDA
-            const quickAnalysis = {
-                totalTimeouts: testState.timeouts,
-                timeoutRate: Math.round((testState.timeouts / TEST_CONFIG.totalDecisions) * 100),
-                avgReactionTime: calculateQuickAvgReactionTime()
-            };
-
-            // ✅ SALVAMENTO SIMPLES
             let userData = JSON.parse(localStorage.getItem('mindkappa_user')) || {};
             userData.teste3 = {
                 decisions: testState.decisions,
-                completedAt: new Date().toISOString(),
-                quickAnalysis: quickAnalysis
+                completedAt: new Date().toISOString()
             };
             
             localStorage.setItem('mindkappa_user', JSON.stringify(userData));
-            showCompletionMessage(quickAnalysis);
+            showCompletionMessage();
+        }
+
+        /**
+         * 🧠 CALCULAR κ VIA BACKEND MCD CORE
+         */
+        async function calcularKappaBackend(choices, testType, sessionId) {
+            const backendUrl = 'https://mindkappa-backend.onrender.com/api/calculate-coherence';
+            
+            try {
+                console.log(`📊 Enviando ${choices.length} escolhas para análise...`);
+                
+                const response = await fetch(backendUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        choices: choices,
+                        testType: testType,
+                        sessionId: sessionId || 'mk-' + Date.now()
+                    })
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`Erro HTTP ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                if (!data.success) {
+                    throw new Error(data.error || 'Erro no cálculo');
+                }
+                
+                console.log('✅ Análise concluída:', data.coherence);
+                return data;
+                
+            } catch (error) {
+                console.error('❌ Erro na comunicação:', error.message);
+                throw error;
+            }
         }
 
         function calculateQuickAvgReactionTime() {
             const validDecisions = testState.decisions.filter(d => !d.timedOut);
             if (validDecisions.length === 0) return 0;
             const avg = validDecisions.reduce((sum, d) => sum + d.reactionTime, 0) / validDecisions.length;
-            return Math.round(avg / 100) / 10; // Converte para segundos com 1 decimal
+            return Math.round(avg / 100) / 10;
         }
 
         // =============================================
-        // ✅ FEEDBACK MELHORADO
+        // ✅ FEEDBACK COM MCD CORE
         // =============================================
-        function showCompletionMessage(analysis) {
-            let performanceNote = "";
-            let pressureDescription = "";
-            
-            if (analysis.timeoutRate < 20) {
-                performanceNote = "🎯 Excelente sob pressão!";
-                pressureDescription = "Você manteve a calma mesmo com tempo reduzido";
-            } else if (analysis.timeoutRate < 40) {
-                performanceNote = "⚡ Boa adaptação!";
-                pressureDescription = "Você se adaptou bem ao aumento da pressão";
-            } else {
-                performanceNote = "🔍 Padrão interessante!";
-                pressureDescription = "Sua resposta ao estresse temporal foi registrada";
+        async function showCompletionMessage() {
+            try {
+                console.log('🧠 Calculando coerência com MCD Core...');
+                
+                // Filtrar apenas decisões válidas (não timeouts)
+                const validChoices = testState.decisions
+                    .filter(d => !d.timedOut)
+                    .map(d => d.choice === 'azul' ? 'Azul' : 'Vermelho');
+                
+                const resultado = await calcularKappaBackend(validChoices, 'pressao', testState.sessionId);
+                
+                const kappa = resultado.coherence.kappa;
+                const nivel = resultado.coherence.level;
+                const descricao = resultado.coherence.description;
+                const emoji = resultado.coherence.emoji;
+                const cor = resultado.coherence.color;
+                
+                // ✅ ANÁLISE DE PRESSÃO
+                const avgReactionTime = calculateQuickAvgReactionTime();
+                const timeoutRate = Math.round((testState.timeouts / TEST_CONFIG.totalDecisions) * 100);
+                
+                let performanceNote = "";
+                if (kappa < 0.3 && timeoutRate < 20) {
+                    performanceNote = "🎯 Excelente sob pressão!";
+                } else if (kappa < 0.6 && timeoutRate < 40) {
+                    performanceNote = "⚡ Boa adaptação!";
+                } else {
+                    performanceNote = "🔍 Padrão interessante!";
+                }
+
+                console.log(`✅ κ = ${kappa} (${nivel}) - Timeouts: ${timeoutRate}%`);
+
+                if (elements.contentArea) {
+                    elements.contentArea.innerHTML = `
+                        <div class="completion-message">✅ Teste de Pressão Concluído!</div>
+                        
+                        <div class="pressure-preview" style="background: ${cor}15; border-left: 4px solid ${cor};">
+                            <div style="font-size: 24px; margin-bottom: 5px;">${emoji}</div>
+                            <strong>${performanceNote}</strong><br>
+                            <strong>Coerência ${nivel}:</strong> ${descricao}<br>
+                            <strong>κ = ${kappa.toFixed(3)}</strong> • 
+                            ${resultado.statistics.blueCount} azuis • ${resultado.statistics.redCount} vermelhos<br>
+                            <small>Timeouts: ${testState.timeouts}/15 (${timeoutRate}%)</small><br>
+                            <small>Tempo médio: ${avgReactionTime}s</small>
+                        </div>
+                        
+                        <div style="color: #718096; margin-bottom: 30px;">
+                            Análise científica de padrão sob pressão concluída
+                        </div>
+                        
+                        <button class="btn" onclick="proximoTeste()">
+                            📊 Ver Meu Relatório Completo
+                        </button>
+                    `;
+                }
+
+            } catch (error) {
+                console.error('❌ Erro no cálculo MCD:', error);
+                
+                // ✅ FALLBACK LOCAL
+                const avgReactionTime = calculateQuickAvgReactionTime();
+                const timeoutRate = Math.round((testState.timeouts / TEST_CONFIG.totalDecisions) * 100);
+                
+                let performanceNote = "";
+                if (timeoutRate < 20) {
+                    performanceNote = "🎯 Excelente sob pressão!";
+                } else if (timeoutRate < 40) {
+                    performanceNote = "⚡ Boa adaptação!";
+                } else {
+                    performanceNote = "🔍 Padrão interessante!";
+                }
+                
+                if (elements.contentArea) {
+                    elements.contentArea.innerHTML = `
+                        <div class="completion-message">✅ Teste de Pressão Concluído!</div>
+                        
+                        <div class="pressure-preview">
+                            <strong>Seu Desempenho:</strong> ${performanceNote}<br>
+                            <small>Timeouts: ${testState.timeouts}/15 (${timeoutRate}%)</small><br>
+                            <small>Tempo médio: ${avgReactionTime}s</small><br>
+                            <small>Sua resposta ao estresse temporal foi registrada</small>
+                        </div>
+                        
+                        <div style="color: #718096; margin-bottom: 30px;">
+                            Seu padrão sob pressão foi mapeado com sucesso
+                        </div>
+                        
+                        <button class="btn" onclick="proximoTeste()">
+                            📊 Ver Meu Relatório Completo
+                        </button>
+                    `;
+                }
             }
-            
-            elements.contentArea.innerHTML = `
-                <div class="completion-message">✅ Teste de Pressão Concluído!</div>
-                
-                <div class="pressure-preview">
-                    <strong>Seu Desempenho:</strong> ${performanceNote}<br>
-                    <small>Timeouts: ${testState.timeouts}/15 (${analysis.timeoutRate}%)</small><br>
-                    <small>Tempo médio: ${analysis.avgReactionTime}s</small><br>
-                    <small>${pressureDescription}</small>
-                </div>
-                
-                <div style="color: #718096; margin-bottom: 30px;">
-                    Seu padrão sob pressão foi mapeado com sucesso
-                </div>
-                
-                <button class="btn" onclick="proximoTeste()">
-                    📊 Ver Meu Relatório Completo
-                </button>
-            `;
         }
 
         function proximoTeste() {
@@ -380,9 +481,13 @@
         }
 
         // =============================================
-        // ✅ INICIAR TESTE
+        // ✅ INICIALIZAÇÃO AUTOMÁTICA
         // =============================================
-        window.addEventListener('load', initializeTest);
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initializeTest);
+        } else {
+            initializeTest();
+        }
 
         window.addEventListener('beforeunload', function (e) {
             if (testState.currentDecision > 0 && testState.currentDecision < TEST_CONFIG.totalDecisions) {
@@ -391,48 +496,45 @@
             }
         });
     </script>
+
     <!-- LGPD Modal -->
-<div id="lgpdModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 10000; justify-content: center; align-items: center; font-family: Arial, sans-serif;">
-  <div style="background: white; padding: 2rem; border-radius: 15px; max-width: 500px; margin: 1rem; box-shadow: 0 10px 30px rgba(0,0,0,0.3);">
-    <h3 style="color: #2c3e50; margin-bottom: 1rem;">📋 Termo de Consentimento</h3>
-    
-    <p style="margin-bottom: 1rem;"><strong>O MindKappa respeita sua privacidade:</strong></p>
-    
-    <ul style="margin-bottom: 1rem; padding-left: 1.5rem;">
-      <li><strong>Coletamos:</strong> suas escolhas (Azul/Vermelho) e índice de coerência (κ)</li>
-      <li><strong>NÃO coletamos:</strong> dados pessoais, localização, IP ou informações do dispositivo</li>
-      <li><strong>Finalidade:</strong> melhorar nosso produto e pesquisa científica agregada</li>
-    </ul>
+    <div id="lgpdModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 10000; justify-content: center; align-items: center; font-family: Arial, sans-serif;">
+        <div style="background: white; padding: 2rem; border-radius: 15px; max-width: 500px; margin: 1rem; box-shadow: 0 10px 30px rgba(0,0,0,0.3);">
+            <h3 style="color: #2c3e50; margin-bottom: 1rem;">📋 Termo de Consentimento</h3>
+            
+            <p style="margin-bottom: 1rem;"><strong>O MindKappa respeita sua privacidade:</strong></p>
+            
+            <ul style="margin-bottom: 1rem; padding-left: 1.5rem;">
+                <li><strong>Coletamos:</strong> suas escolhas (Azul/Vermelho) e índice de coerência (κ)</li>
+                <li><strong>NÃO coletamos:</strong> dados pessoais, localização, IP ou informações do dispositivo</li>
+                <li><strong>Finalidade:</strong> melhorar nosso produto e pesquisa científica agregada</li>
+            </ul>
 
-    <p style="font-size: 0.9rem; color: #666; margin-bottom: 1.5rem;">
-      Conforme Lei Geral de Proteção de Dados (LGPD), você pode solicitar exclusão a qualquer momento.
-    </p>
+            <p style="font-size: 0.9rem; color: #666; margin-bottom: 1.5rem;">
+                Conforme Lei Geral de Proteção de Dados (LGPD), você pode solicitar exclusão a qualquer momento.
+            </p>
 
-    <button onclick="acceptLGPD()" style="background: #007bff; color: white; border: none; padding: 12px 30px; border-radius: 8px; cursor: pointer; font-size: 1rem; width: 100%;">
-      ✅ Concordo e quero continuar
-    </button>
-  </div>
-</div>
+            <button onclick="acceptLGPD()" style="background: #007bff; color: white; border: none; padding: 12px 30px; border-radius: 8px; cursor: pointer; font-size: 1rem; width: 100%;">
+                ✅ Concordo e quero continuar
+            </button>
+        </div>
+    </div>
 
-<script>
-// Verificar se já aceitou o LGPD
-function checkLGPD() {
-  if (!localStorage.getItem('lgpd_accepted')) {
-    document.getElementById('lgpdModal').style.display = 'flex';
-    // Bloquear scroll quando modal aberto
-    document.body.style.overflow = 'hidden';
-  }
-}
+    <script>
+    function checkLGPD() {
+        if (!localStorage.getItem('lgpd_accepted')) {
+            document.getElementById('lgpdModal').style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+    }
 
-// Aceitar LGPD
-function acceptLGPD() {
-  localStorage.setItem('lgpd_accepted', 'true');
-  document.getElementById('lgpdModal').style.display = 'none';
-  document.body.style.overflow = 'auto';
-}
+    function acceptLGPD() {
+        localStorage.setItem('lgpd_accepted', 'true');
+        document.getElementById('lgpdModal').style.display = 'none';
+        document.body.style.overflow = 'auto';
+    }
 
-// Executar quando página carregar
-window.addEventListener('load', checkLGPD);
-</script>
+    window.addEventListener('load', checkLGPD);
+    </script>
 </body>
 </html>
