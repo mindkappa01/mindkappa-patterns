@@ -42,4 +42,3 @@ Thumbs.db
 tmp/
 temp/
 "@ | Out-File -FilePath .gitignore -Encoding UTF8
-mcd-core.js
