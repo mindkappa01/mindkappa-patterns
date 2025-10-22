@@ -250,5 +250,25 @@ app.post('/api/simple-subscription', async (req, res) => {
   }
 });
 
+const PORT = process.env.PORT || 3001;
 
+app.listen(PORT, '0.0.0.0', () => {
+    console.log(`🚀 MindKappa Backend SEGURO rodando na porta ${PORT}`);
+    console.log(`🧠 MCD Core: ATIVO`);
+    console.log(`💳 Mercado Pago: ${process.env.MERCADOPAGO_ACCESS_TOKEN ? 'PRONTO PARA PAGAMENTOS' : 'CONFIGURAR'}`);
+    console.log(`🤖 OpenAI: ${OPENAI_ENABLED ? 'LIGADO' : 'DESLIGADO'}`);
+    console.log(`🔗 Frontend: ${process.env.FRONTEND_URL || 'NÃO CONFIGURADO'}`);
+    console.log(`📊 Health: http://localhost:${PORT}/health`);
+});
+
+// ✅ MANTER PROCESSO ATIVO (OPCIONAL MAS RECOMENDADO)
+process.on('SIGTERM', () => {
+    console.log('🔄 Servidor recebeu SIGTERM, encerrando graciosamente...');
+    process.exit(0);
+});
+
+process.on('SIGINT', () => {
+    console.log('🔄 Servidor reiniciando...');
+    process.exit(0);
+});
 
