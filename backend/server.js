@@ -146,6 +146,84 @@ app.post('/api/calculate-coherence', async (req, res) => {
     }
 });
 
+app.post('/api/update-user-coherence', async (req, res) => {
+    try {
+        const { userData, sessionId } = req.body;
+        console.log('🔄 Atualizando userData com coerência...');
+
+        const updatedUserData = JSON.parse(JSON.stringify(userData)); // deep copy
+
+        // ✅ USA SEU MCD CORE DIRETAMENTE (SEM FETCH INTERNO)
+        if (userData.teste1?.decisions) {
+            const choices = userData.teste1.decisions.map(d => 
+                d.choice === 'azul' ? 'Azul' : 'Vermelho'
+            );
+            
+            // ✅ CHAMA MCD CORE DIRETAMENTE (igual sua rota existente)
+            MCDCore.validateChoices(choices);
+            const report = MCDCore.generateReport(choices);
+            
+            updatedUserData.teste1.coherence = {
+                kappa: report.kappa,
+                level: report.coherenceLevel,
+                description: report.description,
+                emoji: report.emoji,
+                color: report.color
+            };
+            updatedUserData.teste1.statistics = report.statistics;
+        }
+
+        // ✅ REPETE PARA teste2 E teste3
+        if (userData.teste2?.decisions) {
+            const choices = userData.teste2.decisions.map(d => 
+                d.choice === 'azul' ? 'Azul' : 'Vermelho'
+            );
+            
+            MCDCore.validateChoices(choices);
+            const report = MCDCore.generateReport(choices);
+            
+            updatedUserData.teste2.coherence = {
+                kappa: report.kappa,
+                level: report.coherenceLevel,
+                description: report.description, 
+                emoji: report.emoji,
+                color: report.color
+            };
+            updatedUserData.teste2.statistics = report.statistics;
+        }
+
+        if (userData.teste3?.decisions) {
+            const choices = userData.teste3.decisions.map(d => 
+                d.choice === 'azul' ? 'Azul' : 'Vermelho'
+            );
+            
+            MCDCore.validateChoices(choices);
+            const report = MCDCore.generateReport(choices);
+            
+            updatedUserData.teste3.coherence = {
+                kappa: report.kappa,
+                level: report.coherenceLevel,
+                description: report.description,
+                emoji: report.emoji, 
+                color: report.color
+            };
+            updatedUserData.teste3.statistics = report.statistics;
+        }
+
+        res.json({
+            success: true,
+            updatedUserData: updatedUserData
+        });
+
+    } catch (error) {
+        console.error('❌ Erro ao atualizar coerência:', error);
+        res.status(500).json({
+            success: false,
+            error: error.message
+        });
+    }
+});
+
 function gerarPromptGratuito(userData) {
     return `
 ANÁLISE MINDKAPPA PARA: ${userData.name || 'Explorador'}

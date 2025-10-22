@@ -117,36 +117,53 @@
         }
 
         async function generateReport() {
-            elements.reportContent.innerHTML = `
-                <div style="margin: 40px 0;">
-                    <div class="loading-spinner"></div>
-                    <div style="color: #4a5568; margin-top: 20px;">
-                        Analisando seus padrões com IA avançada...
-                    </div>
-                    <div style="color: #718096; font-size: 0.9rem; margin-top: 10px;">
-                        Processando 45 decisões • Gerando insights exclusivos
-                    </div>
-                </div>
-            `;
+    elements.reportContent.innerHTML = `
+        <div style="margin: 40px 0;">
+            <div class="loading-spinner"></div>
+            <div style="color: #4a5568; margin-top: 20px;">
+                Calculando coerência e analisando padrões...
+            </div>
+            <div style="color: #718096; font-size: 0.9rem; margin-top: 10px;">
+                Processando 45 decisões • Gerando insights exclusivos
+            </div>
+        </div>
+    `;
 
-            try {
-                const userData = JSON.parse(localStorage.getItem('mindkappa_user'));
-                
-                // ✅ SALVAR DADOS NO BACKEND ATUAL
-                try {
-                    await saveResearchData(userData);
-                } catch (error) {
-                    console.log('⚠️ Dados não salvos:', error);
-                }
-                
-                // ✅ GERAR RELATÓRIO COM BACKEND ATUAL
-                const gptResponse = await callGPT4API(userData);
-                showFinalReport(gptResponse, userData);
-            } catch (error) {
-                console.error('Erro:', error);
-                showErrorState();
-            }
+    try {
+        const userData = JSON.parse(localStorage.getItem('mindkappa_user'));
+        const sessionId = localStorage.getItem('mindkappa_session');
+        
+        // ✅ PRIMEIRO: ATUALIZAR userData COM COERÊNCIA
+        console.log('🔄 Atualizando dados de coerência...');
+        const updateResponse = await fetch(`${MINDKAPPA_BACKEND}/api/update-user-coherence`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                userData: userData,
+                sessionId: sessionId
+            })
+        });
+        
+        if (!updateResponse.ok) {
+            throw new Error('Erro ao calcular coerência');
         }
+        
+        const updateData = await updateResponse.json();
+        const userDataComCoerencia = updateData.updatedUserData;
+        
+        // ✅ SALVAR userData ATUALIZADO NO LOCALSTORAGE
+        localStorage.setItem('mindkappa_user', JSON.stringify(userDataComCoerencia));
+        
+        // ✅ AGORA SIM GERAR RELATÓRIO COM IA
+        console.log('🧠 Gerando relatório com IA...');
+        const gptResponse = await callGPT4API(userDataComCoerencia);
+        showFinalReport(gptResponse, userDataComCoerencia);
+        
+    } catch (error) {
+        console.error('Erro:', error);
+        showErrorState();
+    }
+}
 
         // ✅ ATUALIZADO: Salvar dados no backend Render
         async function saveResearchData(userData) {
