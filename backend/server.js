@@ -225,44 +225,146 @@ app.post('/api/update-user-coherence', async (req, res) => {
 });
 
 function gerarPromptGratuito(userData) {
+    // ✅ EXTRAIR DADOS REAIS DOS TESTES
+    const t1 = userData.teste1;
+    const t2 = userData.teste2; 
+    const t3 = userData.teste3;
+
+    const nome = userData.name || 'Explorador';
+    
+    // ✅ CALCULAR ESTATÍSTICAS REAIS
+    const azuis1 = t1?.statistics?.blueCount || 0;
+    const vermelhos1 = t1?.statistics?.redCount || 0;
+    const total1 = azuis1 + vermelhos1;
+    
+    const azuis2 = t2?.statistics?.blueCount || 0;
+    const vermelhos2 = t2?.statistics?.redCount || 0;
+    const total2 = azuis2 + vermelhos2;
+    
+    const azuis3 = t3?.statistics?.blueCount || 0;
+    const vermelhos3 = t3?.statistics?.redCount || 0;
+    const total3 = azuis3 + vermelhos3;
+
     return `
-ANÁLISE MINDKAPPA PARA: ${userData.name || 'Explorador'}
+CRIE UM RELATÓRIO PERSONALIZADO EXATAMENTE COMO ESTE EXEMPLO:
 
-SEUS PADRÕES DECISIONAIS REVELADOS:
+🧠 RELATÓRIO PESSOAL DO MCD
+${nome} - Descobrindo Como Sua Mente Funciona
 
-${userData.teste1?.coherence ? `⚡ INSTINTO: ${userData.teste1.coherence.level} (κ = ${userData.teste1.coherence.kappa.toFixed(2)})` : '⚡ INSTINTO: Em análise'}
-${userData.teste2?.coherence ? `⚖️ EQUILÍBRIO: ${userData.teste2.coherence.level} (κ = ${userData.teste2.coherence.kappa.toFixed(2)})` : '⚖️ EQUILÍBRIO: Em análise'}  
-${userData.teste3?.coherence ? `⏰ PRESSÃO: ${userData.teste3.coherence.level} (κ = ${userData.teste3.coherence.kappa.toFixed(2)})` : '⏰ PRESSÃO: Em análise'}
+🎯 O QUE VOCÊ FEZ (RESUMO SIMPLES)
+Você participou de 3 testes diferentes onde tinha que escolher entre azul e vermelho.
 
-🔍 PADRÃO IDENTIFICADO:
-${gerarInsightGratuito(userData)}
+TESTE 1: "Instinto Puro - Primeira Reação"
+• O que pedimos: Siga sua primeira intuição
+• O que você fez: ${azuis1} azuis e ${vermelhos1} vermelhos
+• O que isso revela: ${gerarInsightTeste1(azuis1, vermelhos1)}
 
-💡 O QUE ISSO REVELA?
-Seu estilo único de decisão mostra características interessantes que podem ser otimizadas.
+TESTE 2: "Equilíbrio Mental - Busque Balanceamento"  
+• O que pedimos: Tente equilibrar suas escolhas
+• O que você fez: ${azuis2} azuis e ${vermelhos2} vermelhos
+• O que isso revela: ${gerarInsightTeste2(azuis2, vermelhos2)}
 
-🎯 QUER SABER TUDO?
-No relatório premium você descobre:
-• A ciência por trás do seu perfil κ
-• Estratégias para decisões mais conscientes
-• Comparação com nossa base científica exclusiva
+TESTE 3: "Pressão Temporal - Decisões Rápidas"
+• O que pedimos: Escolha sob pressão de tempo
+• O que você fez: ${azuis3} azuis e ${vermelhos3} vermelhos  
+• O que isso revela: ${gerarInsightTeste3(azuis3, vermelhos3)}
 
-Continue sua jornada de autoconhecimento!
+🔍 O QUE DESCOBRIMOS SOBRE VOCÊ
+${gerarPerfilMental(nome, azuis1, vermelhos1, azuis2, vermelhos2, azuis3, vermelhos3)}
 
-Máximo 130 palavras. Seja curioso e motivador.
+Use linguagem:
+• CONVERSACIONAL: "${nome}, sua mente..."
+• ESPECÍFICA: com números exatos
+• MOTIVADORA: destaque pontos fortes
+• CURIOSA: "O que isso revela sobre você?"
+
+NUNCA seja genérico. SEMPRE use os dados exatos fornecidos.
 `;
 }
 
-function gerarInsightGratuito(userData) {
-    const testes = [userData.teste1, userData.teste2, userData.teste3].filter(t => t?.coherence);
+// ✅ FUNÇÕES DE INSIGHT ESPECÍFICAS
+function gerarInsightTeste1(azuis, vermelhos) {
+    const total = azuis + vermelhos;
+    if (total === 0) return "Seu instinto está sendo analisado...";
     
-    if (testes.length === 0) return "Seus dados estão sendo processados...";
+    if (azuis === 0 || vermelhos === 0) {
+        return "Quando você segue a intuição, vai até o fim sem hesitar! Sua mente escolhe um caminho e segue com convicção total!";
+    }
+    if (Math.abs(azuis - vermelhos) <= 2) {
+        return "Seu instinto naturalmente busca equilíbrio! Sua primeira reação já considera diferentes perspectivas de forma harmoniosa!";
+    }
+    if (azuis > vermelhos * 1.5) {
+        return "Sua intuição tem uma clara preferência pelo azul! Quando você não pensa muito, sua mente escolhe uma direção específica!";
+    }
+    if (vermelhos > azuis * 1.5) {
+        return "Sua intuição tem uma clara preferência pelo vermelho! Sua mente instintiva sabe exatamente o que quer!";
+    }
+    return "Sua primeira reação tem preferências bem definidas, mas com espaço para variação!";
+}
+
+function gerarInsightTeste2(azuis, vermelhos) {
+    const total = azuis + vermelhos;
+    if (total === 0) return "Seu equilíbrio está sendo analisado...";
     
-    const kappas = testes.map(t => t.coherence.kappa);
-    const avgKappa = kappas.reduce((a, b) => a + b, 0) / kappas.length;
+    const diferenca = Math.abs(azuis - vermelhos);
     
-    if (avgKappa > 0.7) return "Consistência notável em suas escolhas - você tem clareza interna.";
-    if (avgKappa > 0.4) return "Balanço interessante entre intuição e adaptabilidade.";
-    return "Padrão flexível que se adapta a diferentes contextos.";
+    if (diferenca === 0) {
+        return "PERFEITO! Quando você tenta equilibrar, consegue com precisão absoluta! Sua mente é uma balança perfeita!";
+    }
+    if (diferenca <= 2) {
+        return "Excelente! Você tem um talento natural para encontrar equilíbrio! Sua mente busca harmonia de forma consistente!";
+    }
+    if (diferenca <= 5) {
+        return "Você se esforça pelo equilíbrio, mas suas preferências pessoais ainda aparecem! Isso mostra autenticidade!";
+    }
+    return "Mesmo tentando equilibrar, suas inclinações naturais são fortes! Isso revela personalidade bem definida!";
+}
+
+function gerarInsightTeste3(azuis, vermelhos) {
+    const total = azuis + vermelhos;
+    if (total === 0) return "Sua performance sob pressão está sendo analisada...";
+    
+    if (azuis === 0 || vermelhos === 0) {
+        return "SOB PRESSÃO, você se torna super focado! Sua mente escolhe uma direção e segue com determinação total, sem distrações!";
+    }
+    if (Math.abs(azuis - vermelhos) <= 3) {
+        return "Incível! Mesmo sob pressão, você mantém o equilíbrio! Sua mente funciona bem mesmo em situações desafiadoras!";
+    }
+    if (azuis > vermelhos) {
+        return "Sob pressão, sua mente se inclina fortemente para o azul! O estresse traz à tona suas preferências mais profundas!";
+    }
+    return "Sob pressão, sua mente se inclina fortemente para o vermelho! Situações intensas revelam seu lado mais decisivo!";
+}
+
+function gerarPerfilMental(nome, azuis1, vermelhos1, azuis2, vermelhos2, azuis3, vermelhos3) {
+    const perfis = [];
+    
+    // Analisar padrão do Teste 1 (Instinto)
+    if (azuis1 === 0 || vermelhos1 === 0) {
+        perfis.push("MENTE DECISIVA - Quando você confia na intuição, age com convicção total");
+    } else if (Math.abs(azuis1 - vermelhos1) <= 2) {
+        perfis.push("MENTE EQUILIBRADA - Sua intuição natural já busca harmonia");
+    }
+    
+    // Analisar padrão do Teste 2 (Equilíbrio) 
+    if (Math.abs(azuis2 - vermelhos2) === 0) {
+        perfis.push("ARTISTA DO EQUILÍBRIO - Você domina a arte do balanceamento perfeito");
+    } else if (Math.abs(azuis2 - vermelhos2) <= 3) {
+        perfis.push("NEGOCIADOR NATURAL - Sabe encontrar meio-termo com maestria");
+    }
+    
+    // Analisar padrão do Teste 3 (Pressão)
+    if (azuis3 === 0 || vermelhos3 === 0) {
+        perfis.push("HERÓI SOB PRESSÃO - Quanto mais desafio, mais focado você fica");
+    } else if (Math.abs(azuis3 - vermelhos3) <= 2) {
+        perfis.push("MESTRE DA CALMA - Mantém serenidade mesmo sob pressão intensa");
+    }
+    
+    if (perfis.length === 0) {
+        perfis.push("EXPLORADOR ÚNICO - Sua mente tem um estilo todo especial que merece ser descoberto!");
+    }
+    
+    return `${nome}, descobrimos que sua mente é incrível! \n\nSeu Perfil: "${perfis.slice(0, 2).join(' • ')}"\n\nCOMO SUA MENTE FUNCIONA:\n• ${perfis.join('\n• ')}\n\nIsso mostra que você tem características mentais muito especiais!`;
 }
 
 // ✅ RELATÓRIO SEGURO COM INTERRUPTOR
