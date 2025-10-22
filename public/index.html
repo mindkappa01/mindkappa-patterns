@@ -3,174 +3,155 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MindKappa - Descubra Seus Padrões Mentais em 3 Minutos</title>
+    <title>MindKappa - Descubra Seu Estilo de Decisão</title>
+    <link rel="stylesheet" href="assets/style.css">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            color: white;
-            line-height: 1.6;
-        }
-
-        .container {
-            max-width: 600px;
-            margin: 0 auto;
-            padding: 40px 20px;
+        .hero-section {
             text-align: center;
+            padding: 40px 20px;
         }
-
-        .logo {
-            font-size: 4rem;
-            margin-bottom: 20px;
-        }
-
-        h1 {
+        .hero-title {
             font-size: 2.5rem;
+            color: #1e40af;
             margin-bottom: 15px;
             font-weight: 700;
         }
-
-        .subtitle {
+        .hero-subtitle {
             font-size: 1.3rem;
-            opacity: 0.9;
+            color: #4b5563;
             margin-bottom: 40px;
+            line-height: 1.5;
         }
-
-        .value-props {
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 15px;
-            padding: 25px;
-            margin: 30px 0;
-            text-align: left;
-        }
-
-        .prop {
-            margin: 15px 0;
-            font-size: 1.1rem;
-        }
-
-        .prop::before {
-            content: "✓ ";
-            color: #68d391;
-            font-weight: bold;
-        }
-
         .cta-button {
-            background: white;
-            color: #667eea;
+            background: linear-gradient(135deg, #7c3aed, #1e40af);
+            color: white;
             border: none;
-            padding: 20px 50px;
-            font-size: 1.4rem;
-            font-weight: 700;
+            padding: 18px 40px;
+            font-size: 1.3rem;
             border-radius: 50px;
             cursor: pointer;
             transition: all 0.3s ease;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-            display: inline-block;
-            text-decoration: none;
-            margin: 20px 0;
+            margin-bottom: 40px;
+            box-shadow: 0 8px 25px rgba(124, 58, 237, 0.3);
         }
-
         .cta-button:hover {
             transform: translateY(-3px);
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 12px 35px rgba(124, 58, 237, 0.4);
         }
-
-        .footer {
-            margin-top: 50px;
-            opacity: 0.7;
-            font-size: 0.9rem;
+        .benefits-grid {
+            display: grid;
+            gap: 20px;
+            max-width: 500px;
+            margin: 0 auto;
+            text-align: left;
         }
-
-        .no-commitment {
+        .benefit-item {
+            padding: 20px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border-left: 4px solid #7c3aed;
+        }
+        .benefit-icon {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+        .benefit-title {
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 5px;
+        }
+        .benefit-desc {
+            color: #6b7280;
+            line-height: 1.5;
+        }
+        .disclaimer {
+            margin-top: 40px;
+            padding: 15px;
+            background: #f3f4f6;
+            border-radius: 10px;
             font-size: 0.9rem;
-            opacity: 0.8;
-            margin-top: 15px;
+            color: #6b7280;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="logo">🧠</div>
-        
-        <h1>Descubra os Padrões da Sua Mente</h1>
-        <div class="subtitle">Teste rápido e gratuito • Resultado em 3 minutos</div>
-
-        <div class="value-props">
-            <div class="prop">Veja o padrão por trás de suas escolhas</div>
-            <div class="prop">Descubra seu perfil único de decisão</div>
-            <div class="prop">Relatório personalizado instantâneo</div>
-            <div class="prop">Sem cadastro • 100% confidencial</div>
-        </div>
-
-        <!-- CTA DIRETO PARA OS TESTES -->
-        <a href="onboarding.html" class="cta-button">
-    🔍 Descobrir Meus Padrões Agora
-</a>
-
-        <div class="no-commitment">
-            Comece agora - adicione seus dados depois, se quiser
-        </div>
-
-        <div class="footer">
-            MindKappa Patterns • Ferramenta científica de autoconhecimento
+        <div class="card">
+            <div class="hero-section">
+                <!-- Logo/Marca -->
+                <div style="font-size: 3rem; margin-bottom: 20px;">🧠</div>
+                
+                <!-- Headline Principal -->
+                <h1 class="hero-title">Qual é o Seu Estilo de Decisão?</h1>
+                
+                <!-- Subtítulo -->
+                <p class="hero-subtitle">
+                    Descubra os padrões por trás das suas escolhas em 5 minutos
+                </p>
+                
+                <!-- Call to Action -->
+                <button class="cta-button" onclick="startTest()">
+                    🧠 Analisar Meu Estilo
+                </button>
+                
+                <!-- Benefícios -->
+                <div class="benefits-grid">
+                    <div class="benefit-item">
+                        <div class="benefit-icon">🔍</div>
+                        <div class="benefit-title">Padrões Únicos</div>
+                        <div class="benefit-desc">Cada pessoa decide de um jeito diferente</div>
+                    </div>
+                    
+                    <div class="benefit-item">
+                        <div class="benefit-icon">📊</div>
+                        <div class="benefit-title">Método Científico</div>
+                        <div class="benefit-desc">Análise baseada em dados e métricas reais</div>
+                    </div>
+                    
+                    <div class="benefit-item">
+                        <div class="benefit-icon">🎯</div>
+                        <div class="benefit-title">Autoconhecimento</div>
+                        <div class="benefit-desc">Entenda como sua mente realmente funciona</div>
+                    </div>
+                </div>
+                
+                <!-- Disclaimer -->
+                <div class="disclaimer">
+                    💡 <strong>Importante:</strong> Esta é uma ferramenta de autoconhecimento. 
+                    Não substitui avaliação psicológica profissional.
+                </div>
+            </div>
         </div>
     </div>
 
     <script>
-        // Geração automática de sessionId
-        const sessionId = 'mk-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
-        localStorage.setItem('mindkappa_session', sessionId);
+        function startTest() {
+            window.location.href = 'test.html';
+        }
     </script>
-    <!-- LGPD Modal -->
-<div id="lgpdModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 10000; justify-content: center; align-items: center; font-family: Arial, sans-serif;">
-  <div style="background: white; padding: 2rem; border-radius: 15px; max-width: 500px; margin: 1rem; box-shadow: 0 10px 30px rgba(0,0,0,0.3);">
-    <h3 style="color: #2c3e50; margin-bottom: 1rem;">📋 Termo de Consentimento</h3>
-    
-    <p style="margin-bottom: 1rem;"><strong>O MindKappa respeita sua privacidade:</strong></p>
-    
-    <ul style="margin-bottom: 1rem; padding-left: 1.5rem;">
-      <li><strong>Coletamos:</strong> suas escolhas (Azul/Vermelho) e índice de coerência (κ)</li>
-      <li><strong>NÃO coletamos:</strong> dados pessoais, localização, IP ou informações do dispositivo</li>
-      <li><strong>Finalidade:</strong> melhorar nosso produto e pesquisa científica agregada</li>
-    </ul>
 
-    <p style="font-size: 0.9rem; color: #666; margin-bottom: 1.5rem;">
-      Conforme Lei Geral de Proteção de Dados (LGPD), você pode solicitar exclusão a qualquer momento.
-    </p>
+    <!-- LGPD Modal (mantenha o código existente) -->
+    <div id="lgpdModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 10000; justify-content: center; align-items: center; font-family: Arial, sans-serif;">
+        <!-- ... mantenha o modal LGPD existente ... -->
+    </div>
 
-    <button onclick="acceptLGPD()" style="background: #007bff; color: white; border: none; padding: 12px 30px; border-radius: 8px; cursor: pointer; font-size: 1rem; width: 100%;">
-      ✅ Concordo e quero continuar
-    </button>
-  </div>
-</div>
+    <script>
+    // Mantenha o código LGPD existente
+    function checkLGPD() {
+        if (!localStorage.getItem('lgpd_accepted')) {
+            document.getElementById('lgpdModal').style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+    }
 
-<script>
-// Verificar se já aceitou o LGPD
-function checkLGPD() {
-  if (!localStorage.getItem('lgpd_accepted')) {
-    document.getElementById('lgpdModal').style.display = 'flex';
-    // Bloquear scroll quando modal aberto
-    document.body.style.overflow = 'hidden';
-  }
-}
+    function acceptLGPD() {
+        localStorage.setItem('lgpd_accepted', 'true');
+        document.getElementById('lgpdModal').style.display = 'none';
+        document.body.style.overflow = 'auto';
+    }
 
-// Aceitar LGPD
-function acceptLGPD() {
-  localStorage.setItem('lgpd_accepted', 'true');
-  document.getElementById('lgpdModal').style.display = 'none';
-  document.body.style.overflow = 'auto';
-}
-
-// Executar quando página carregar
-window.addEventListener('load', checkLGPD);
-</script>
+    window.addEventListener('load', checkLGPD);
+    </script>
 </body>
 </html>
