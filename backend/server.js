@@ -215,7 +215,7 @@ app.post('/api/simple-subscription', async (req, res) => {
       items: [
         {
           title: 'Relatório Premium MindKappa',
-          unit_price: 1.90,
+          unit_price: 9.90,
           quantity: 1,
           currency_id: 'BRL',
           description: 'Análise profunda do seu padrão decisional com relatório PDF completo'
