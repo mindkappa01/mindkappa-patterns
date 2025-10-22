@@ -164,7 +164,44 @@ app.post('/api/generate-report', async (req, res) => {
                         model: "gpt-3.5-turbo",
                         messages: [{
                             role: "user",
-                            content: `Resumo CURTO (máximo 100 palavras) para ${userData.name}, ${userData.age} anos: análise de padrões mentais baseada em 3 testes. Seja positivo e motivador.`
+                            content: `
+Você é um especialista em análise de padrões decisórios da MindKappa.
+
+ANÁLISE PARA: ${userData.name}, ${userData.age} anos
+ESTADO EMOCIONAL: ${userData.emotion || 'Não informado'}
+
+CONTEXTO CIENTÍFICO:
+- Método: Medidor de Coerência Decisional (MCD)
+- Métrica: κ (kappa) - índice de coerência não-aleatória
+- Base: Estatística circular e distribuição von Mises
+
+DADOS DOS 3 TESTES:
+
+TESTE 1 - INSTINTO PURO:
+- Coerência: ${userData.teste1?.coherence?.level || 'Não calculado'}
+- κ = ${userData.teste1?.coherence?.kappa || 'Não calculado'}
+
+TESTE 2 - EQUILÍBRIO MENTAL:  
+- Coerência: ${userData.teste2?.coherence?.level || 'Não calculado'}
+- κ = ${userData.teste2?.coherence?.kappa || 'Não calculado'}
+
+TESTE 3 - PRESSÃO TEMPORAL:
+- Coerência: ${userData.teste3?.coherence?.level || 'Não calculado'}
+- κ = ${userData.teste3?.coherence?.kappa || 'Não calculado'}
+
+INSTRUÇÕES:
+- Seja positivo e motivador
+- Foco em autoconhecimento, NÃO diagnóstico
+- Destaque padrões interessantes nos testes
+- Sugira aplicações práticas
+- Linguagem acessível mas científica
+- MÁXIMO 150 palavras
+- 3-4 parágrafos curtos
+- Inclua 1 insight surpreendente
+- Termine com recomendação prática
+
+NUNCA use termos médicos ou psicológicos.
+`
                         }],
                         max_tokens: 150,
                         temperature: 0.7
