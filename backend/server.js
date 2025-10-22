@@ -209,7 +209,7 @@ app.post('/api/generate-report', async (req, res) => {
 // ✅ MERCADO PAGO (JÁ FUNCIONA)
 app.post('/api/simple-subscription', async (req, res) => {
   try {
-    console.log('🔄 Criando pagamento real...');
+    console.log('🔄 Criando pagamento com PIX...');
     
     const preference = {
       items: [
@@ -227,17 +227,37 @@ app.post('/api/simple-subscription', async (req, res) => {
         pending: `${process.env.FRONTEND_URL}/pending`
       },
       auto_return: 'approved',
-      statement_descriptor: 'MINDKAPPA PREMIUM'
+      statement_descriptor: 'MINDKAPPA',
+      
+      // ✅ NOVO: CONFIGURAÇÃO PIX
+      payment_methods: {
+        excluded_payment_types: [
+          { id: 'ticket' }, // Remove boleto
+          { id: 'atm' }     // Remove caixa eletrônico
+        ],
+        default_installments: 1,
+        excluded_payment_methods: [
+          { id: 'debvisa' }, // Remove débito
+          { id: 'debmaster' }
+        ]
+      },
+      
+      // ✅ PIX AUTOMÁTICO (30 minutos)
+      pix: {
+        expiration: 1800 // 30 minutos em segundos
+      }
     };
 
     const response = await mercadopago.preferences.create(preference);
     
-    console.log('✅ Pagamento criado:', response.body.id);
+    console.log('✅ Pagamento PIX criado:', response.body.id);
     
     res.json({
       success: true,
-      payment_link: response.body.init_point, // URL REAL de pagamento
-      fallback: false // AGORA É REAL!
+      payment_link: response.body.init_point,
+      fallback: false,
+      // ✅ NOVO: DADOS PIX ESPECÍFICOS
+      pix_data: response.body.pix || null
     });
 
   } catch (error) {
