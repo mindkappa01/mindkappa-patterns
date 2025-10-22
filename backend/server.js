@@ -222,9 +222,9 @@ app.post('/api/simple-subscription', async (req, res) => {
         }
       ],
       back_urls: {
-        success: `${process.env.FRONTEND_URL}/success`,
-        failure: `${process.env.FRONTEND_URL}/failure`,
-        pending: `${process.env.FRONTEND_URL}/pending`
+        success: `${process.env.FRONTEND_URL}/success.html`,
+        failure: `${process.env.FRONTEND_URL}/failure.html`,
+        pending: `${process.env.FRONTEND_URL}/pending.html`
       },
       auto_return: 'approved',
       statement_descriptor: 'MINDKAPPA',

@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pagamento Aprovado - MindKappa</title>
+    <link rel="stylesheet" href="assets/style.css">
+    <style>
+        .success-container { 
+            text-align: center; 
+            padding: 40px 20px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .success-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+        }
+        .loading-bar {
+            width: 100%;
+            height: 6px;
+            background: #e2e8f0;
+            border-radius: 3px;
+            margin: 30px 0;
+            overflow: hidden;
+        }
+        .loading-progress {
+            height: 100%;
+            background: linear-gradient(90deg, #10b981, #059669);
+            animation: loading 2s ease-in-out infinite;
+        }
+        @keyframes loading {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+        .feature-card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            text-align: left;
+        }
+        .btn-success {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.1rem;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin-top: 10px;
+        }
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <div class="success-container">
+                <div class="success-icon">✅</div>
+                <h1>Pagamento Aprovado!</h1>
+                <p style="color: #4a5568; font-size: 1.1rem; margin-bottom: 30px;">
+                    Seu relatório premium está sendo gerado com análise aprofundada por IA
+                </p>
+
+                <div class="loading-bar">
+                    <div class="loading-progress"></div>
+                </div>
+
+                <div class="feature-card">
+                    <h3 style="color: #2d3748; margin-bottom: 15px;">🎁 O que você está recebendo:</h3>
+                    <div class="feature-item">📊 Análise profunda dos seus 3 testes cognitivos</div>
+                    <div class="feature-item">🧠 Insights personalizados sobre seus padrões</div>
+                    <div class="feature-item">📄 Relatório PDF para download</div>
+                    <div class="feature-item">⚡ Comparações com base científica</div>
+                </div>
+
+                <div style="background: #f0f9ff; padding: 20px; border-radius: 10px; margin: 25px 0;">
+                    <h4 style="color: #2b6cb0; margin-bottom: 10px;">📧 Email em andamento</h4>
+                    <p style="color: #4a5568; margin: 0;">
+                        Seu relatório premium será enviado para o email cadastrado no Mercado Pago em até 5 minutos.
+                    </p>
+                </div>
+
+                <div style="display: flex; gap: 10px; margin-top: 30px;">
+                    <button class="btn-success" onclick="goHome()">
+                        🏠 Voltar ao Início
+                    </button>
+                    <button class="btn" onclick="goToReport()" 
+                            style="background: #e2e8f0; color: #4a5568;">
+                        📊 Ver Relatório Básico
+                    </button>
+                </div>
+
+                <div style="margin-top: 25px; padding: 15px; background: #f7fafc; border-radius: 10px;">
+                    <small style="color: #718096;">
+                        💡 Dica: Salve este relatório para acompanhar sua evolução cognitiva ao longo do tempo.
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function goHome() {
+            window.location.href = 'index.html';
+        }
+
+        function goToReport() {
+            window.location.href = 'report.html';
+        }
+
+        // Simular processamento do relatório premium
+        setTimeout(() => {
+            const processingElement = document.querySelector('.loading-bar');
+            if (processingElement) {
+                processingElement.innerHTML = '<div style="height: 100%; background: #10b981; border-radius: 3px;"></div>';
+                processingElement.previousElementSibling.innerHTML = '✅ Relatório gerado com sucesso!';
+            }
+        }, 3000);
+    </script>
+</body>
+</html>
