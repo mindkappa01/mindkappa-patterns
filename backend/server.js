@@ -235,24 +235,21 @@ function gerarPromptGratuito(userData) {
     // ✅ CALCULAR ESTATÍSTICAS REAIS
     const azuis1 = t1?.statistics?.blueCount || 0;
     const vermelhos1 = t1?.statistics?.redCount || 0;
-    const total1 = azuis1 + vermelhos1;
     
     const azuis2 = t2?.statistics?.blueCount || 0;
     const vermelhos2 = t2?.statistics?.redCount || 0;
-    const total2 = azuis2 + vermelhos2;
     
     const azuis3 = t3?.statistics?.blueCount || 0;
     const vermelhos3 = t3?.statistics?.redCount || 0;
-    const total3 = azuis3 + vermelhos3;
 
     return `
-CRIE UM RELATÓRIO PERSONALIZADO EXATAMENTE COMO ESTE EXEMPLO:
+CRIE UM RELATÓRIO EXCLUSIVO DO MINDKAPPA USANDO ESTA ESTRUTURA EXATA:
 
-🧠 RELATÓRIO PESSOAL DO MCD
+🧠 SEU RELATÓRIO PESSOAL DO MCD
 ${nome} - Descobrindo Como Sua Mente Funciona
 
 🎯 O QUE VOCÊ FEZ (RESUMO SIMPLES)
-Você participou de 3 testes diferentes onde tinha que escolher entre azul e vermelho.
+Você participou de 3 testes diferentes onde tinha que escolher entre AZUL e VERMELHO.
 
 TESTE 1: "Instinto Puro - Primeira Reação"
 • O que pedimos: Siga sua primeira intuição
@@ -272,14 +269,53 @@ TESTE 3: "Pressão Temporal - Decisões Rápidas"
 🔍 O QUE DESCOBRIMOS SOBRE VOCÊ
 ${gerarPerfilMental(nome, azuis1, vermelhos1, azuis2, vermelhos2, azuis3, vermelhos3)}
 
-Use linguagem:
-• CONVERSACIONAL: "${nome}, sua mente..."
-• ESPECÍFICA: com números exatos
-• MOTIVADORA: destaque pontos fortes
-• CURIOSA: "O que isso revela sobre você?"
+💡 DICAS PARA SEU DIA A DIA
+${gerarDicasPraticas(azuis1, vermelhos1, azuis2, vermelhos2, azuis3, vermelhos3)}
 
-NUNCA seja genérico. SEMPRE use os dados exatos fornecidos.
+🎉 MENSAGEM FINAL
+${gerarMensagemFinal(nome)}
+
+---
+INSTRUÇÕES OBRIGATÓRIAS:
+• USE APENAS "AZUL" e "VERMELHO" (nunca A/B ou outras cores)
+• USE "MCD" ou "MindKappa" (nunca ABC ou outros nomes)
+• SIGA A ESTRUTURA ACIMA EXATAMENTE
+• LINGUAGEM: Conversacional, motivadora, específica
+• CHAME O USUÁRIO PELO NOME: "${nome}, sua mente..."
 `;
+}
+
+function gerarDicasPraticas(azuis1, vermelhos1, azuis2, vermelhos2, azuis3, vermelhos3) {
+    const dicas = [];
+    
+    if (azuis1 === 0 || vermelhos1 === 0) {
+        dicas.push("• CONFIE NA SUA INTUIÇÃO - Quando você segue seu instinto, age com convicção!");
+    }
+    
+    if (Math.abs(azuis2 - vermelhos2) <= 2) {
+        dicas.push("• USE SEU TALENTO PARA EQUILÍBRIO - Você é ótimo em encontrar meio-termo em discussões!");
+    }
+    
+    if (azuis3 === 0 || vermelhos3 === 0) {
+        dicas.push("• EM MOMENTOS DECISIVOS - Lembre-se que você fica super focado sob pressão, use isso a seu favor!");
+    }
+    
+    if (dicas.length === 0) {
+        dicas.push("• EXPERIMENTE DIFERENTES ABORDAGENS - Sua mente se adapta bem a diversos contextos!");
+        dicas.push("• OBSERVE SEUS PADRÕES - Preste atenção em como você toma decisões no dia a dia!");
+    }
+    
+    return dicas.join('\n');
+}
+
+function gerarMensagemFinal(nome) {
+    const mensagens = [
+        `${nome}, sua mente é única e especial! Os padrões que descobrimos mostram características valiosas que você pode usar a seu favor!`,
+        `${nome}, o teste revelou talentos mentais incríveis! Continue explorando como sua mente funciona - o autoconhecimento é um superpoder!`,
+        `${nome}, cada mente é uma obra de arte! A sua tem padrões fascinantes que merecem ser celebrados e usados com sabedoria!`
+    ];
+    
+    return mensagens[Math.floor(Math.random() * mensagens.length)];
 }
 
 // ✅ FUNÇÕES DE INSIGHT ESPECÍFICAS
@@ -387,7 +423,7 @@ app.post('/api/generate-report', async (req, res) => {
                             role: "user",
                             content: gerarPromptGratuito(userData)
 }],
-                        max_tokens: 150,
+                        max_tokens: 600,
                         temperature: 0.7
                     }),
                     new Promise((_, reject) => 
