@@ -375,32 +375,37 @@ function gerarInsightTeste3(azuis, vermelhos) {
 function gerarPerfilMental(nome, azuis1, vermelhos1, azuis2, vermelhos2, azuis3, vermelhos3) {
     const perfis = [];
     
-    // Analisar padrão do Teste 1 (Instinto)
-    if (azuis1 === 0 || vermelhos1 === 0) {
-        perfis.push("MENTE DECISIVA - Quando você confia na intuição, age com convicção total");
-    } else if (Math.abs(azuis1 - vermelhos1) <= 2) {
-        perfis.push("MENTE EQUILIBRADA - Sua intuição natural já busca harmonia");
+    // ✅ ANALISAR MUDANÇA ENTRE TESTE 1 E 2
+    const preferencia1 = azuis1 > vermelhos1 ? "AZUL" : "VERMELHO";
+    const preferencia2 = azuis2 > vermelhos2 ? "AZUL" : "VERMELHO";
+    
+    if (preferencia1 !== preferencia2) {
+        perfis.push(`MENTE ADAPTÁVEL - Você muda de estratégia quando o contexto pede (de ${preferencia1} para ${preferencia2})`);
     }
     
-    // Analisar padrão do Teste 2 (Equilíbrio) 
-    if (Math.abs(azuis2 - vermelhos2) === 0) {
-        perfis.push("ARTISTA DO EQUILÍBRIO - Você domina a arte do balanceamento perfeito");
-    } else if (Math.abs(azuis2 - vermelhos2) <= 3) {
-        perfis.push("NEGOCIADOR NATURAL - Sabe encontrar meio-termo com maestria");
+    // ✅ ANALISAR FORÇA DAS PREFERÊNCIAS
+    const diferenca1 = Math.abs(azuis1 - vermelhos1);
+    const diferenca2 = Math.abs(azuis2 - vermelhos2);
+    
+    if (diferenca1 >= 7) {
+        perfis.push("INTUIÇÃO FORTE - Seu instinto tem preferências bem definidas");
     }
     
-    // Analisar padrão do Teste 3 (Pressão)
-    if (azuis3 === 0 || vermelhos3 === 0) {
-        perfis.push("HERÓI SOB PRESSÃO - Quanto mais desafio, mais focado você fica");
-    } else if (Math.abs(azuis3 - vermelhos3) <= 2) {
-        perfis.push("MESTRE DA CALMA - Mantém serenidade mesmo sob pressão intensa");
+    if (diferenca2 >= 8) {
+        perfis.push("PERSONALIDADE MARCADA - Mesmo tentando equilibrar, seu estilo único aparece");
+    }
+    
+    // ✅ ANALISAR CONSISTÊNCIA SOB PRESSÃO
+    const preferencia3 = azuis3 > vermelhos3 ? "AZUL" : "VERMELHO";
+    if (preferencia2 === preferencia3) {
+        perfis.push("FOCO SOB PRESSÃO - Sob estresse, você mantém a mesma direção que escolheu conscientemente");
     }
     
     if (perfis.length === 0) {
-        perfis.push("EXPLORADOR ÚNICO - Sua mente tem um estilo todo especial que merece ser descoberto!");
+        perfis.push("EXPLORADOR ÚNICO - Sua mente tem combinações especiais que merecem ser descobertas");
     }
     
-    return `${nome}, descobrimos que sua mente é incrível! \n\nSeu Perfil: "${perfis.slice(0, 2).join(' • ')}"\n\nCOMO SUA MENTE FUNCIONA:\n• ${perfis.join('\n• ')}\n\nIsso mostra que você tem características mentais muito especiais!`;
+    return `${nome}, descobrimos que sua mente é fascinante! \n\nSEU PERFIL: "${perfis[0]}"\n\nCOMO SUA MENTE FUNCIONA:\n• ${perfis.join('\n• ')}\n\nIsso revela padrões mentais muito interessantes!`;
 }
 
 // ✅ RELATÓRIO SEGURO COM INTERRUPTOR
