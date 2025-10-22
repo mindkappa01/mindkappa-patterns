@@ -146,6 +146,47 @@ app.post('/api/calculate-coherence', async (req, res) => {
     }
 });
 
+function gerarPromptGratuito(userData) {
+    return `
+ANÁLISE MINDKAPPA PARA: ${userData.name || 'Explorador'}
+
+SEUS PADRÕES DECISIONAIS REVELADOS:
+
+${userData.teste1?.coherence ? `⚡ INSTINTO: ${userData.teste1.coherence.level} (κ = ${userData.teste1.coherence.kappa.toFixed(2)})` : '⚡ INSTINTO: Em análise'}
+${userData.teste2?.coherence ? `⚖️ EQUILÍBRIO: ${userData.teste2.coherence.level} (κ = ${userData.teste2.coherence.kappa.toFixed(2)})` : '⚖️ EQUILÍBRIO: Em análise'}  
+${userData.teste3?.coherence ? `⏰ PRESSÃO: ${userData.teste3.coherence.level} (κ = ${userData.teste3.coherence.kappa.toFixed(2)})` : '⏰ PRESSÃO: Em análise'}
+
+🔍 PADRÃO IDENTIFICADO:
+${gerarInsightGratuito(userData)}
+
+💡 O QUE ISSO REVELA?
+Seu estilo único de decisão mostra características interessantes que podem ser otimizadas.
+
+🎯 QUER SABER TUDO?
+No relatório premium você descobre:
+• A ciência por trás do seu perfil κ
+• Estratégias para decisões mais conscientes
+• Comparação com nossa base científica exclusiva
+
+Continue sua jornada de autoconhecimento!
+
+Máximo 130 palavras. Seja curioso e motivador.
+`;
+}
+
+function gerarInsightGratuito(userData) {
+    const testes = [userData.teste1, userData.teste2, userData.teste3].filter(t => t?.coherence);
+    
+    if (testes.length === 0) return "Seus dados estão sendo processados...";
+    
+    const kappas = testes.map(t => t.coherence.kappa);
+    const avgKappa = kappas.reduce((a, b) => a + b, 0) / kappas.length;
+    
+    if (avgKappa > 0.7) return "Consistência notável em suas escolhas - você tem clareza interna.";
+    if (avgKappa > 0.4) return "Balanço interessante entre intuição e adaptabilidade.";
+    return "Padrão flexível que se adapta a diferentes contextos.";
+}
+
 // ✅ RELATÓRIO SEGURO COM INTERRUPTOR
 app.post('/api/generate-report', async (req, res) => {
     try {
@@ -164,45 +205,8 @@ app.post('/api/generate-report', async (req, res) => {
                         model: "gpt-3.5-turbo",
                         messages: [{
                             role: "user",
-                            content: `
-Você é um especialista em análise de padrões decisórios da MindKappa.
-
-ANÁLISE PARA: ${userData.name}, ${userData.age} anos
-ESTADO EMOCIONAL: ${userData.emotion || 'Não informado'}
-
-CONTEXTO CIENTÍFICO:
-- Método: Medidor de Coerência Decisional (MCD)
-- Métrica: κ (kappa) - índice de coerência não-aleatória
-- Base: Estatística circular e distribuição von Mises
-
-DADOS DOS 3 TESTES:
-
-TESTE 1 - INSTINTO PURO:
-- Coerência: ${userData.teste1?.coherence?.level || 'Não calculado'}
-- κ = ${userData.teste1?.coherence?.kappa || 'Não calculado'}
-
-TESTE 2 - EQUILÍBRIO MENTAL:  
-- Coerência: ${userData.teste2?.coherence?.level || 'Não calculado'}
-- κ = ${userData.teste2?.coherence?.kappa || 'Não calculado'}
-
-TESTE 3 - PRESSÃO TEMPORAL:
-- Coerência: ${userData.teste3?.coherence?.level || 'Não calculado'}
-- κ = ${userData.teste3?.coherence?.kappa || 'Não calculado'}
-
-INSTRUÇÕES:
-- Seja positivo e motivador
-- Foco em autoconhecimento, NÃO diagnóstico
-- Destaque padrões interessantes nos testes
-- Sugira aplicações práticas
-- Linguagem acessível mas científica
-- MÁXIMO 150 palavras
-- 3-4 parágrafos curtos
-- Inclua 1 insight surpreendente
-- Termine com recomendação prática
-
-NUNCA use termos médicos ou psicológicos.
-`
-                        }],
+                            content: gerarPromptGratuito(userData)
+}],
                         max_tokens: 150,
                         temperature: 0.7
                     }),
