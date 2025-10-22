@@ -329,20 +329,23 @@ Para uma análise mais profunda com IA generativa, tente novamente em alguns min
                     ` : ''}
                 </div>
 
-                <!-- CTA PARA KAPITTY -->
-                <div style="background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 25px; border-radius: 15px; margin: 30px 0; text-align: center;">
-                    <h3 style="margin: 0 0 10px 0;">🚀 CONTINUE SUA JORNADA NO KAPITTY</h3>
-                    <p style="margin: 0 0 15px 0; opacity: 0.9;">+20 exercícios imersivos • Trilha sonora • Labirintos de escolha</p>
-                    
-                    <a href="https://kapitty.fit" 
-                       style="background: white; color: #2d3748; border: none; padding: 15px 30px; font-size: 1.1rem; border-radius: 50px; cursor: pointer; font-weight: bold; transition: all 0.3s; text-decoration: none; display: inline-block;">
-                        🎮 EXPLORAR KAPITTY.FIT
-                    </a>
-                    
-                    <div style="font-size: 0.8rem; margin-top: 15px; opacity: 0.7;">
-                        ✅ Experiência imersiva • Testes especiais • Relatórios avançados
-                    </div>
-                </div>
+<!-- ✅ BOTÃO DE PAGAMENTO PREMIUM -->
+<div class="premium-cta">
+    <h3 style="margin: 0 0 10px 0;">💎 RELATÓRIO PREMIUM MINDKAPPA</h3>
+    <p style="margin: 0 0 15px 0; opacity: 0.9;">Análise profunda com IA • PDF personalizado • Comparações detalhadas</p>
+    
+    <button onclick="buyPremiumReport()" 
+            style="background: white; color: #2d3748; border: none; padding: 15px 30px; font-size: 1.1rem; border-radius: 50px; cursor: pointer; font-weight: bold; transition: all 0.3s; width: 100%; max-width: 300px;">
+        💳 COMPRAR AGORA - R$ 9,90
+    </button>
+    
+    <div class="feature-list">
+        <div class="feature-item">Análise aprofundada dos seus 3 testes</div>
+        <div class="feature-item">PDF para download e compartilhamento</div>
+        <div class="feature-item">Comparação com outros perfis</div>
+        <div class="feature-item">Recomendações personalizadas</div>
+    </div>
+</div>
 
                 <div style="margin-top: 25px; display: flex; gap: 10px; justify-content: center;">
                     <button class="btn" onclick="window.location.href='index.html'" 
@@ -426,6 +429,32 @@ Para uma análise mais profunda com IA generativa, tente novamente em alguns min
         document.getElementById('lgpdModal').style.display = 'none';
         document.body.style.overflow = 'auto';
     }
+
+    async function buyPremiumReport() {
+    try {
+        console.log('🔄 Iniciando pagamento...');
+        
+        const response = await fetch(`${MINDKAPPA_BACKEND}/api/simple-subscription`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        const data = await response.json();
+        
+        if (data.success && data.payment_link) {
+            console.log('✅ Redirecionando para pagamento:', data.payment_link);
+            window.location.href = data.payment_link;
+        } else {
+            throw new Error('Link de pagamento não gerado');
+        }
+        
+    } catch (error) {
+        console.error('❌ Erro no pagamento:', error);
+        alert('⚠️ Sistema de pagamento em manutenção. Tente novamente em alguns minutos.');
+    }
+}
 
     window.addEventListener('load', checkLGPD);
     </script>
