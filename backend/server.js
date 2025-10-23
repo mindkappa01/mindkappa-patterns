@@ -229,52 +229,91 @@ app.post('/api/generate-premium-report', async (req, res) => {
     try {
         const { userData, sessionId } = req.body;
         console.log('💎 Gerando relatório premium para:', userData?.name);
+        
+        // ✅ NOVO: LOG DOS DADOS RECEBIDOS
+        console.log('🔍 Dados recebidos para análise premium:', {
+            temTeste1: !!userData.teste1,
+            temTeste2: !!userData.teste2,
+            temTeste3: !!userData.teste3,
+            coerenciaTeste1: userData.teste1?.coherence,
+            coerenciaTeste2: userData.teste2?.coherence,
+            coerenciaTeste3: userData.teste3?.coherence
+        });
 
         let relatorioPremium, source;
 
+        // ✅ INTERRUPTOR: OPENAI LIGADO/DESLIGADO
         if (OPENAI_ENABLED && openai) {
-            console.log('🔄 Gerando análise premium...');
+            console.log('🔄 Tentando GPT-4 para análise premium...');
             
             try {
                 const completion = await Promise.race([
                     openai.chat.completions.create({
-                        model: "gpt-4", // ✅ GPT-4 para premium
+                        model: "gpt-4", // ✅ PRIMEIRO TENTA GPT-4
                         messages: [{
                             role: "user",
                             content: gerarPromptPremium(userData)
                         }],
-                        max_tokens: 1200, // ✅ Mais detalhes
+                        max_tokens: 1200,
                         temperature: 0.7
                     }),
                     new Promise((_, reject) => 
-                        setTimeout(() => reject(new Error('Timeout')), 30000)
+                        setTimeout(() => reject(new Error('GPT-4 Timeout após 25s')), 25000)
                     )
                 ]);
 
+                console.log('✅ GPT-4 SUCESSO! Relatório premium gerado com IA avançada.');
                 relatorioPremium = completion.choices[0].message.content;
-                source = 'openai_premium';
-                console.log('✅ Relatório premium gerado!');
+                source = 'gpt4_premium';
                 
-            } catch (openaiError) {
-                console.log('🔄 GPT-4 falhou, usando fallback:', openaiError.message);
-                relatorioPremium = gerarFallbackPremium(userData);
-                source = 'fallback_premium';
+            } catch (gpt4Error) {
+                console.log('❌ GPT-4 FALHOU:', gpt4Error.message);
+                console.log('🔄 Tentando GPT-3.5-turbo como fallback...');
+                
+                // ✅ FALLBACK PARA GPT-3.5
+                try {
+                    const completion35 = await openai.chat.completions.create({
+                        model: "gpt-3.5-turbo",
+                        messages: [{
+                            role: "user", 
+                            content: gerarPromptPremium(userData)
+                        }],
+                        max_tokens: 1200,
+                        temperature: 0.7
+                    });
+                    
+                    console.log('✅ GPT-3.5-turbo SUCESSO! Relatório premium gerado.');
+                    relatorioPremium = completion35.choices[0].message.content;
+                    source = 'gpt35_premium';
+                    
+                } catch (gpt35Error) {
+                    console.log('❌ GPT-3.5-turbo TAMBÉM FALHOU:', gpt35Error.message);
+                    console.log('🔄 Usando fallback manual...');
+                    relatorioPremium = gerarFallbackPremium(userData);
+                    source = 'fallback_premium';
+                }
             }
         } else {
+            console.log('📴 OpenAI desligado por configuração, usando fallback manual');
             relatorioPremium = gerarFallbackPremium(userData);
             source = 'fallback_premium';
         }
 
-        // ✅ SALVAR NO BANCO COMO PREMIUM
+        // ✅ LOG DO TIPO DE RELATÓRIO GERADO
+        console.log(`📄 Relatório premium gerado via: ${source}`);
+        console.log(`📏 Tamanho do relatório: ${relatorioPremium?.length} caracteres`);
+
+        // ✅ SALVAR NO BANCO (OPCIONAL)
+        let dbResult;
         try {
-            await pool.query(
+            dbResult = await pool.query(
                 `INSERT INTO mindkappa_premium_reports (session_id, user_name, report_content, generated_at) 
                  VALUES ($1, $2, $3, $4) RETURNING id`,
                 [sessionId, userData?.name, relatorioPremium, new Date().toISOString()]
             );
-            console.log('💾 Relatório premium salvo no BD');
+            console.log('💾 Relatório premium salvo no BD:', dbResult.rows[0].id);
         } catch (dbError) {
-            console.log('📝 Relatório premium não salvo:', dbError.message);
+            console.log('📝 Relatório premium não salvo no BD:', dbError.message);
         }
 
         res.json({ 
@@ -285,7 +324,7 @@ app.post('/api/generate-premium-report', async (req, res) => {
         });
 
     } catch (error) {
-        console.error('❌ Erro no relatório premium:', error);
+        console.error('❌ Erro crítico no relatório premium:', error);
         res.status(500).json({
             success: false,
             error: 'Erro ao gerar relatório premium'
