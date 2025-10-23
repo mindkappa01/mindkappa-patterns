@@ -224,6 +224,75 @@ app.post('/api/update-user-coherence', async (req, res) => {
     }
 });
 
+// ✅ RELATÓRIO PREMIUM - ÉTICO E AVANÇADO
+app.post('/api/generate-premium-report', async (req, res) => {
+    try {
+        const { userData, sessionId } = req.body;
+        console.log('💎 Gerando relatório premium para:', userData?.name);
+
+        let relatorioPremium, source;
+
+        if (OPENAI_ENABLED && openai) {
+            console.log('🔄 Gerando análise premium...');
+            
+            try {
+                const completion = await Promise.race([
+                    openai.chat.completions.create({
+                        model: "gpt-4", // ✅ GPT-4 para premium
+                        messages: [{
+                            role: "user",
+                            content: gerarPromptPremium(userData)
+                        }],
+                        max_tokens: 1200, // ✅ Mais detalhes
+                        temperature: 0.7
+                    }),
+                    new Promise((_, reject) => 
+                        setTimeout(() => reject(new Error('Timeout')), 30000)
+                    )
+                ]);
+
+                relatorioPremium = completion.choices[0].message.content;
+                source = 'openai_premium';
+                console.log('✅ Relatório premium gerado!');
+                
+            } catch (openaiError) {
+                console.log('🔄 GPT-4 falhou, usando fallback:', openaiError.message);
+                relatorioPremium = gerarFallbackPremium(userData);
+                source = 'fallback_premium';
+            }
+        } else {
+            relatorioPremium = gerarFallbackPremium(userData);
+            source = 'fallback_premium';
+        }
+
+        // ✅ SALVAR NO BANCO COMO PREMIUM
+        try {
+            await pool.query(
+                `INSERT INTO mindkappa_premium_reports (session_id, user_name, report_content, generated_at) 
+                 VALUES ($1, $2, $3, $4) RETURNING id`,
+                [sessionId, userData?.name, relatorioPremium, new Date().toISOString()]
+            );
+            console.log('💾 Relatório premium salvo no BD');
+        } catch (dbError) {
+            console.log('📝 Relatório premium não salvo:', dbError.message);
+        }
+
+        res.json({ 
+            success: true,
+            relatorio: relatorioPremium,
+            source: source,
+            tipo: 'premium'
+        });
+
+    } catch (error) {
+        console.error('❌ Erro no relatório premium:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Erro ao gerar relatório premium'
+        });
+    }
+});
+
 function gerarPromptGratuito(userData) {
     // ✅ EXTRAIR DADOS REAIS DOS TESTES
     const t1 = userData.teste1;
@@ -509,6 +578,86 @@ app.post('/api/simple-subscription', async (req, res) => {
         expiration: 1800 // 30 minutos em segundos
       }
     };
+
+    function gerarPromptPremium(userData) {
+    const t1 = userData.teste1;
+    const t2 = userData.teste2;
+    const t3 = userData.teste3;
+
+    const nome = userData.name || 'Explorador';
+    
+    const azuis1 = t1?.statistics?.blueCount || 0;
+    const vermelhos1 = t1?.statistics?.redCount || 0;
+    const azuis2 = t2?.statistics?.blueCount || 0;
+    const vermelhos2 = t2?.statistics?.redCount || 0;
+    const azuis3 = t3?.statistics?.blueCount || 0;
+    const vermelhos3 = t3?.statistics?.redCount || 0;
+
+    return `
+CRIE UM RELATÓRIO PREMIUM DE AUTOCONHECIMENTO BASEADO NESTES DADOS:
+
+DADOS ANALISADOS:
+• TESTE 1 (Instinto): ${azuis1} azuis, ${vermelhos1} vermelhos
+• TESTE 2 (Equilíbrio): ${azuis2} azuis, ${vermelhos2} vermelhos  
+• TESTE 3 (Pressão): ${azuis3} azuis, ${vermelhos3} vermelhos
+
+INSTRUÇÕES OBRIGATÓRIAS:
+
+1. FOCO EM AUTOCONHECIMENTO, NÃO DIAGNÓSTICO
+2. LINGUAGEM: Científica mas acessível, motivadora
+3. ESTRUTURA:
+
+🧠 SEU MAPA DECISIONAL AVANÇADO
+${nome} - Análise Profunda de Padrões
+
+📊 SEUS RESULTADOS EM 3 DIMENSÕES:
+[Apresentar dados dos 3 testes com insights]
+
+🔍 PADRÕES E TENDÊNCIAS IDENTIFICADAS:
+[Analisar mudanças, consistências, evolução]
+
+🌟 SEU ESTILO DECISIONAL ÚNICO:
+[Perfil baseado em padrões observados]
+
+💡 ESTRATÉGIAS PARA OTIMIZAÇÃO PESSOAL:
+[Sugestões práticas baseadas nos padrões]
+
+📈 CONTEXTO COMPARATIVO EDUCACIONAL:
+[Perspectiva sobre os padrões encontrados]
+
+---
+
+🛡️ IMPORTANTE: 
+• Use termos como "padrões observados", "tendências identificadas"
+• Evite "diagnóstico", "condição", "problema" 
+• Destaque que é análise comportamental educacional
+• Inclua disclaimer sobre não ser avaliação médica
+
+NOME: ${nome}
+LINGUAGEM: Português brasileiro
+TAMANHO: Detalhado mas claro
+`;
+}
+
+function gerarFallbackPremium(userData) {
+    const t1 = userData.teste1;
+    const t2 = userData.teste2;
+    const t3 = userData.teste3;
+
+    const nome = userData.name || 'Explorador';
+    
+    return `🧠 RELATÓRIO PREMIUM MINDKAPPA - ${nome}
+
+📊 ANÁLISE AVANÇADA DOS SEUS PADRÕES DECISIONAIS
+
+Seus dados revelam padrões fascinantes de comportamento decisional em diferentes contextos. Esta análise aprofundada oferece insights valiosos para seu autoconhecimento e desenvolvimento pessoal.
+
+💡 LEMBRETE: Este é um relatório educacional de autoconhecimento. Não substitui avaliação profissional.
+
+Entre em contato para receber a versão completa com GPT-4.
+
+MindKappa - Tecnologia para Autoconhecimento 🧠`;
+}
 
     const response = await mercadopago.preferences.create(preference);
     
