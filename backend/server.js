@@ -244,60 +244,34 @@ app.post('/api/generate-premium-report', async (req, res) => {
 
         // ✅ INTERRUPTOR: OPENAI LIGADO/DESLIGADO
         if (OPENAI_ENABLED && openai) {
-            console.log('🔄 Tentando GPT-4 para análise premium...');
+            console.log('🔄 Gerando análise premium com GPT-3.5-turbo...');
             
             try {
                 const completion = await Promise.race([
                     openai.chat.completions.create({
-                        model: "gpt-4", // ✅ PRIMEIRO TENTA GPT-4
+                        model: "gpt-3.5-turbo", // ✅ FOCO NO QUE FUNCIONA
                         messages: [{
                             role: "user",
                             content: gerarPromptPremium(userData)
                         }],
-                        max_tokens: 1200,
-                        temperature: 0.7
+                        max_tokens: 1500, // ✅ AUMENTEI PARA MAIS DETALHES
+                        temperature: 0.8 // ✅ MAIS CRIATIVIDADE
                     }),
                     new Promise((_, reject) => 
-                        setTimeout(() => reject(new Error('GPT-4 Timeout após 25s')), 25000)
+                        setTimeout(() => reject(new Error('Timeout após 30s')), 30000)
                     )
                 ]);
 
-                console.log('✅ GPT-4 SUCESSO! Relatório premium gerado com IA avançada.');
+                console.log('✅ GPT-3.5-turbo SUCESSO! Relatório premium gerado.');
                 relatorioPremium = completion.choices[0].message.content;
-                source = 'gpt4_premium';
+                source = 'gpt35_premium';
                 
-            } catch (gpt4Error) {
-                console.log('❌ GPT-4 FALHOU:', gpt4Error.message);
-                console.log('🔄 Tentando GPT-3.5-turbo como fallback...');
-                
-                // ✅ FALLBACK PARA GPT-3.5
-                try {
-                    const completion35 = await openai.chat.completions.create({
-                        model: "gpt-3.5-turbo",
-                        messages: [{
-                            role: "user", 
-                            content: gerarPromptPremium(userData)
-                        }],
-                        max_tokens: 1200,
-                        temperature: 0.7
-                    });
-                    
-                    console.log('✅ GPT-3.5-turbo SUCESSO! Relatório premium gerado.');
-                    relatorioPremium = completion35.choices[0].message.content;
-                    source = 'gpt35_premium';
-                    
-                } catch (gpt35Error) {
-                    console.log('❌ GPT-3.5-turbo TAMBÉM FALHOU:', gpt35Error.message);
-                    console.log('🔄 Usando fallback manual...');
-                    relatorioPremium = gerarFallbackPremium(userData);
-                    source = 'fallback_premium';
-                }
+            } catch (error) {
+                console.log('❌ GPT-3.5 falhou:', error.message);
+                relatorioPremium = gerarFallbackPremium(userData);
+                source = 'fallback_premium';
             }
-        } else {
-            console.log('📴 OpenAI desligado por configuração, usando fallback manual');
-            relatorioPremium = gerarFallbackPremium(userData);
-            source = 'fallback_premium';
-        }
+        }        
 
         // ✅ LOG DO TIPO DE RELATÓRIO GERADO
         console.log(`📄 Relatório premium gerado via: ${source}`);
