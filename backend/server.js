@@ -655,49 +655,48 @@ function gerarPromptPremium(userData) {
     const azuis3 = t3?.statistics?.blueCount || 0;
     const vermelhos3 = t3?.statistics?.redCount || 0;
 
+    const k1 = t1?.coherence?.kappa || 0;
+    const k2 = t2?.coherence?.kappa || 0;
+    const k3 = t3?.coherence?.kappa || 0;
+
     return `
-CRIE UM RELATÓRIO PREMIUM DE AUTOCONHECIMENTO BASEADO NESTES DADOS:
+CRIE UM RELATÓRIO PREMIUM **IMPRESSIOANTE** PARA ESTUDIOSOS DE COMPORTAMENTO:
 
-DADOS ANALISADOS:
-• TESTE 1 (Instinto): ${azuis1} azuis, ${vermelhos1} vermelhos
-• TESTE 2 (Equilíbrio): ${azuis2} azuis, ${vermelhos2} vermelhos  
-• TESTE 3 (Pressão): ${azuis3} azuis, ${vermelhos3} vermelhos
+DADOS COMPLETOS DO USUÁRIO:
+• NOME: ${nome}
+• TESTE 1 (Instinto): ${azuis1} azuis, ${vermelhos1} vermelhos | κ = ${k1.toFixed(3)}
+• TESTE 2 (Equilíbrio): ${azuis2} azuis, ${vermelhos2} vermelhos | κ = ${k2.toFixed(3)}  
+• TESTE 3 (Pressão): ${azuis3} azuis, ${vermelhos3} vermelhos | κ = ${k3.toFixed(3)}
 
-INSTRUÇÕES OBRIGATÓRIAS:
+INSTRUÇÕES PARA RELATÓRIO **IMPRESSIOANTE**:
 
-1. FOCO EM AUTOCONHECIMENTO, NÃO DIAGNÓSTICO
-2. LINGUAGEM: Científica mas acessível, motivadora
-3. ESTRUTURA:
+🧠 ANÁLISE PROFUNDA DO PERFIL COGNITIVO
+[Incluir análise técnica dos padrões κ]
 
-🧠 SEU MAPA DECISIONAL AVANÇADO
-${nome} - Análise Profunda de Padrões
+📊 MAPA VISUAL DE PADRÕES  
+[Descrever visualmente os 3 testes lado a lado]
 
-📊 SEUS RESULTADOS EM 3 DIMENSÕES:
-[Apresentar dados dos 3 testes com insights]
+🎯 DETECÇÃO DE TENDÊNCIAS COMPORTAMENTAIS
+[Identificar padrões específicos: criatividade vs foco, κ alto vs baixo]
 
-🔍 PADRÕES E TENDÊNCIAS IDENTIFICADAS:
-[Analisar mudanças, consistências, evolução]
+💡 EXERCÍCIOS COMPORTAMENTAIS PERSONALIZADOS
+[Criar 3-4 exercícios baseados nos padrões detectados]
 
-🌟 SEU ESTILO DECISIONAL ÚNICO:
-[Perfil baseado em padrões observados]
+🔬 BENCHMARK CIENTÍFICO
+[Comparar com bases de pesquisa em tomada de decisão]
 
-💡 ESTRATÉGIAS PARA OTIMIZAÇÃO PESSOAL:
-[Sugestões práticas baseadas nos padrões]
+📈 ESTRATÉGIAS DE OTIMIZAÇÃO COGNITIVA
+[Baseado em κ alto/baixo para diferentes contexts]
 
-📈 CONTEXTO COMPARATIVO EDUCACIONAL:
-[Perspectiva sobre os padrões encontrados]
+ESTRUTURA OBRIGATÓTIA:
+1. Análise Técnica Profunda
+2. Padrões Detectados com Dados
+3. Exercícios Práticos Personalizados  
+4. Contexto Científico
+5. Estratégias de Alto Impacto
 
----
-
-🛡️ IMPORTANTE: 
-• Use termos como "padrões observados", "tendências identificadas"
-• Evite "diagnóstico", "condição", "problema" 
-• Destaque que é análise comportamental educacional
-• Inclua disclaimer sobre não ser avaliação médica
-
-NOME: ${nome}
-LINGUAGEM: Português brasileiro
-TAMANHO: Detalhado mas claro
+NÍVEL: Estudosos de comportamento - linguagem técnica mas acessível
+TAMANHO: Extremamente detalhado (máximo de tokens)
 `;
 }
 
