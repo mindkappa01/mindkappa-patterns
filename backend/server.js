@@ -579,7 +579,30 @@ app.post('/api/simple-subscription', async (req, res) => {
       }
     };
 
-    function gerarPromptPremium(userData) {
+
+       const response = await mercadopago.preferences.create(preference);
+    
+    console.log('✅ Pagamento PIX criado:', response.body.id);
+    
+    res.json({
+      success: true,
+      payment_link: response.body.init_point,
+      fallback: false,
+      // ✅ NOVO: DADOS PIX ESPECÍFICOS
+      pix_data: response.body.pix || null
+    });
+
+  } catch (error) {
+    console.error('❌ Erro Mercado Pago:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Erro ao criar pagamento',
+      fallback: true
+    });
+  }
+});
+
+function gerarPromptPremium(userData) {
     const t1 = userData.teste1;
     const t2 = userData.teste2;
     const t3 = userData.teste3;
@@ -639,6 +662,7 @@ TAMANHO: Detalhado mas claro
 `;
 }
 
+// ✅ FUNÇÃO FALLBACK PREMIUM
 function gerarFallbackPremium(userData) {
     const t1 = userData.teste1;
     const t2 = userData.teste2;
@@ -646,40 +670,36 @@ function gerarFallbackPremium(userData) {
 
     const nome = userData.name || 'Explorador';
     
+    const azuis1 = t1?.statistics?.blueCount || 0;
+    const vermelhos1 = t1?.statistics?.redCount || 0;
+    const azuis2 = t2?.statistics?.blueCount || 0;
+    const vermelhos2 = t2?.statistics?.redCount || 0;
+    const azuis3 = t3?.statistics?.blueCount || 0;
+    const vermelhos3 = t3?.statistics?.redCount || 0;
+    
     return `🧠 RELATÓRIO PREMIUM MINDKAPPA - ${nome}
 
 📊 ANÁLISE AVANÇADA DOS SEUS PADRÕES DECISIONAIS
 
-Seus dados revelam padrões fascinantes de comportamento decisional em diferentes contextos. Esta análise aprofundada oferece insights valiosos para seu autoconhecimento e desenvolvimento pessoal.
+Seus dados de ${azuis1 + vermelhos1 + azuis2 + vermelhos2 + azuis3 + vermelhos3} escolhas revelam padrões fascinantes de comportamento decisional em diferentes contextos.
 
-💡 LEMBRETE: Este é um relatório educacional de autoconhecimento. Não substitui avaliação profissional.
+📈 SEUS RESULTADOS:
+• INSTINTO: ${azuis1} azuis, ${vermelhos1} vermelhos
+• EQUILÍBRIO: ${azuis2} azuis, ${vermelhos2} vermelhos
+• PRESSÃO: ${azuis3} azuis, ${vermelhos3} vermelhos
 
-Entre em contato para receber a versão completa com GPT-4.
+💡 PADRÕES IDENTIFICADOS:
+Sua mente mostra características únicas de adaptação e consistência entre os diferentes contextos testados.
+
+🎯 PRÓXIMOS PASSOS:
+Para uma análise completa com IA avançada, tente novamente em alguns minutos.
+
+---
+🛡️ AVISO: Este é um relatório educacional de autoconhecimento.
+Não constitui avaliação psicológica ou médica.
 
 MindKappa - Tecnologia para Autoconhecimento 🧠`;
 }
-
-    const response = await mercadopago.preferences.create(preference);
-    
-    console.log('✅ Pagamento PIX criado:', response.body.id);
-    
-    res.json({
-      success: true,
-      payment_link: response.body.init_point,
-      fallback: false,
-      // ✅ NOVO: DADOS PIX ESPECÍFICOS
-      pix_data: response.body.pix || null
-    });
-
-  } catch (error) {
-    console.error('❌ Erro Mercado Pago:', error);
-    res.status(500).json({
-      success: false,
-      error: 'Erro ao criar pagamento',
-      fallback: true
-    });
-  }
-});
 
 const PORT = process.env.PORT || 3001;
 
