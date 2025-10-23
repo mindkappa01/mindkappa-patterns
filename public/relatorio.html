@@ -508,63 +508,159 @@ Para uma análise mais profunda com IA generativa, tente novamente em alguns min
         `;
     }
 
-    async function downloadPDF() {
-            try {
-                const { jsPDF } = window.jspdf;
-                const doc = new jsPDF();
-                
-                const userName = document.querySelector('.user-header div:first-child').innerText;
-                const reportContent = document.querySelector('.report-content').innerText;
-                
-                // ✅ CAPA PROFISSIONAL
-                doc.setFillColor(30, 64, 175);
-                doc.rect(0, 0, 210, 297, 'F');
-                doc.setTextColor(255, 255, 255);
-                doc.setFontSize(28);
-                doc.text('RELATÓRIO PREMIUM', 105, 80, { align: 'center' });
-                doc.setFontSize(20);
-                doc.text('MINDKAPPA MCD', 105, 100, { align: 'center' });
-                doc.setFontSize(16);
-                doc.text(userName, 105, 120, { align: 'center' });
-                doc.text(new Date().toLocaleDateString(), 105, 135, { align: 'center' });
-                
-                doc.addPage();
-                
-                // ✅ CONTEÚDO FORMATADO
-                doc.setTextColor(0, 0, 0);
-                doc.setFontSize(16);
-                doc.text('ANÁLISE DE PADRÕES DECISIONAIS AVANÇADA', 20, 20);
-                doc.setFontSize(12);
-                
-                const splitText = doc.splitTextToSize(reportContent, 170);
-                doc.text(splitText, 20, 40);
-                
-                // ✅ GRÁFICO VISUAL (SIMULADO)
-                doc.addPage();
-                doc.setFontSize(16);
-                doc.text('VISUALIZAÇÃO DOS PADRÕES κ', 20, 20);
-                
-                // Gráfico simples de barras (precisamos dos valores κ)
-                // Por enquanto, vamos fazer um gráfico genérico
-                doc.setDrawColor(30, 64, 175);
-                doc.setFillColor(30, 64, 175, 0.7);
-                doc.rect(50, 50, 30, 40, 'F'); // Barra 1
-                doc.rect(90, 50, 30, 60, 'F'); // Barra 2  
-                doc.rect(130, 50, 30, 30, 'F'); // Barra 3
-                
-                doc.setTextColor(0, 0, 0);
-                doc.text('Instinto', 50, 100);
-                doc.text('Equilíbrio', 90, 100);
-                doc.text('Pressão', 130, 100);
-                
-                // ✅ DOWNLOAD
-                doc.save(`Relatorio_Premium_MindKappa_${userName.replace(/\s+/g, '_')}.pdf`);
-                
-            } catch (error) {
-                console.error('❌ Erro PDF:', error);
-                alert('📄 PDF em desenvolvimento avançado. Use a versão web por enquanto.');
-            }
-        }
+    // ✅ FUNÇÃO PDF PROFISSIONAL E ACESSÍVEL
+async function downloadPDF() {
+    try {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        
+        // ✅ DADOS DO USUÁRIO (precisamos acessar os dados κ reais)
+        const userData = JSON.parse(localStorage.getItem('mindkappa_user'));
+        const userName = userData?.name || 'Explorador';
+        const t1 = userData.teste1;
+        const t2 = userData.teste2;
+        const t3 = userData.teste3;
+        
+        const k1 = t1?.coherence?.kappa || 0;
+        const k2 = t2?.coherence?.kappa || 0;
+        const k3 = t3?.coherence?.kappa || 0;
+        
+        const azuis1 = t1?.statistics?.blueCount || 0;
+        const vermelhos1 = t1?.statistics?.redCount || 0;
+        const azuis2 = t2?.statistics?.blueCount || 0;
+        const vermelhos2 = t2?.statistics?.redCount || 0;
+        const azuis3 = t3?.statistics?.blueCount || 0;
+        const vermelhos3 = t3?.statistics?.redCount || 0;
+
+        // ✅ CAPA PROFISSIONAL
+        doc.setFillColor(30, 64, 175); // Azul MindKappa
+        doc.rect(0, 0, 210, 297, 'F');
+        
+        doc.setTextColor(255, 255, 255);
+        doc.setFontSize(32);
+        doc.text('🧠', 105, 60, { align: 'center' });
+        doc.setFontSize(24);
+        doc.text('RELATÓRIO PREMIUM', 105, 80, { align: 'center' });
+        doc.setFontSize(18);
+        doc.text('MindKappa MCD', 105, 100, { align: 'center' });
+        doc.setFontSize(16);
+        doc.text(userName, 105, 120, { align: 'center' });
+        doc.setFontSize(12);
+        doc.text('Análise Avançada de Padrões Decisiónais', 105, 135, { align: 'center' });
+        doc.text(`Gerado em: ${new Date().toLocaleDateString()}`, 105, 150, { align: 'center' });
+
+        // ✅ PÁGINA 1 - RESUMO EXECUTIVO
+        doc.addPage();
+        doc.setTextColor(0, 0, 0);
+        
+        // Título
+        doc.setFontSize(20);
+        doc.setTextColor(30, 64, 175);
+        doc.text('📊 SEU MAPA DECISIONAL COMPLETO', 20, 30);
+        doc.setDrawColor(30, 64, 175);
+        doc.line(20, 35, 190, 35);
+        
+        // Introdução amigável
+        doc.setFontSize(12);
+        doc.setTextColor(0, 0, 0);
+        const introText = `
+Olá, ${userName}!
+
+Este relatório premium revela insights profundos sobre seus padrões únicos de tomada de decisão, baseado em 45 escolhas analisadas pelo algoritmo MCD.
+
+Abaixo você encontra sua análise completa com gráficos, exercícios personalizados e estratégias baseadas em seus dados exclusivos.
+        `;
+        doc.text(doc.splitTextToSize(introText, 170), 20, 50);
+
+        // ✅ PÁGINA 2 - DADOS VISUAIS
+        doc.addPage();
+        
+        // Título
+        doc.setFontSize(18);
+        doc.setTextColor(30, 64, 175);
+        doc.text('🎯 SEUS RESULTADOS EM 3 DIMENSÕES', 20, 30);
+        doc.line(20, 35, 190, 35);
+        
+        doc.setFontSize(12);
+        doc.setTextColor(0, 0, 0);
+        
+        // Teste 1
+        doc.text(`⚡ INSTINTO PURO:`, 20, 50);
+        doc.text(`${azuis1} azuis | ${vermelhos1} vermelhos`, 40, 60);
+        doc.text(`Coerência: ${k1.toFixed(3)} (${t1?.coherence?.level || 'N/A'})`, 40, 70);
+        
+        // Teste 2
+        doc.text(`⚖️ EQUILÍBRIO MENTAL:`, 20, 90);
+        doc.text(`${azuis2} azuis | ${vermelhos2} vermelhos`, 40, 100);
+        doc.text(`Coerência: ${k2.toFixed(3)} (${t2?.coherence?.level || 'N/A'})`, 40, 110);
+        
+        // Teste 3
+        doc.text(`⏰ PRESSÃO TEMPORAL:`, 20, 130);
+        doc.text(`${azuis3} azuis | ${vermelhos3} vermelhos`, 40, 140);
+        doc.text(`Coerência: ${k3.toFixed(3)} (${t3?.coherence?.level || 'N/A'})`, 40, 150);
+
+        // Gráfico simples de κ
+        doc.setFontSize(14);
+        doc.text('📈 SEU PERFIL DE COERÊNCIA κ', 20, 170);
+        
+        const maxK = Math.max(k1, k2, k3);
+        const barHeight = 20;
+        
+        // Gráfico de barras
+        doc.setFillColor(99, 179, 237); // Azul claro
+        doc.rect(40, 180, (k1/maxK) * 100, barHeight, 'F');
+        doc.rect(40, 210, (k2/maxK) * 100, barHeight, 'F');
+        doc.rect(40, 240, (k3/maxK) * 100, barHeight, 'F');
+        
+        doc.setTextColor(0, 0, 0);
+        doc.text('Instinto', 150, 190);
+        doc.text('Equilíbrio', 150, 220);
+        doc.text('Pressão', 150, 250);
+
+        // ✅ PÁGINA 3 - EXERCÍCIOS PERSONALIZADOS
+        doc.addPage();
+        
+        doc.setFontSize(18);
+        doc.setTextColor(30, 64, 175);
+        doc.text('💡 EXERCÍCIOS PARA SEU CÉREBRO ÚNICO', 20, 30);
+        doc.line(20, 35, 190, 35);
+        
+        doc.setFontSize(11);
+        doc.setTextColor(0, 0, 0);
+        
+        const exercicios = [
+            '🎯 EXERCÍCIO 1: OBSERVAÇÃO CONSCIENTE\nPratique notar como você toma decisões no dia a dia. Antes de escolher, pause 5 segundos e observe seu processo mental.',
+            
+            '🔄 EXERCÍCIO 2: FLEXIBILIDADE COGNITIVA\nTente resolver problemas de pelo menos 3 maneiras diferentes. Isso expande sua capacidade adaptativa.',
+            
+            '⚡ EXERCÍCIO 3: INTUIÇÃO vs RAZÃO\nEm decisões simples, siga sua primeira intuição. Em decisões complexas, faça uma lista de prós e contras.',
+            
+            '🎪 EXERCÍCIO 4: MUDANÇA DE PERSPECTIVA\nImagine como outras pessoas resolveriam seus desafios. Isso ativa padrões mentais diferentes.'
+        ];
+        
+        let yPos = 50;
+        exercicios.forEach(exercicio => {
+            const lines = doc.splitTextToSize(exercicio, 170);
+            doc.text(lines, 20, yPos);
+            yPos += lines.length * 7 + 10;
+        });
+
+        // ✅ DISCLAIMER FINAL
+        doc.setFontSize(10);
+        doc.setTextColor(100, 100, 100);
+        const disclaimer = '💡 Este relatório é uma ferramenta de autoconhecimento. Não substitui avaliação profissional. MindKappa - Tecnologia para Autoconhecimento 🧠';
+        doc.text(doc.splitTextToSize(disclaimer, 170), 20, 270);
+
+        // ✅ DOWNLOAD
+        doc.save(`Relatorio_Premium_MindKappa_${userName.replace(/\s+/g, '_')}.pdf`);
+        
+        console.log('✅ PDF premium gerado com sucesso!');
+        
+    } catch (error) {
+        console.error('❌ Erro ao gerar PDF:', error);
+        alert('📄 Erro ao gerar PDF. Tente novamente ou use a versão web.');
+    }
+}
 
         window.addEventListener('load', initializeReport);
     </script>
