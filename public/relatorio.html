@@ -90,10 +90,10 @@
           <div class="premium-cta">
             <h3 style="margin:0 0 10px 0;">🚀 DESBLOQUEIE SUA ANÁLISE COMPLETA</h3>
             <p style="margin:0 0 15px 0; opacity:.9;">Relatório Premium com IA Generativa + PDF para download imediato</p>
-            <button onclick="startPremiumFlow()"
-              style="background: linear-gradient(135deg, #10b981, #059669); color:#fff; border:none; padding:18px 40px; font-size:1.1rem; border-radius:50px; cursor:pointer; font-weight:700; transition: all .3s; width:100%; max-width:320px; box-shadow:0 8px 25px rgba(16,185,129,.3);">
-              💎 Pagar e Gerar Relatório Premium
-            </button>
+            <button onclick="buyPremiumReport()"
+  style="background: linear-gradient(135deg, #10b981, #059669); color:#fff; border:none; padding:18px 40px; font-size:1.1rem; border-radius:50px; cursor:pointer; font-weight:700; transition: all .3s; width:100%; max-width:320px; box-shadow:0 8px 25px rgba(16,185,129,.3);">
+  💎 Pagar e Gerar Relatório Premium
+</button>
             <div class="feature-list">
               <div class="feature-item">Análise aprofundada dos seus 3 testes</div>
               <div class="feature-item">PDF para download e compartilhamento</div>
@@ -459,6 +459,26 @@ ${analysis.teste3.kappa ? `⏰ PRESSÃO: κ ${analysis.teste3.kappa} (${analysis
 
     window.addEventListener('load', () => { checkLGPD(); initializeReport(); });
   </script>
+
+  <script>
+async function buyPremiumReport() {
+  try {
+    const res = await fetch(`${API_URL}/api/simple-subscription`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' }
+    });
+    const data = await res.json();
+    if (data.success && data.payment_link) {
+      window.location.href = data.payment_link;
+    } else {
+      throw new Error('Link de pagamento não gerado');
+    }
+  } catch (err) {
+    console.error('Pagamento erro:', err);
+    alert('⚠️ Pagamento indisponível no momento. Tente novamente.');
+  }
+}
+</script>
 
   <!-- LGPD Modal -->
   <div id="lgpdModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.45); z-index:10000; justify-content:center; align-items:center; font-family:Arial,sans-serif;">

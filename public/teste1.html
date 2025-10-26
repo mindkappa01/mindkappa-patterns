@@ -61,7 +61,7 @@
     const TEST_CONFIG = { totalDecisions: 15, decisionDelay: 100, minReactionTime: 50 };
     const API_URL = (window.env && window.env.API_URL) ||
                     (typeof importMeta !== 'undefined' && importMeta.env && importMeta.env.VITE_API_URL) ||
-                    'http://localhost:3000';
+                    'window.location.origin';
 
     // ========= Estado =========
     let testState = {
