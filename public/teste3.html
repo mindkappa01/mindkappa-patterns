@@ -1,540 +1,404 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Teste 3 - Pressão Temporal | MindKappa</title>
-    <link rel="stylesheet" href="assets/style.css">
-    <style>
-        .test-container { text-align: center; padding: 20px; }
-        .progress-info { margin-bottom: 30px; color: #4a5568; }
-        .progress-bar-container { width: 100%; height: 8px; background: #e2e8f0; border-radius: 10px; margin: 20px 0; overflow: hidden; }
-        .progress-fill { height: 100%; background: linear-gradient(45deg, #63b3ed, #4299e1); border-radius: 10px; transition: width 0.3s ease; }
-        .buttons-container { display: flex; gap: 20px; justify-content: center; margin: 40px 0; flex-wrap: wrap; }
-        .choice-btn { width: 150px; height: 150px; border: none; border-radius: 20px; font-size: 1.2rem; font-weight: bold; cursor: pointer; transition: all 0.2s ease; box-shadow: 0 8px 20px rgba(0,0,0,0.15); }
-        .choice-btn:active { transform: scale(0.95); }
-        .choice-btn:disabled { opacity: 0.6; cursor: not-allowed; }
-        .btn-azul { background: linear-gradient(135deg, #63b3ed, #4299e1); color: white; }
-        .btn-vermelho { background: linear-gradient(135deg, #fc8181, #f56565); color: white; }
-        .decision-count { font-size: 1.1rem; color: #718096; margin-bottom: 10px; }
-        .completion-message { font-size: 1.3rem; color: #2d3748; margin: 30px 0; }
-        
-        /* Timer Styles */
-        .timer-container { margin: 30px 0; }
-        .timer-circle { 
-            width: 100px; 
-            height: 100px; 
-            border-radius: 50%; 
-            background: conic-gradient(#48bb78 0deg, #e2e8f0 0deg); 
-            margin: 0 auto 15px; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            font-size: 1.5rem; 
-            font-weight: bold; 
-            color: #2d3748; 
-            transition: background 0.1s linear; 
-        }
-        .timer-text { font-size: 1.1rem; color: #4a5568; margin-bottom: 5px; }
-        .time-limit { font-size: 0.9rem; color: #718096; }
-        
-        /* Timeout State */
-        .timeout-message { 
-            color: #e53e3e; 
-            font-weight: bold; 
-            margin: 10px 0; 
-            font-size: 1.1rem; 
-        }
-        
-        .pressure-preview {
-            background: rgba(237, 137, 54, 0.1);
-            padding: 15px;
-            border-radius: 10px;
-            margin: 20px 0;
-            border-left: 4px solid #ed8936;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Teste 3 - Pressão Temporal | MindKappa</title>
+  <link rel="stylesheet" href="assets/style.css" />
+  <style>
+    .test-container { text-align: center; padding: 20px; }
+    .progress-info { margin-bottom: 30px; color: #4a5568; }
+    .progress-bar-container { width: 100%; height: 8px; background: #e2e8f0; border-radius: 10px; margin: 20px 0; overflow: hidden; }
+    .progress-fill { height: 100%; background: linear-gradient(45deg, #63b3ed, #4299e1); border-radius: 10px; transition: width .3s ease; width:0%; }
+    .buttons-container { display: flex; gap: 20px; justify-content: center; margin: 40px 0; flex-wrap: wrap; }
+    .choice-btn { width: 150px; height: 150px; border: none; border-radius: 20px; font-size: 1.2rem; font-weight: bold; cursor: pointer; transition: all .2s ease; box-shadow: 0 8px 20px rgba(0,0,0,.15); }
+    .choice-btn:active { transform: scale(0.95); }
+    .choice-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+    .btn-azul { background: linear-gradient(135deg, #63b3ed, #4299e1); color: #fff; }
+    .btn-vermelho { background: linear-gradient(135deg, #fc8181, #f56565); color: #fff; }
+    .decision-count { font-size: 1.1rem; color: #718096; margin-bottom: 10px; }
+    .completion-message { font-size: 1.3rem; color: #2d3748; margin: 30px 0; }
+
+    /* Timer */
+    .timer-container { margin: 30px 0; }
+    .timer-circle {
+      width: 110px; height: 110px; border-radius: 50%;
+      background: conic-gradient(#48bb78 360deg, #e2e8f0 0deg);
+      margin: 0 auto 15px; display:flex; align-items:center; justify-content:center;
+      font-size: 1.6rem; font-weight: bold; color: #2d3748; transition: background .1s linear;
+    }
+    .timer-text { font-size: 1.05rem; color: #4a5568; margin-bottom: 5px; }
+    .time-limit { font-size: 0.9rem; color: #718096; }
+
+    .timeout-message { color: #e53e3e; font-weight: bold; margin: 10px 0; font-size: 1.1rem; }
+
+    .pressure-preview {
+      background: rgba(237,137,54,.1);
+      padding: 15px; border-radius: 10px; margin: 20px 0;
+      border-left: 4px solid #ed8936;
+    }
+    .btn-next {
+      background: #111827; color: #fff; border: none; padding: 14px 20px; border-radius: 10px;
+      cursor: pointer; font-weight: 700; box-shadow: 0 8px 20px rgba(0,0,0,.15);
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <div class="card">
-            <div class="test-container">
-                <div class="logo">⏰</div>
-                <div class="title">Pressão Temporal</div>
-                <div class="subtitle">Decisões com tempo limitado - o desafio aumenta gradualmente</div>
-                
-                <div class="progress-info">
-                    <div class="decision-count">Decisão: <span id="currentDecision">1</span>/15</div>
-                    <div class="progress-bar-container">
-                        <div class="progress-fill" id="progressFill" style="width: 6.66%"></div>
-                    </div>
-                </div>
+  <div class="container">
+    <div class="card">
+      <header style="text-align:center; padding: 20px 0 0 0;">
+        <div style="font-size: 2rem;">🧠</div>
+        <div style="font-size: 1.5rem; font-weight: 700; color: #1e40af;">MindKappa</div>
+        <div style="color: #6b7280; font-size: .9rem; margin-top: 5px;">Análise de Padrões Decisorais</div>
+      </header>
 
-                <!-- Timer Display -->
-                <div class="timer-container">
-                    <div class="timer-text">Tempo Restante:</div>
-                    <div class="timer-circle" id="timerCircle">
-                        <span id="timerValue">3.0</span>s
-                    </div>
-                    <div class="time-limit">Tempo limite: <span id="timeLimit">3.0</span>s</div>
-                </div>
+      <div class="test-container">
+        <div class="logo">⏰</div>
+        <div class="title">Pressão Temporal</div>
+        <div class="subtitle">Decisões com tempo limitado — o desafio aumenta gradualmente</div>
 
-                <div id="contentArea">
-                    <div class="buttons-container" id="buttonsContainer">
-                        <!-- Botões inseridos pelo JavaScript -->
-                    </div>
-                    
-                    <div style="color: #718096; font-size: 0.9rem; margin-top: 30px;">
-                        O tempo diminui gradualmente - confie no seu instinto
-                    </div>
-                </div>
-            </div>
+        <div class="progress-info">
+          <div class="decision-count">Decisão: <span id="currentDecision">0</span>/15</div>
+          <div class="progress-bar-container">
+            <div class="progress-fill" id="progressFill"></div>
+          </div>
         </div>
-    </div>
 
-    <script>
-        // =============================================
-        // ✅ CONFIGURAÇÕES OTIMIZADAS
-        // =============================================
-        const TEST_CONFIG = {
-            totalDecisions: 15,
-            timeProgression: [3000, 2800, 2600, 2400, 2200, 2000, 1800, 1600, 1400, 1200, 1000, 900, 800, 700, 600],
-            decisionDelay: 200,
-            minReactionTime: 50
-        };
-
-        // =============================================
-        // ✅ ESTADO DO TESTE
-        // =============================================
-        let testState = {
-            currentDecision: 0,
-            decisions: [],
-            startTime: null,
-            currentTimeLimit: 3000,
-            timerInterval: null,
-            timeRemaining: 3000,
-            timeouts: 0,
-            sessionId: null
-        };
-
-        const elements = {
-            buttonsContainer: document.getElementById('buttonsContainer'),
-            currentDecision: document.getElementById('currentDecision'),
-            progressFill: document.getElementById('progressFill'),
-            contentArea: document.getElementById('contentArea'),
-            timerCircle: document.getElementById('timerCircle'),
-            timerValue: document.getElementById('timerValue'),
-            timeLimit: document.getElementById('timeLimit')
-        };
-
-        // =============================================
-        // ✅ INICIALIZAÇÃO
-        // =============================================
-        function initializeTest() {
-            console.log('🧠 Iniciando Teste 3 - Pressão Temporal');
-            
-            let sessionId = localStorage.getItem('mindkappa_session');
-            if (!sessionId) {
-                sessionId = 'mk-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
-                localStorage.setItem('mindkappa_session', sessionId);
-            }
-            testState.sessionId = sessionId;
-            
-            showNextDecision();
-        }
-
-        // =============================================
-        // ✅ LÓGICA PRINCIPAL
-        // =============================================
-        function showNextDecision() {
-            testState.currentDecision++;
-            
-            if (testState.currentDecision > TEST_CONFIG.totalDecisions) {
-                completeTest();
-                return;
-            }
-
-            updateProgressUI();
-            updateTimeLimit();
-            renderDecisionButtons();
-            startTimer();
-        }
-
-        function updateProgressUI() {
-            if (elements.currentDecision) {
-                elements.currentDecision.textContent = testState.currentDecision;
-                const progressPercent = (testState.currentDecision / TEST_CONFIG.totalDecisions) * 100;
-                elements.progressFill.style.width = `${progressPercent}%`;
-            }
-        }
-
-        function updateTimeLimit() {
-            const progressionIndex = Math.min(testState.currentDecision - 1, TEST_CONFIG.timeProgression.length - 1);
-            testState.currentTimeLimit = TEST_CONFIG.timeProgression[progressionIndex];
-            testState.timeRemaining = testState.currentTimeLimit;
-            
-            if (elements.timeLimit) {
-                elements.timeLimit.textContent = (testState.currentTimeLimit / 1000).toFixed(1);
-            }
-        }
-
-        function renderDecisionButtons() {
-            const positions = getRandomizedPositions();
-            
-            if (elements.buttonsContainer) {
-                elements.buttonsContainer.innerHTML = `
-                    <button class="choice-btn btn-azul" onclick="handleDecision('azul', ${positions.azulPosition})">AZUL</button>
-                    <button class="choice-btn btn-vermelho" onclick="handleDecision('vermelho', ${positions.vermelhoPosition})">VERMELHO</button>
-                `;
-
-                elements.buttonsContainer.style.flexDirection = positions.direction;
-            }
-        }
-
-        function getRandomizedPositions() {
-            const useNormalLayout = Math.random() > 0.5;
-            const azulFirst = Math.random() > 0.5;
-            
-            if (useNormalLayout) {
-                return {
-                    direction: 'row',
-                    azulPosition: azulFirst ? 0 : 1,
-                    vermelhoPosition: azulFirst ? 1 : 0
-                };
-            } else {
-                return {
-                    direction: 'row-reverse',
-                    azulPosition: azulFirst ? 1 : 0,
-                    vermelhoPosition: azulFirst ? 0 : 1
-                };
-            }
-        }
-
-        // =============================================
-        // ✅ TIMER
-        // =============================================
-        function startTimer() {
-            testState.startTime = Date.now();
-            clearInterval(testState.timerInterval);
-            
-            testState.timerInterval = setInterval(() => {
-                testState.timeRemaining -= 100;
-                
-                if (testState.timeRemaining <= 0) {
-                    handleTimeout();
-                    return;
-                }
-                
-                updateTimerDisplay();
-            }, 100);
-        }
-
-        function updateTimerDisplay() {
-            if (elements.timerValue) {
-                const seconds = (testState.timeRemaining / 1000).toFixed(1);
-                elements.timerValue.textContent = seconds;
-                
-                const progress = (testState.timeRemaining / testState.currentTimeLimit) * 360;
-                const color = getTimerColor(progress);
-                elements.timerCircle.style.background = `conic-gradient(${color} ${progress}deg, #e2e8f0 ${progress}deg)`;
-            }
-        }
-
-        function getTimerColor(progress) {
-            const percentage = progress / 360;
-            if (percentage > 0.6) return "#48bb78";
-            if (percentage > 0.3) return "#ed8936";
-            return "#e53e3e";
-        }
-
-        function handleTimeout() {
-            clearInterval(testState.timerInterval);
-            testState.timeouts++;
-            
-            testState.decisions.push({
-                choice: 'timeout',
-                timestamp: new Date().toISOString(),
-                reactionTime: testState.currentTimeLimit,
-                decisionNumber: testState.currentDecision,
-                timedOut: true,
-                timeLimit: testState.currentTimeLimit
-            });
-
-            if (elements.contentArea) {
-                elements.contentArea.innerHTML = `
-                    <div class="timeout-message">⏰ Tempo esgotado!</div>
-                    <div class="buttons-container">
-                        <button class="choice-btn btn-azul" disabled>AZUL</button>
-                        <button class="choice-btn btn-vermelho" disabled>VERMELHO</button>
-                    </div>
-                    <div style="color: #718096; font-size: 0.9rem; margin-top: 30px;">
-                        Preparando próxima decisão...
-                    </div>
-                `;
-            }
-
-            setTimeout(() => {
-                showNextDecision();
-            }, TEST_CONFIG.decisionDelay);
-        }
-
-        function stopTimer() {
-            clearInterval(testState.timerInterval);
-        }
-
-        // =============================================
-        // ✅ MANIPULAÇÃO DE DECISÕES
-        // =============================================
-        function handleDecision(choice, buttonPosition) {
-            const reactionTime = Date.now() - testState.startTime;
-            
-            if (reactionTime < TEST_CONFIG.minReactionTime) {
-                return;
-            }
-
-            stopTimer();
-
-            testState.decisions.push({
-                choice: choice,
-                timestamp: new Date().toISOString(),
-                reactionTime: reactionTime,
-                decisionNumber: testState.currentDecision,
-                buttonPosition: buttonPosition,
-                timeLimit: testState.currentTimeLimit,
-                timedOut: false,
-                timeRemaining: testState.timeRemaining
-            });
-
-            if (elements.buttonsContainer) {
-                elements.buttonsContainer.classList.add('loading');
-            }
-            
-            setTimeout(() => {
-                if (elements.buttonsContainer) {
-                    elements.buttonsContainer.classList.remove('loading');
-                }
-                showNextDecision();
-            }, TEST_CONFIG.decisionDelay);
-        }
-
-        // =============================================
-        // ✅ FINALIZAÇÃO COM MCD CORE
-        // =============================================
-        function completeTest() {
-            stopTimer();
-            
-            let userData = JSON.parse(localStorage.getItem('mindkappa_user')) || {};
-            userData.teste3 = {
-                decisions: testState.decisions,
-                completedAt: new Date().toISOString()
-            };
-            
-            localStorage.setItem('mindkappa_user', JSON.stringify(userData));
-            showCompletionMessage();
-        }
-
-        /**
-         * 🧠 CALCULAR κ VIA BACKEND MCD CORE
-         */
-        async function calcularKappaBackend(choices, testType, sessionId) {
-            const backendUrl = 'https://mindkappa-backend.onrender.com/api/calculate-coherence';
-            
-            try {
-                console.log(`📊 Enviando ${choices.length} escolhas para análise...`);
-                
-                const response = await fetch(backendUrl, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        choices: choices,
-                        testType: testType,
-                        sessionId: sessionId || 'mk-' + Date.now()
-                    })
-                });
-                
-                if (!response.ok) {
-                    throw new Error(`Erro HTTP ${response.status}`);
-                }
-                
-                const data = await response.json();
-                
-                if (!data.success) {
-                    throw new Error(data.error || 'Erro no cálculo');
-                }
-                
-                console.log('✅ Análise concluída:', data.coherence);
-                return data;
-                
-            } catch (error) {
-                console.error('❌ Erro na comunicação:', error.message);
-                throw error;
-            }
-        }
-
-        function calculateQuickAvgReactionTime() {
-            const validDecisions = testState.decisions.filter(d => !d.timedOut);
-            if (validDecisions.length === 0) return 0;
-            const avg = validDecisions.reduce((sum, d) => sum + d.reactionTime, 0) / validDecisions.length;
-            return Math.round(avg / 100) / 10;
-        }
-
-        // =============================================
-        // ✅ FEEDBACK COM MCD CORE
-        // =============================================
-        async function showCompletionMessage() {
-            try {
-                console.log('🧠 Calculando coerência com MCD Core...');
-                
-                // Filtrar apenas decisões válidas (não timeouts)
-                const validChoices = testState.decisions
-                    .filter(d => !d.timedOut)
-                    .map(d => d.choice === 'azul' ? 'Azul' : 'Vermelho');
-                
-                const resultado = await calcularKappaBackend(validChoices, 'pressao', testState.sessionId);
-                
-                const kappa = resultado.coherence.kappa;
-                const nivel = resultado.coherence.level;
-                const descricao = resultado.coherence.description;
-                const emoji = resultado.coherence.emoji;
-                const cor = resultado.coherence.color;
-                
-                // ✅ ANÁLISE DE PRESSÃO
-                const avgReactionTime = calculateQuickAvgReactionTime();
-                const timeoutRate = Math.round((testState.timeouts / TEST_CONFIG.totalDecisions) * 100);
-                
-                let performanceNote = "";
-                if (kappa < 0.3 && timeoutRate < 20) {
-                    performanceNote = "🎯 Excelente sob pressão!";
-                } else if (kappa < 0.6 && timeoutRate < 40) {
-                    performanceNote = "⚡ Boa adaptação!";
-                } else {
-                    performanceNote = "🔍 Padrão interessante!";
-                }
-
-                console.log(`✅ κ = ${kappa} (${nivel}) - Timeouts: ${timeoutRate}%`);
-
-                if (elements.contentArea) {
-                    elements.contentArea.innerHTML = `
-                        <div class="completion-message">✅ Teste de Pressão Concluído!</div>
-                        
-                        <div class="pressure-preview" style="background: ${cor}15; border-left: 4px solid ${cor};">
-                            <div style="font-size: 24px; margin-bottom: 5px;">${emoji}</div>
-                            <strong>${performanceNote}</strong><br>
-                            <strong>Coerência ${nivel}:</strong> ${descricao}<br>
-                            <strong>κ = ${kappa.toFixed(3)}</strong> • 
-                            ${resultado.statistics.blueCount} azuis • ${resultado.statistics.redCount} vermelhos<br>
-                            <small>Timeouts: ${testState.timeouts}/15 (${timeoutRate}%)</small><br>
-                            <small>Tempo médio: ${avgReactionTime}s</small>
-                        </div>
-                        
-                        <div style="color: #718096; margin-bottom: 30px;">
-                            Análise científica de padrão sob pressão concluída
-                        </div>
-                        
-                        <button class="btn" onclick="proximoTeste()">
-                            📊 Ver Meu Relatório Completo
-                        </button>
-                    `;
-                }
-
-            } catch (error) {
-                console.error('❌ Erro no cálculo MCD:', error);
-                
-                // ✅ FALLBACK LOCAL
-                const avgReactionTime = calculateQuickAvgReactionTime();
-                const timeoutRate = Math.round((testState.timeouts / TEST_CONFIG.totalDecisions) * 100);
-                
-                let performanceNote = "";
-                if (timeoutRate < 20) {
-                    performanceNote = "🎯 Excelente sob pressão!";
-                } else if (timeoutRate < 40) {
-                    performanceNote = "⚡ Boa adaptação!";
-                } else {
-                    performanceNote = "🔍 Padrão interessante!";
-                }
-                
-                if (elements.contentArea) {
-                    elements.contentArea.innerHTML = `
-                        <div class="completion-message">✅ Teste de Pressão Concluído!</div>
-                        
-                        <div class="pressure-preview">
-                            <strong>Seu Desempenho:</strong> ${performanceNote}<br>
-                            <small>Timeouts: ${testState.timeouts}/15 (${timeoutRate}%)</small><br>
-                            <small>Tempo médio: ${avgReactionTime}s</small><br>
-                            <small>Sua resposta ao estresse temporal foi registrada</small>
-                        </div>
-                        
-                        <div style="color: #718096; margin-bottom: 30px;">
-                            Seu padrão sob pressão foi mapeado com sucesso
-                        </div>
-                        
-                        <button class="btn" onclick="proximoTeste()">
-                            📊 Ver Meu Relatório Completo
-                        </button>
-                    `;
-                }
-            }
-        }
-
-        function proximoTeste() {
-            window.location.href = 'relatorio.html';
-        }
-
-        // =============================================
-        // ✅ INICIALIZAÇÃO AUTOMÁTICA
-        // =============================================
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', initializeTest);
-        } else {
-            initializeTest();
-        }
-
-        window.addEventListener('beforeunload', function (e) {
-            if (testState.currentDecision > 0 && testState.currentDecision < TEST_CONFIG.totalDecisions) {
-                e.preventDefault();
-                e.returnValue = 'Seu progresso será perdido. Tem certeza que quer sair?';
-            }
-        });
-    </script>
-
-    <!-- LGPD Modal -->
-    <div id="lgpdModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 10000; justify-content: center; align-items: center; font-family: Arial, sans-serif;">
-        <div style="background: white; padding: 2rem; border-radius: 15px; max-width: 500px; margin: 1rem; box-shadow: 0 10px 30px rgba(0,0,0,0.3);">
-            <h3 style="color: #2c3e50; margin-bottom: 1rem;">📋 Termo de Consentimento</h3>
-            
-            <p style="margin-bottom: 1rem;"><strong>O MindKappa respeita sua privacidade:</strong></p>
-            
-            <ul style="margin-bottom: 1rem; padding-left: 1.5rem;">
-                <li><strong>Coletamos:</strong> suas escolhas (Azul/Vermelho) e índice de coerência (κ)</li>
-                <li><strong>NÃO coletamos:</strong> dados pessoais, localização, IP ou informações do dispositivo</li>
-                <li><strong>Finalidade:</strong> melhorar nosso produto e pesquisa científica agregada</li>
-            </ul>
-
-            <p style="font-size: 0.9rem; color: #666; margin-bottom: 1.5rem;">
-                Conforme Lei Geral de Proteção de Dados (LGPD), você pode solicitar exclusão a qualquer momento.
-            </p>
-
-            <button onclick="acceptLGPD()" style="background: #007bff; color: white; border: none; padding: 12px 30px; border-radius: 8px; cursor: pointer; font-size: 1rem; width: 100%;">
-                ✅ Concordo e quero continuar
-            </button>
+        <div class="timer-container">
+          <div class="timer-text">Tempo restante</div>
+          <div class="timer-circle" id="timerCircle"><span id="timerValue">3.0</span>s</div>
+          <div class="time-limit">Tempo limite: <span id="timeLimit">3.0</span>s</div>
         </div>
-    </div>
 
-    <script>
+        <div id="contentArea">
+          <div class="buttons-container" id="buttonsContainer"><!-- botões via JS --></div>
+          <div style="color:#718096; font-size:.9rem; margin-top: 30px;">O tempo diminui aos poucos — confie no seu instinto</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ===== Config =====
+    const TEST_CONFIG = {
+      totalDecisions: 15,
+      timeProgression: [3000,2800,2600,2400,2200,2000,1800,1600,1400,1200,1000,900,800,700,600],
+      decisionDelay: 200,
+      minReactionTime: 50
+    };
+    const API_URL = (window.env && window.env.API_URL) ||
+                    (typeof importMeta !== 'undefined' && importMeta.env && importMeta.env.VITE_API_URL) ||
+                    'http://localhost:3000';
+
+    // ===== Estado =====
+    let testState = {
+      currentDecision: 0,
+      decisions: [],
+      testStartedAt: null,
+      currentTimeLimit: 3000,
+      timerInterval: null,
+      timeRemaining: 3000,
+      timeouts: 0,
+      sessionId: null,
+      lastTickAt: null
+    };
+
+    const elements = {
+      buttonsContainer: document.getElementById('buttonsContainer'),
+      currentDecision: document.getElementById('currentDecision'),
+      progressFill: document.getElementById('progressFill'),
+      contentArea: document.getElementById('contentArea'),
+      timerCircle: document.getElementById('timerCircle'),
+      timerValue: document.getElementById('timerValue'),
+      timeLimit: document.getElementById('timeLimit')
+    };
+
+    // ===== Init =====
+    function initializeTest() {
+      console.log('🧠 Iniciando Teste 3 - Pressão Temporal');
+
+      let sessionId = localStorage.getItem('mindkappa_session');
+      if (!sessionId) {
+        sessionId = 'mk-' + Date.now() + '-' + Math.random().toString(36).slice(2,10);
+        localStorage.setItem('mindkappa_session', sessionId);
+      }
+      testState.sessionId = sessionId;
+      testState.testStartedAt = Date.now();
+
+      showNextDecision(true);
+    }
+
+    // ===== Fluxo =====
+    function showNextDecision(isFirst=false) {
+      if (!isFirst) testState.currentDecision++;
+      if (isFirst) testState.currentDecision = 1;
+
+      if (testState.currentDecision > TEST_CONFIG.totalDecisions) {
+        completeTest();
+        return;
+      }
+
+      updateProgressUI();
+      updateTimeLimit();
+      renderDecisionButtons();
+      startTimer();
+    }
+
+    function updateProgressUI() {
+      elements.currentDecision.textContent = testState.currentDecision;
+      const progressPercent = (testState.currentDecision - 1) / TEST_CONFIG.totalDecisions * 100;
+      elements.progressFill.style.width = `${Math.max(progressPercent,0)}%`;
+    }
+
+    function updateTimeLimit() {
+      const idx = Math.min(testState.currentDecision - 1, TEST_CONFIG.timeProgression.length - 1);
+      testState.currentTimeLimit = TEST_CONFIG.timeProgression[idx];
+      testState.timeRemaining = testState.currentTimeLimit;
+      elements.timeLimit.textContent = (testState.currentTimeLimit / 1000).toFixed(1);
+      updateTimerDisplay(true);
+    }
+
+    function renderDecisionButtons() {
+      const positions = getRandomizedPositions();
+      elements.buttonsContainer.innerHTML = `
+        <button class="choice-btn btn-azul" onclick="handleDecision('azul', ${positions.azulPosition})">AZUL</button>
+        <button class="choice-btn btn-vermelho" onclick="handleDecision('vermelho', ${positions.vermelhoPosition})">VERMELHO</button>
+      `;
+      elements.buttonsContainer.style.flexDirection = positions.direction;
+    }
+
+    function getRandomizedPositions() {
+      const useNormalLayout = Math.random() > 0.5;
+      const azulFirst = Math.random() > 0.5;
+      if (useNormalLayout) {
+        return { direction:'row', azulPosition: azulFirst ? 0 : 1, vermelhoPosition: azulFirst ? 1 : 0 };
+      }
+      return { direction:'row-reverse', azulPosition: azulFirst ? 1 : 0, vermelhoPosition: azulFirst ? 0 : 1 };
+    }
+
+    // ===== Timer =====
+    function startTimer() {
+      testState.lastTickAt = Date.now();
+      clearInterval(testState.timerInterval);
+      testState.timerInterval = setInterval(() => {
+        testState.timeRemaining -= 100;
+        if (testState.timeRemaining <= 0) {
+          handleTimeout();
+          return;
+        }
+        updateTimerDisplay();
+      }, 100);
+    }
+
+    function updateTimerDisplay(reset=false) {
+      const seconds = (testState.timeRemaining / 1000).toFixed(1);
+      elements.timerValue.textContent = seconds;
+
+      const ratio = Math.max(testState.timeRemaining,0) / testState.currentTimeLimit;
+      const degrees = 360 * ratio;
+      const color = ratio > 0.6 ? '#48bb78' : ratio > 0.3 ? '#ed8936' : '#e53e3e';
+      elements.timerCircle.style.background = `conic-gradient(${color} ${degrees}deg, #e2e8f0 ${degrees}deg)`;
+      if (reset) elements.timerCircle.offsetHeight; // reflow pra suavizar
+    }
+
+    function stopTimer() {
+      clearInterval(testState.timerInterval);
+    }
+
+    function handleTimeout() {
+      stopTimer();
+      testState.timeouts++;
+      testState.decisions.push({
+        choice: 'timeout',
+        timestamp: new Date().toISOString(),
+        reactionTime: testState.currentTimeLimit,
+        decisionNumber: testState.currentDecision,
+        timedOut: true,
+        timeLimit: testState.currentTimeLimit
+      });
+
+      elements.contentArea.innerHTML = `
+        <div class="timeout-message">⏰ Tempo esgotado!</div>
+        <div class="buttons-container">
+          <button class="choice-btn btn-azul" disabled>AZUL</button>
+          <button class="choice-btn btn-vermelho" disabled>VERMELHO</button>
+        </div>
+        <div style="color:#718096; font-size:.9rem; margin-top: 30px;">Preparando a próxima decisão…</div>
+      `;
+
+      setTimeout(() => showNextDecision(), TEST_CONFIG.decisionDelay);
+    }
+
+    // ===== Decisão =====
+    function handleDecision(choice, buttonPosition) {
+      const reactionTime = Date.now() - testState.lastTickAt;
+      if (reactionTime < TEST_CONFIG.minReactionTime) return;
+
+      stopTimer();
+      testState.decisions.push({
+        choice,
+        timestamp: new Date().toISOString(),
+        reactionTime,
+        decisionNumber: testState.currentDecision,
+        buttonPosition,
+        timeLimit: testState.currentTimeLimit,
+        timedOut: false,
+        timeRemaining: testState.timeRemaining
+      });
+
+      elements.buttonsContainer.classList.add('loading');
+      setTimeout(() => {
+        elements.buttonsContainer.classList.remove('loading');
+        showNextDecision();
+      }, TEST_CONFIG.decisionDelay);
+    }
+
+    // ===== Backend MCD =====
+    async function calcularKappaBackend(choices, testType, sessionId) {
+      const url = `${API_URL}/api/calculate-coherence`;
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ choices, testType, sessionId })
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+      if (!data.success) throw new Error(data.error || 'Erro no cálculo');
+      return data;
+    }
+
+    function calculateQuickAvgReactionTime() {
+      const valid = testState.decisions.filter(d => !d.timedOut);
+      if (!valid.length) return 0;
+      const avgMs = valid.reduce((s,d)=>s+d.reactionTime,0) / valid.length;
+      return Math.round(avgMs/100) / 10; // em segundos, 1 casa
+    }
+
+    // ===== Fim =====
+    async function completeTest() {
+      stopTimer();
+      const durationMs = Date.now() - testState.testStartedAt;
+
+      // Salva bruto
+      let userData = JSON.parse(localStorage.getItem('mindkappa_user') || '{}');
+      userData.teste3 = {
+        decisions: testState.decisions,
+        completedAt: new Date().toISOString(),
+        durationMs
+      };
+      localStorage.setItem('mindkappa_user', JSON.stringify(userData));
+
+      try {
+        console.log('📡 Enviando escolhas válidas ao backend para calcular κ…');
+        const validChoices = testState.decisions
+          .filter(d => !d.timedOut)
+          .map(d => d.choice === 'azul' ? 'Azul' : 'Vermelho');
+
+        const resultado = await calcularKappaBackend(validChoices, 'pressao', testState.sessionId);
+
+        // Persistência coherence + statistics
+        userData = JSON.parse(localStorage.getItem('mindkappa_user') || '{}');
+        userData.teste3 = {
+          ...userData.teste3,
+          coherence: resultado.coherence,
+          statistics: resultado.statistics
+        };
+        localStorage.setItem('mindkappa_user', JSON.stringify(userData));
+
+        const { kappa, level, description, emoji, color } = resultado.coherence;
+        const avgReactionTime = calculateQuickAvgReactionTime();
+        const timeoutRate = Math.round((testState.timeouts / TEST_CONFIG.totalDecisions) * 100);
+
+        let performanceNote = "";
+        if (kappa < 0.3 && timeoutRate < 20) performanceNote = "🎯 Excelente sob pressão!";
+        else if (kappa < 0.6 && timeoutRate < 40) performanceNote = "⚡ Boa adaptação!";
+        else performanceNote = "🔍 Padrão interessante!";
+
+        elements.contentArea.innerHTML = `
+          <div class="completion-message">✅ Teste de Pressão Concluído!</div>
+          <div class="pressure-preview" style="background:${color}15; border-left:4px solid ${color};">
+            <div style="font-size:24px; margin-bottom:6px;">${emoji}</div>
+            <strong>${performanceNote}</strong><br/>
+            <strong>Coerência ${level}:</strong> ${description}<br/>
+            <strong>κ = ${Number(kappa).toFixed(3)}</strong> •
+            ${resultado.statistics.blueCount} azuis • ${resultado.statistics.redCount} vermelhos<br/>
+            <small>Timeouts: ${testState.timeouts}/${TEST_CONFIG.totalDecisions} (${timeoutRate}%)</small><br/>
+            <small>Tempo médio: ${avgReactionTime}s</small>
+          </div>
+          <div style="color:#718096; margin-bottom: 24px;">Análise sob pressão concluída.</div>
+          <button class="btn-next" onclick="proximoTeste()">📊 Ver Meu Relatório Completo</button>
+        `;
+        elements.progressFill.style.width = '100%';
+
+      } catch (err) {
+        console.error('❌ Erro no cálculo MCD:', err);
+
+        const avgReactionTime = calculateQuickAvgReactionTime();
+        const timeoutRate = Math.round((testState.timeouts / TEST_CONFIG.totalDecisions) * 100);
+        let performanceNote = timeoutRate < 20 ? "🎯 Excelente sob pressão!"
+                           : timeoutRate < 40 ? "⚡ Boa adaptação!"
+                           : "🔍 Padrão interessante!";
+
+        elements.contentArea.innerHTML = `
+          <div class="completion-message">✅ Teste de Pressão Concluído!</div>
+          <div class="pressure-preview">
+            <strong>${performanceNote}</strong><br/>
+            <small>Timeouts: ${testState.timeouts}/${TEST_CONFIG.totalDecisions} (${timeoutRate}%)</small><br/>
+            <small>Tempo médio: ${avgReactionTime}s</small>
+          </div>
+          <div style="color:#718096; margin-bottom: 24px;">Seu padrão sob pressão foi mapeado.</div>
+          <button class="btn-next" onclick="proximoTeste()">📊 Ver Meu Relatório Completo</button>
+        `;
+        elements.progressFill.style.width = '100%';
+      }
+    }
+
+    function proximoTeste() {
+      window.location.href = 'relatorio.html';
+    }
+
+    // ===== Boot =====
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initializeTest);
+    } else {
+      initializeTest();
+    }
+
+    window.addEventListener('beforeunload', function (e) {
+      if (testState.currentDecision > 0 && testState.currentDecision < TEST_CONFIG.totalDecisions) {
+        e.preventDefault();
+        e.returnValue = 'Seu progresso será perdido. Tem certeza que quer sair?';
+      }
+    });
+  </script>
+
+  <!-- LGPD (só aparece se ainda não aceitou) -->
+  <div id="lgpdModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.45); z-index:10000; justify-content:center; align-items:center; font-family:Arial,sans-serif;">
+    <div style="background:#fff; padding:2rem; border-radius:15px; max-width:520px; margin:1rem; box-shadow:0 10px 30px rgba(0,0,0,.3);">
+      <h3 style="color:#1e40af; margin-bottom:.8rem;">📋 Termo de Consentimento</h3>
+      <p style="margin-bottom:.8rem;"><strong>Respeitamos sua privacidade:</strong></p>
+      <ul style="margin-bottom:1rem; padding-left:1.5rem; color:#374151;">
+        <li><strong>Coletamos:</strong> escolhas (AZUL/VERMELHO) e métricas do teste.</li>
+        <li><strong>Não coletamos:</strong> dados sensíveis.</li>
+        <li><strong>Finalidade:</strong> gerar seu relatório e melhorar o MindKappa.</li>
+      </ul>
+      <button onclick="acceptLGPD()" style="background:#111827; color:#fff; border:none; padding:12px 30px; border-radius:8px; cursor:pointer; font-size:1rem; width:100%;">✅ Concordo e continuar</button>
+    </div>
+  </div>
+
+  <script>
     function checkLGPD() {
-        if (!localStorage.getItem('lgpd_accepted')) {
-            document.getElementById('lgpdModal').style.display = 'flex';
-            document.body.style.overflow = 'hidden';
-        }
+      if (!localStorage.getItem('lgpd_accepted_v1')) {
+        document.getElementById('lgpdModal').style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+      }
     }
-
     function acceptLGPD() {
-        localStorage.setItem('lgpd_accepted', 'true');
-        document.getElementById('lgpdModal').style.display = 'none';
-        document.body.style.overflow = 'auto';
+      localStorage.setItem('lgpd_accepted_v1', 'true');
+      document.getElementById('lgpdModal').style.display = 'none';
+      document.body.style.overflow = '';
     }
-
-    window.addEventListener('load', checkLGPD);
-    </script>
+    document.addEventListener('DOMContentLoaded', checkLGPD);
+  </script>
 </body>
 </html>

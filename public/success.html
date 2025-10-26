@@ -1,129 +1,90 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pagamento Aprovado - MindKappa</title>
-    <link rel="stylesheet" href="assets/style.css">
-    <style>
-        .success-container { 
-            text-align: center; 
-            padding: 40px 20px;
-            max-width: 600px;
-            margin: 0 auto;
-        }
-        .success-icon {
-            font-size: 4rem;
-            margin-bottom: 20px;
-        }
-        .loading-bar {
-            width: 100%;
-            height: 6px;
-            background: #e2e8f0;
-            border-radius: 3px;
-            margin: 30px 0;
-            overflow: hidden;
-        }
-        .loading-progress {
-            height: 100%;
-            background: linear-gradient(90deg, #10b981, #059669);
-            animation: loading 2s ease-in-out infinite;
-        }
-        @keyframes loading {
-            0% { transform: translateX(-100%); }
-            100% { transform: translateX(100%); }
-        }
-        .feature-card {
-            background: white;
-            padding: 25px;
-            border-radius: 15px;
-            margin: 20px 0;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
-            text-align: left;
-        }
-        .btn-success {
-            background: linear-gradient(135deg, #10b981, #059669);
-            color: white;
-            border: none;
-            padding: 15px 30px;
-            font-size: 1.1rem;
-            border-radius: 50px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            width: 100%;
-            margin-top: 10px;
-        }
-        .btn-success:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Pagamento Aprovado - MindKappa</title>
+  <link rel="stylesheet" href="assets/style.css" />
+  <style>
+    .success-container { text-align:center; padding:40px 20px; max-width:640px; margin:0 auto; }
+    .success-icon { font-size:4rem; margin-bottom:20px; }
+    .loading-bar { width:100%; height:6px; background:#e2e8f0; border-radius:3px; margin:30px 0; overflow:hidden; }
+    .loading-progress { height:100%; background:linear-gradient(90deg, #10b981, #059669); animation:loading 2s ease-in-out infinite; }
+    @keyframes loading { 0% { transform: translateX(-100%);} 100% { transform: translateX(100%);} }
+    .feature-card { background:#fff; padding:25px; border-radius:15px; margin:20px 0; box-shadow:0 5px 20px rgba(0,0,0,0.1); text-align:left; }
+    .btn { background:linear-gradient(135deg,#10b981,#059669); color:#fff; border:none; padding:15px 30px; font-size:1.1rem; border-radius:50px; cursor:pointer; transition:.3s; width:100%; margin-top:10px; }
+    .btn:hover { transform:translateY(-2px); box-shadow:0 8px 25px rgba(16,185,129,.4); }
+    .btn-secondary { background:#e2e8f0; color:#4a5568; }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <div class="card">
-            <div class="success-container">
-                <div class="success-icon">✅</div>
-                <h1>Pagamento Aprovado!</h1>
-                <p style="color: #4a5568; font-size: 1.1rem; margin-bottom: 30px;">
-                    Seu relatório premium está sendo gerado com análise aprofundada por IA
-                </p>
+  <div class="container">
+    <div class="card">
+      <div class="success-container">
+        <div class="success-icon">✅</div>
+        <h1>Pagamento aprovado!</h1>
+        <p style="color:#4a5568; font-size:1.05rem; margin-bottom:20px;">
+          Estamos preparando seu <strong>Relatório Premium</strong>.
+        </p>
 
-                <div class="loading-bar">
-                    <div class="loading-progress"></div>
-                </div>
+        <div class="loading-bar"><div class="loading-progress"></div></div>
 
-                <div class="feature-card">
-                    <h3 style="color: #2d3748; margin-bottom: 15px;">🎁 O que você está recebendo:</h3>
-                    <div class="feature-item">📊 Análise profunda dos seus 3 testes cognitivos</div>
-                    <div class="feature-item">🧠 Insights personalizados sobre seus padrões</div>
-                    <div class="feature-item">📄 Relatório PDF para download</div>
-                    <div class="feature-item">⚡ Comparações com base científica</div>
-                </div>
-
-                <div style="background: #f0f9ff; padding: 20px; border-radius: 10px; margin: 25px 0;">
-                    <h4 style="color: #2b6cb0; margin-bottom: 10px;">📧 Email em andamento</h4>
-                    <p style="color: #4a5568; margin: 0;">
-                        Seu relatório premium será enviado para o email cadastrado no Mercado Pago em até 5 minutos.
-                    </p>
-                </div>
-
-                <div style="display: flex; gap: 10px; margin-top: 30px;">
-                    <button class="btn-success" onclick="goHome()">
-                        🏠 Voltar ao Início
-                    </button>
-                    <button class="btn" onclick="goToReport()" 
-                            style="background: #e2e8f0; color: #4a5568;">
-                        📊 Ver Relatório Básico
-                    </button>
-                </div>
-
-                <div style="margin-top: 25px; padding: 15px; background: #f7fafc; border-radius: 10px;">
-                    <small style="color: #718096;">
-                        💡 Dica: Salve este relatório para acompanhar sua evolução cognitiva ao longo do tempo.
-                    </small>
-                </div>
-            </div>
+        <div class="feature-card">
+          <h3 style="color:#2d3748; margin-bottom:15px;">🎁 Você desbloqueou:</h3>
+          <div>📊 Análise profunda dos 3 testes</div>
+          <div>🧠 Insights e recomendações personalizadas</div>
+          <div>📄 Download do PDF Premium</div>
         </div>
+
+        <div id="actions" style="display:flex; gap:10px; margin-top:20px; flex-wrap:wrap;">
+          <button class="btn" id="btnGoPremium">⚡ Ver Relatório Premium agora</button>
+          <button class="btn btn-secondary" id="btnHome">🏠 Voltar ao início</button>
+        </div>
+
+        <div id="tip" style="margin-top:25px; padding:15px; background:#f7fafc; border-radius:10px;">
+          <small style="color:#718096;">
+            Dica: salve o PDF para acompanhar sua evolução no futuro.
+          </small>
+        </div>
+      </div>
     </div>
+  </div>
 
-    <script>
-        function goHome() {
-            window.location.href = 'index.html';
-        }
+  <script>
+    // Mantém os parâmetros que o Mercado Pago envia (ex.: collection_status=approved)
+    const qs = new URLSearchParams(window.location.search);
+    const approved = qs.get('collection_status') === 'approved' || qs.get('status') === 'approved';
 
-        function goToReport() {
-            window.location.href = 'report.html';
-        }
+    // Monta uma URL de retorno para o relatorio.html preservando os parâmetros
+    function buildReportUrl() {
+      const url = new URL(window.location.origin + (window.location.pathname.replace(/success\.html$/,'') + 'relatorio.html'));
+      // Repassa todos os parâmetros recebidos (principalmente o approved)
+      for (const [k, v] of qs.entries()) url.searchParams.set(k, v);
+      // Em alguns casos o MP só manda status, garantimos um flag genérico também
+      if (approved) url.searchParams.set('paid', 'true');
+      return url.toString();
+    }
 
-        // Simular processamento do relatório premium
-        setTimeout(() => {
-            const processingElement = document.querySelector('.loading-bar');
-            if (processingElement) {
-                processingElement.innerHTML = '<div style="height: 100%; background: #10b981; border-radius: 3px;"></div>';
-                processingElement.previousElementSibling.innerHTML = '✅ Relatório gerado com sucesso!';
-            }
-        }, 3000);
-    </script>
+    // Botões
+    document.getElementById('btnGoPremium').addEventListener('click', () => {
+      window.location.href = buildReportUrl();
+    });
+    document.getElementById('btnHome').addEventListener('click', () => {
+      window.location.href = 'index.html';
+    });
+
+    // Se aprovado, faz redirecionamento automático depois de alguns segundos
+    if (approved) {
+      // Feedback visual depois de 2s e redireciona em seguida
+      setTimeout(() => {
+        const bar = document.querySelector('.loading-bar');
+        if (bar) bar.innerHTML = '<div style="height:100%; background:#10b981; border-radius:3px; width:100%;"></div>';
+      }, 2000);
+
+      setTimeout(() => {
+        window.location.href = buildReportUrl();
+      }, 2800);
+    }
+  </script>
 </body>
 </html>

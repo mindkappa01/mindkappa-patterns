@@ -1,208 +1,206 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MindKappa - Personalize Sua Experiência</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            color: white;
-            line-height: 1.6;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>MindKappa - Personalize Sua Experiência</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh; color: white; line-height: 1.6;
+      display: grid; place-items: center;
+    }
+    .container { width: 100%; max-width: 520px; padding: 40px 20px; }
+    .logo { font-size: 3.2rem; margin-bottom: 12px; text-align: center; }
+    h1 { font-size: 2rem; margin-bottom: 8px; text-align: center; }
+    .subtitle { font-size: 1.05rem; opacity: .95; margin-bottom: 20px; text-align: center; }
+    .card {
+      background: rgba(255,255,255,.12);
+      border-radius: 16px; padding: 24px; box-shadow: 0 15px 40px rgba(0,0,0,.22);
+      backdrop-filter: blur(3px);
+    }
+    .form-group { margin-bottom: 16px; }
+    label { display: block; margin-bottom: 6px; font-weight: 600; }
+    input, select {
+      width: 100%; padding: 14px; border: none; border-radius: 10px;
+      font-size: 1rem; background: rgba(255,255,255,.93); color: #111827;
+    }
+    .btn {
+      background: #ffffff; color: #5b67e7; border: none; padding: 16px;
+      font-size: 1.1rem; font-weight: 800; border-radius: 50px; cursor: pointer;
+      transition: transform .2s ease, box-shadow .2s ease; width: 100%; margin-top: 10px;
+      box-shadow: 0 12px 30px rgba(0,0,0,.25);
+    }
+    .btn:hover { transform: translateY(-2px); box-shadow: 0 18px 40px rgba(0,0,0,.32); }
+    .skip-option { text-align: center; margin-top: 14px; }
+    .skip-link { color: rgba(255,255,255,.92); text-decoration: underline; font-size: .95rem; }
+    .privacy-note { font-size: .8rem; opacity: .85; margin-top: 12px; text-align: center; }
 
-        .container {
-            max-width: 500px;
-            margin: 0 auto;
-            padding: 40px 20px;
-        }
-
-        .logo {
-            font-size: 4rem;
-            margin-bottom: 20px;
-            text-align: center;
-        }
-
-        h1 {
-            font-size: 2.2rem;
-            margin-bottom: 10px;
-            text-align: center;
-        }
-
-        .subtitle {
-            font-size: 1.1rem;
-            opacity: 0.9;
-            margin-bottom: 30px;
-            text-align: center;
-        }
-
-        .form-container {
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 15px;
-            padding: 30px;
-            margin: 20px 0;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 500;
-        }
-
-        input, select {
-            width: 100%;
-            padding: 15px;
-            border: none;
-            border-radius: 10px;
-            font-size: 1rem;
-            background: rgba(255, 255, 255, 0.9);
-        }
-
-        .btn {
-            background: white;
-            color: #667eea;
-            border: none;
-            padding: 18px;
-            font-size: 1.2rem;
-            font-weight: 700;
-            border-radius: 50px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-            width: 100%;
-            margin-top: 10px;
-        }
-
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
-        }
-
-        .skip-option {
-            text-align: center;
-            margin-top: 20px;
-        }
-
-        .skip-link {
-            color: rgba(255, 255, 255, 0.7);
-            text-decoration: none;
-            font-size: 0.9rem;
-        }
-
-        .skip-link:hover {
-            color: white;
-        }
-
-        .privacy-note {
-            font-size: 0.8rem;
-            opacity: 0.7;
-            margin-top: 20px;
-            text-align: center;
-        }
-    </style>
+    /* Painel de retomada */
+    .resume {
+      background: rgba(255,255,255,.15);
+      border-radius: 14px; padding: 16px; margin-bottom: 16px;
+      border: 1px dashed rgba(255,255,255,.35);
+    }
+    .resume h3 { margin-bottom: 8px; font-size: 1.05rem; }
+    .row { display: flex; gap: 10px; }
+    .btn-secondary {
+      background: rgba(255,255,255,.14); color: white; border: 1px solid rgba(255,255,255,.35);
+      padding: 12px 14px; border-radius: 12px; cursor: pointer; flex: 1;
+    }
+    .btn-primary-ghost {
+      background: #fff; color: #5b67e7; border: none; padding: 12px 14px; border-radius: 12px; cursor: pointer; flex: 1;
+      font-weight: 800;
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <div class="logo">🎯</div>
-        
-        <h1>Personalize Sua Jornada</h1>
-        <div class="subtitle">Nos conte um pouco sobre você para um relatório mais preciso</div>
+  <div class="container">
+    <div class="logo">🎯</div>
+    <h1>Personalize sua jornada</h1>
+    <div class="subtitle">Dê um nome ao seu relatório e, se quiser, adicione mais contexto. Leva 30 segundos.</div>
 
-        <div class="form-container">
-            <form id="onboardingForm">
-                <div class="form-group">
-                    <label for="name">Como gostaria de ser chamado?</label>
-                    <input type="text" id="name" placeholder="Seu nome ou apelido" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="email">Email (opcional - para salvar seu progresso)</label>
-                    <input type="email" id="email" placeholder="seu@email.com">
-                </div>
-
-                <div class="form-group">
-                    <label for="age">Idade</label>
-                    <select id="age" required>
-                        <option value="">Selecione sua idade</option>
-                        <option value="18-24">18-24 anos</option>
-                        <option value="25-34">25-34 anos</option>
-                        <option value="35-44">35-44 anos</option>
-                        <option value="45-54">45-54 anos</option>
-                        <option value="55+">55+ anos</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label for="emotion">Como você está se sentindo hoje?</label>
-                    <select id="emotion" required>
-                        <option value="">Selecione seu estado</option>
-                        <option value="curioso">🤔 Curioso/Explorador</option>
-                        <option value="focado">🎯 Focado/Determinado</option>
-                        <option value="relaxado">😌 Relaxado/Calmo</option>
-                        <option value="ansioso">⚡ Ansioso/Energizado</option>
-                        <option value="reflexivo">🧠 Reflexivo/Pensativo</option>
-                    </select>
-                </div>
-
-                <button type="submit" class="btn">
-                    🚀 Começar Meus Testes
-                </button>
-            </form>
-
-            <div class="skip-option">
-                <a href="teste1.html" class="skip-link">Pular e ir direto para os testes</a>
-            </div>
-        </div>
-
-        <div class="privacy-note">
-            Seus dados estão seguros. Usamos apenas para personalizar sua experiência.
-        </div>
+    <!-- Painel de retomada (aparece se já houver dados) -->
+    <div id="resumePanel" class="resume" style="display:none;">
+      <h3>Você já iniciou sua sessão no MindKappa.</h3>
+      <p id="resumeInfo" style="opacity: .95;"></p>
+      <div class="row" style="margin-top: 10px;">
+        <button class="btn-secondary" id="editDataBtn">Editar dados</button>
+        <button class="btn-primary-ghost" id="continueBtn">Continuar testes</button>
+      </div>
     </div>
 
-    <script>
-        document.getElementById('onboardingForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const userData = {
-                name: document.getElementById('name').value,
-                email: document.getElementById('email').value || '',
-                age: document.getElementById('age').value,
-                emotion: document.getElementById('emotion').value,
-                joinedAt: new Date().toISOString()
-            };
-            
-            // Salvar dados do usuário
-            localStorage.setItem('mindkappa_user', JSON.stringify(userData));
-            
-            // Gerar session ID se não existir
-            if (!localStorage.getItem('mindkappa_session')) {
-                const sessionId = 'mk-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
-                localStorage.setItem('mindkappa_session', sessionId);
-            }
-            
-            // Redirecionar para primeiro teste
-            window.location.href = 'teste1.html';
-        });
+    <div class="card" id="formCard">
+      <form id="onboardingForm" novalidate>
+        <div class="form-group">
+          <label for="name">Como você quer ser chamado? <span style="opacity:.9;">(obrigatório)</span></label>
+          <input type="text" id="name" placeholder="Seu nome ou apelido" required />
+        </div>
 
-        // Preencher automaticamente se já tiver dados
-        window.addEventListener('load', function() {
-            const savedUser = localStorage.getItem('mindkappa_user');
-            if (savedUser) {
-                window.location.href = 'teste1.html';
-            }
-        });
-    </script>
+        <div class="form-group">
+          <label for="email">Email (opcional — para resgatar seu relatório mais tarde)</label>
+          <input type="email" id="email" placeholder="seu@email.com" />
+        </div>
+
+        <div class="form-group">
+          <label for="age">Idade (opcional)</label>
+          <select id="age">
+            <option value="">Prefiro não informar</option>
+            <option value="18-24">18-24 anos</option>
+            <option value="25-34">25-34 anos</option>
+            <option value="35-44">35-44 anos</option>
+            <option value="45-54">45-54 anos</option>
+            <option value="55+">55+ anos</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="emotion">Como você está hoje? (opcional)</label>
+          <select id="emotion">
+            <option value="">Escolher depois</option>
+            <option value="curioso">🤔 Curioso/Explorador</option>
+            <option value="focado">🎯 Focado/Determinado</option>
+            <option value="relaxado">😌 Relaxado/Calmo</option>
+            <option value="ansioso">⚡ Ansioso/Energizado</option>
+            <option value="reflexivo">🧠 Reflexivo/Pensativo</option>
+          </select>
+        </div>
+
+        <button type="submit" class="btn">🚀 Começar meus testes</button>
+      </form>
+
+      <div class="skip-option">
+        <a href="teste1.html" class="skip-link">Pular agora e ir direto aos testes</a>
+      </div>
+
+      <div class="privacy-note">
+        Usamos seus dados apenas para personalizar sua experiência e gerar seu relatório.<br/>
+        Não coletamos dados pessoais sensíveis. Você pode editar/remover depois.
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const LS_USER_KEY = 'mindkappa_user';
+    const LS_SESSION_KEY = 'mindkappa_session';
+    const API_URL = (window.env && window.env.API_URL) || (typeof importMeta !== 'undefined' && importMeta.env && importMeta.env.VITE_API_URL) || 'http://localhost:3000';
+
+    function ensureSessionId() {
+      let sessionId = localStorage.getItem(LS_SESSION_KEY);
+      if (!sessionId) {
+        sessionId = 'mk-' + Date.now() + '-' + Math.random().toString(36).slice(2, 10);
+        localStorage.setItem(LS_SESSION_KEY, sessionId);
+      }
+      return sessionId;
+    }
+
+    function resumePanelFill(user) {
+      const info = document.getElementById('resumeInfo');
+      const name = user?.name || 'Explorador(a)';
+      const email = user?.email ? ` • ${user.email}` : '';
+      info.textContent = `Nome: ${name}${email}`;
+    }
+
+    // Carregar se já houver usuário
+    document.addEventListener('DOMContentLoaded', () => {
+      const saved = localStorage.getItem(LS_USER_KEY);
+      if (saved) {
+        const user = JSON.parse(saved);
+        // Mostra painel de retomada (sem redirecionar)
+        document.getElementById('resumePanel').style.display = 'block';
+        resumePanelFill(user);
+        // Preenche formulário com dados existentes (para editar)
+        document.getElementById('name').value = user.name || '';
+        document.getElementById('email').value = user.email || '';
+        document.getElementById('age').value = user.age || '';
+        document.getElementById('emotion').value = user.emotion || '';
+      }
+    });
+
+    // Botões do painel de retomada
+    document.getElementById('continueBtn')?.addEventListener('click', () => {
+      ensureSessionId();
+      window.location.href = 'teste1.html';
+    });
+    document.getElementById('editDataBtn')?.addEventListener('click', () => {
+      document.getElementById('formCard').scrollIntoView({ behavior: 'smooth' });
+    });
+
+    // Submissão do formulário
+    document.getElementById('onboardingForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const name = document.getElementById('name').value.trim();
+      if (!name) {
+        alert('Por favor, informe como quer ser chamado(a).');
+        return;
+      }
+
+      const userData = {
+        name,
+        email: document.getElementById('email').value.trim() || '',
+        age: document.getElementById('age').value || '',
+        emotion: document.getElementById('emotion').value || '',
+        joinedAt: new Date().toISOString()
+      };
+
+      // Salva local
+      localStorage.setItem(LS_USER_KEY, JSON.stringify(userData));
+      const sessionId = ensureSessionId();
+
+      // (Opcional/MVP) salva no backend — não bloqueia a navegação
+      try {
+        fetch(`${API_URL}/api/save-research-data`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ userData: { ...userData, sessionId } })
+        }).catch(() => {});
+      } catch (_) {}
+
+      // Segue para o Teste 1
+      window.location.href = 'teste1.html';
+    });
+  </script>
 </body>
 </html>

@@ -1,18 +1,80 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-br">
 <head>
-    <title>Pagamento Não Aprovado - MindKappa</title>
-    <style>
-        body { text-align: center; padding: 40px; font-family: Arial; }
-        .icon { font-size: 4rem; margin-bottom: 20px; }
-        .btn { background: #667eea; color: white; padding: 15px 30px; 
-               text-decoration: none; border-radius: 50px; display: inline-block; }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Pagamento Não Aprovado - MindKappa</title>
+  <link rel="stylesheet" href="assets/style.css" />
+  <style>
+    body { background:#f9fafb; color:#1a202c; font-family:Arial, sans-serif; }
+    .failure-container { text-align:center; padding:40px 20px; max-width:640px; margin:0 auto; }
+    .icon { font-size:4rem; margin-bottom:20px; }
+    .subtitle { color:#4a5568; font-size:1.05rem; margin-bottom:20px; }
+    .info-card {
+      background:#fff; padding:25px; border-radius:15px; margin:20px 0;
+      box-shadow:0 5px 20px rgba(0,0,0,0.1); text-align:left;
+    }
+    .btn {
+      background:linear-gradient(135deg,#667eea,#764ba2); color:#fff; border:none;
+      padding:15px 30px; font-size:1.1rem; border-radius:50px; cursor:pointer;
+      transition:all 0.3s ease; width:100%;
+    }
+    .btn:hover { transform:translateY(-2px); box-shadow:0 8px 25px rgba(102,126,234,.4); }
+    .btn-secondary { background:#e2e8f0; color:#4a5568; }
+    .actions { display:flex; gap:10px; margin-top:20px; flex-wrap:wrap; justify-content:center; }
+    .tip { margin-top:25px; padding:15px; background:#f7fafc; border-radius:10px; color:#718096; }
+  </style>
 </head>
 <body>
-    <div class="icon">❌</div>
-    <h1>Pagamento Não Aprovado</h1>
-    <p>Seu pagamento não foi processado. Tente novamente ou use outro método.</p>
-    <a href="report.html" class="btn">Tentar Novamente</a>
+  <div class="container">
+    <div class="card">
+      <div class="failure-container">
+        <div class="icon">❌</div>
+        <h1>Pagamento não aprovado</h1>
+        <p class="subtitle">Seu pagamento não foi processado ou foi cancelado. Isso pode ocorrer por falha no cartão, expiração do link ou cancelamento manual.</p>
+
+        <div class="info-card">
+          <h3 style="color:#2d3748; margin-bottom:10px;">Como resolver:</h3>
+          <div>💳 Tente novamente com outro método de pagamento</div>
+          <div>🔁 Gere um novo link de pagamento no relatório</div>
+          <div>📧 Verifique se há notificações do Mercado Pago</div>
+        </div>
+
+        <div class="actions">
+          <button class="btn" id="btnTryAgain">🔁 Tentar novamente</button>
+          <button class="btn btn-secondary" id="btnBasic">📊 Ver relatório básico</button>
+          <button class="btn btn-secondary" id="btnHome">🏠 Voltar ao início</button>
+        </div>
+
+        <div class="tip">Se o problema persistir, aguarde alguns minutos e gere um novo pagamento pelo relatório.</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Preserva parâmetros do Mercado Pago (status, collection_status, etc.)
+    const qs = new URLSearchParams(window.location.search);
+
+    // Função utilitária: cria URLs mantendo os parâmetros originais
+    function buildUrlTo(page) {
+      const base = window.location.origin + (window.location.pathname.replace(/failure\.html$/,'') + page);
+      const url = new URL(base);
+      for (const [k,v] of qs.entries()) url.searchParams.set(k, v);
+      return url.toString();
+    }
+
+    // Botões principais
+    document.getElementById('btnHome').addEventListener('click', () => {
+      window.location.href = 'index.html';
+    });
+
+    document.getElementById('btnTryAgain').addEventListener('click', () => {
+      window.location.href = buildUrlTo('relatorio.html');
+    });
+
+    document.getElementById('btnBasic').addEventListener('click', () => {
+      window.location.href = buildUrlTo('relatorio.html');
+    });
+  </script>
 </body>
 </html>
