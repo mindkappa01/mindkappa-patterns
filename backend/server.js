@@ -37,6 +37,41 @@ REGRAS:
 `;
 }
 
+const MANUAL_MANUS = `
+NOME DO ESTILO: MANUS (MindKappa Narrative Style)
+
+VOZ:
+- Clara, confiante, positiva e precisa. Sempre em pt-BR.
+- Sem jargões clínicos ou diagnósticos. Use linguagem humana: “equilíbrio”, “constância”, “variação”, “pressão do tempo”.
+
+OBJETIVO DO RELATÓRIO GRÁTIS:
+- Explicar, de forma útil e agradável, o que os 3 testes medem e o que os dados do usuário sugerem.
+- Entregar valor real sem depender de termos técnicos (κ, von Mises, etc.).
+- Convidar o usuário a continuar a jornada (sem pressão).
+
+ESTRUTURA OBRIGATÓRIA (SEMPRE NA MESMA ORDEM):
+1) **Título** (1 linha) – curto e forte (ex.: “Seu padrão mental em 3 atos”).
+2) **O que você fez** – explique os 3 testes em linguagem simples e mostre a contagem AZUL/VERMELHO de cada um.
+3) **O que isso sugere** – insight central em 3–5 frases; traduza números em linguagem humana (equilíbrio, variação, constância).
+4) **Seus pontos fortes** – 3 bullets, cada um com 1 frase direta.
+5) **Como aproveitar isso no dia a dia** – 3 bullets práticos (1–2 linhas cada).
+6) **Próximo passo** – convite gentil para o premium (“com IA gerativa, PDF e comparações”).
+
+REGRAS:
+- Nunca usar termos técnicos (κ, concentração angular, etc.) no relatório grátis.
+- Sempre escrever em 2ª pessoa (“você”).
+- Sempre usar **AZUL** e **VERMELHO** (não chame de A/B).
+- Não fazer promessas de desempenho (“você vai…”); prefira possibilidades (“você pode…”).
+- Nada de linguagem clínica/terapêutica.
+
+TÉCNICAS DE LINGUAGEM:
+- “Tradução de número → experiência”: se azul≈vermelho, fale “tendência natural ao equilíbrio”; se um domina, fale “preferência estável”.
+- “Contraste contextual”: note diferenças entre instinto (Teste 1), equilíbrio buscado (Teste 2) e pressão temporal (Teste 3).
+
+TAMANHO:
+- 180 a 320 palavras. Sem floreio.
+`;
+
 function montarUserMessagePremium(userData) {
   const nome = userData.name || 'Explorador';
   const t1 = userData.teste1 || {};
@@ -345,61 +380,62 @@ app.post('/api/generate-premium-report', async (req, res) => {
 });
 
 function gerarPromptGratuito(userData) {
-  const t1 = userData.teste1;
-  const t2 = userData.teste2;
-  const t3 = userData.teste3;
+  const nome = userData?.name || 'Explorador';
 
-  const nome = userData.name || 'Explorador';
+  const t1 = userData?.teste1 || {};
+  const t2 = userData?.teste2 || {};
+  const t3 = userData?.teste3 || {};
 
-  const azuis1 = t1?.statistics?.blueCount || 0;
-  const vermelhos1 = t1?.statistics?.redCount || 0;
+  const a1 = Number(t1.statistics?.blueCount || 0);
+  const v1 = Number(t1.statistics?.redCount || 0);
+  const a2 = Number(t2.statistics?.blueCount || 0);
+  const v2 = Number(t2.statistics?.redCount || 0);
+  const a3 = Number(t3.statistics?.blueCount || 0);
+  const v3 = Number(t3.statistics?.redCount || 0);
 
-  const azuis2 = t2?.statistics?.blueCount || 0;
-  const vermelhos2 = t2?.statistics?.redCount || 0;
+  // Sinais simples para orientar o tom dos insights
+  const eq1 = Math.abs(a1 - v1);
+  const eq2 = Math.abs(a2 - v2);
+  const eq3 = Math.abs(a3 - v3);
 
-  const azuis3 = t3?.statistics?.blueCount || 0;
-  const vermelhos3 = t3?.statistics?.redCount || 0;
+  const pistaInstinto =
+    a1 + v1 === 0 ? 'sem_dados' :
+    eq1 <= 2 ? 'equilibrado' :
+    a1 > v1 ? 'preferencia_azul' : 'preferencia_vermelho';
+
+  const pistaEquilibrio =
+    a2 + v2 === 0 ? 'sem_dados' :
+    eq2 <= 2 ? 'equilibrado' :
+    a2 > v2 ? 'puxa_azul' : 'puxa_vermelho';
+
+  const pistaPressao =
+    a3 + v3 === 0 ? 'sem_dados' :
+    eq3 <= 3 ? 'mantem_equilibrio' :
+    a3 > v3 ? 'pressao_azul' : 'pressao_vermelho';
 
   return `
-CRIE UM RELATÓRIO EXCLUSIVO DO MINDKAPPA USANDO ESTA ESTRUTURA EXATA:
+Você é um assistente que escreve relatórios curtos no estilo MANUS.
+Siga o MANUAL MANUS (abaixo) como se fosse um guia de redação obrigatório.
+NUNCA revele κ ou termos técnicos; traduza tudo em linguagem humana.
+Português do Brasil. 2ª pessoa. 180–320 palavras.
 
-🧠 SEU RELATÓRIO PESSOAL DO MCD
-${nome} - Descobrindo Como Sua Mente Funciona
+MANUAL:
+${MANUAL_MANUS}
 
-🎯 O QUE VOCÊ FEZ (RESUMO SIMPLES)
-Você participou de 3 testes diferentes onde tinha que escolher entre AZUL e VERMELHO.
+DADOS DO USUÁRIO (para base factual):
+• Nome: ${nome}
+• Teste 1 (Instinto): ${a1} AZUL / ${v1} VERMELHO → pista=${pistaInstinto}
+• Teste 2 (Equilíbrio): ${a2} AZUL / ${v2} VERMELHO → pista=${pistaEquilibrio}
+• Teste 3 (Pressão): ${a3} AZUL / ${v3} VERMELHO → pista=${pistaPressao}
 
-TESTE 1: "Instinto Puro - Primeira Reação"
-• O que pedimos: Siga sua primeira intuição
-• O que você fez: ${azuis1} azuis e ${vermelhos1} vermelhos
-• O que isso revela: ${gerarInsightTeste1(azuis1, vermelhos1)}
+INSTRUÇÕES DE SAÍDA (OBRIGATÓRIO):
+- Use a ESTRUTURA OBRIGATÓRIA do MANUAL, nesta ordem e com títulos.
+- Escreva de forma direta, sem frases longas demais.
+- Não use bullet points excessivos (máximo 3 em cada lista).
+- Use sempre AZUL/VERMELHO quando citar as escolhas.
+- Não inclua κ, “von Mises”, nem qualquer fórmula.
 
-TESTE 2: "Equilíbrio Mental - Busque Balanceamento"  
-• O que pedimos: Tente equilibrar suas escolhas
-• O que você fez: ${azuis2} azuis e ${vermelhos2} vermelhos
-• O que isso revela: ${gerarInsightTeste2(azuis2, vermelhos2)}
-
-TESTE 3: "Pressão Temporal - Decisões Rápidas"
-• O que pedimos: Escolha sob pressão de tempo
-• O que você fez: ${azuis3} azuis e ${vermelhos3} vermelhos  
-• O que isso revela: ${gerarInsightTeste3(azuis3, vermelhos3)}
-
-🔍 O QUE DESCOBRIMOS SOBRE VOCÊ
-${gerarPerfilMental(nome, azuis1, vermelhos1, azuis2, vermelhos2, azuis3, vermelhos3)}
-
-💡 DICAS PARA SEU DIA A DIA
-${gerarDicasPraticas(azuis1, vermelhos1, azuis2, vermelhos2, azuis3, vermelhos3)}
-
-🎉 MENSAGEM FINAL
-${gerarMensagemFinal(nome)}
-
----
-INSTRUÇÕES OBRIGATÓRIAS:
-• USE APENAS "AZUL" e "VERMELHO" (nunca A/B ou outras cores)
-• USE "MCD" ou "MindKappa" (nunca ABC ou outros nomes)
-• SIGA A ESTRUTURA ACIMA EXATAMENTE
-• LINGUAGEM: Conversacional, motivadora, específica
-• CHAME O USUÁRIO PELO NOME: "${nome}, sua mente..."
+Agora gere o RELATÓRIO GRÁTIS em texto puro (sem markdown extra além de negritos pedidos nos títulos).
 `;
 }
 
@@ -536,8 +572,17 @@ app.post('/api/generate-report', async (req, res) => {
         const completion = await Promise.race([
           openai.chat.completions.create({
             model: "gpt-3.5-turbo",
-            messages: [{ role: "user", content: gerarPromptGratuito(userData) }],
-            max_tokens: 600,
+            messages: [
+      {
+        role: "system",
+        content: "Você escreve relatórios MindKappa no estilo MANUS. Siga estritamente o manual. Proíba termos técnicos (κ, von Mises). Tom não-diagnóstico."
+      },
+      {
+        role: "user",
+        content: gerarPromptGratuito(userData)
+      }
+    ],
+            max_tokens: 750,
             temperature: 0.7
           }),
           new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), OPENAI_TIMEOUT))
@@ -567,7 +612,7 @@ app.post('/api/generate-report', async (req, res) => {
   }
 });
 
-// ✅ MERCADO PAGO (Checkout Pro)
+
 // ✅ MERCADO PAGO (Checkout Pro)
 app.post('/api/simple-subscription', async (req, res) => {
   try {
