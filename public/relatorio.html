@@ -44,10 +44,7 @@
 
   <script>
     // ========= CONFIG BACKEND =========
-    const API_URL =
-      (window.env && window.env.API_URL) ||
-      (typeof importMeta !== 'undefined' && importMeta.env && importMeta.env.VITE_API_URL) ||
-      'http://localhost:3000';
+    const API_URL = (window.env && window.env.API_URL) || window.location.origin;
 
     const elements = {
       reportContent: document.getElementById('reportContent')
@@ -84,7 +81,7 @@
           </div>
 
           <button class="btn" onclick="generateReport()" style="font-size:1.2rem; padding:18px 40px;">
-            🧠 Gerar Meu Relatório com IA (Grátis)
+            🧠 Gerar Meu Relatório. (Grátis)
           </button>
 
           <div class="premium-cta">
@@ -92,7 +89,7 @@
             <p style="margin:0 0 15px 0; opacity:.9;">Relatório Premium com IA Generativa + PDF para download imediato</p>
             <button onclick="buyPremiumReport()"
   style="background: linear-gradient(135deg, #10b981, #059669); color:#fff; border:none; padding:18px 40px; font-size:1.1rem; border-radius:50px; cursor:pointer; font-weight:700; transition: all .3s; width:100%; max-width:320px; box-shadow:0 8px 25px rgba(16,185,129,.3);">
-  💎 Pagar e Gerar Relatório Premium
+  💎 Gerar Relatório Premium
 </button>
             <div class="feature-list">
               <div class="feature-item">Análise aprofundada dos seus 3 testes</div>
@@ -458,6 +455,9 @@ ${analysis.teste3.kappa ? `⏰ PRESSÃO: κ ${analysis.teste3.kappa} (${analysis
     }
 
     window.addEventListener('load', () => { checkLGPD(); initializeReport(); });
+    window.generateReport = generateReport;
+    window.generatePremiumReport = generatePremiumReport;
+    window.startPremiumFlow = startPremiumFlow;
   </script>
 
   <script>
@@ -478,6 +478,7 @@ async function buyPremiumReport() {
     alert('⚠️ Pagamento indisponível no momento. Tente novamente.');
   }
 }
+
 </script>
 
   <!-- LGPD Modal -->
