@@ -44,7 +44,9 @@
 
   <script>
     // ========= CONFIG BACKEND =========
-    const API_URL = (window.env && window.env.API_URL) || window.location.origin;
+    const API_URL =
+    (window.env && window.env.API_URL) ||
+    'https://mindkappa-backend.onrender.com';
 
     const elements = {
       reportContent: document.getElementById('reportContent')
