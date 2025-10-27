@@ -10,6 +10,59 @@ const MCDCore = require('./mcd-core');
 // ✅ MERCADO PAGO (SDK v2)
 const { MercadoPagoConfig, Preference } = require('mercadopago');
 
+const MANUS_FREE = `
+Você é o MindKappa Analyst. Transforme dados em linguagem humana e positiva.
+Regras:
+- Tom: encorajador, científico-acessível, com "UAU".
+- Proibido jargões (κ, von Mises, “coerência”) no relatório grátis.
+- Use termos humanos: Equilíbrio, Constância, Flexibilidade, Foco, Resposta ao Tempo.
+- Use emojis com moderação (1 por título e 1 por bullet).
+- Estrutura obrigatória (nessa ordem):
+  1) 🧠 Título curto e forte
+  2) 🎯 O que você fez (3 testes + contagem AZUL/VERMELHO)
+  3) 🔍 O que isso sugere (insight em 3–5 frases, traduzindo números em experiência humana)
+  4) ⭐ Seus pontos fortes (3 bullets, 1 emoji cada)
+  5) 💡 Como aproveitar no dia a dia (3 bullets práticos)
+  6) 🚀 Próximo passo (convite gentil ao Premium: IA generativa, PDF, comparações)
+- Tamanho: 180–320 palavras, direto e sem floreio.
+`;
+
+// PREMIUM: quadro de Tipos Mentais e comparação populacional (pode usar κ nos bastidores)
+const MANUS_PREMIUM = `
+Você é o MindKappa Analyst (versão Premium).
+Objetivo: classificar Tipo Mental com base nas 3 dimensões e comparar com população.
+Regras de estilo:
+- Tom: forte, inspirador, técnico-acessível. Emojis moderados.
+- No texto final, não exagere em números brutos; traduza κ em linguagem humana (pode citar, mas priorize significado).
+
+Tipos Mentais (heurística):
+- Executora Perfeita: "aleatório" alto, "50/50" perfeito, "preferência" alto.
+- Aleatório Natural: "aleatório" perfeito/quase, "50/50" um pouco menos preciso.
+- Racional Equilibrado: "aleatório" baixo/médio, "50/50" perfeito, "preferência" alto.
+- Mestre do Equilíbrio: "aleatório" baixo/perfeito e "50/50" perfeito.
+- Apaixonado Controlado: "aleatório" alto, "50/50" perfeito, "preferência" alto.
+- Equilibrista Absoluta: "50/50" perfeito e "preferência" ~50/50.
+- Apaixonado Disciplinado: "aleatório" alto, "50/50" quase perfeito, "preferência" alto.
+- Equilibrista Determinado: "aleatório" baixo/médio, "50/50" quase perfeito, "preferência" alto.
+- Autêntica Consistente: "aleatório" médio, "50/50" levemente alto, "preferência" alto.
+- Aleatório Criativo (Lion): κ médio muito baixo; variabilidade extrema.
+
+Comparação Populacional:
+- κ médio populacional (Primeiros10): 10.476
+- κ médio Lion: 0.413
+Diretrizes:
+- Se κ médio usuário < 1.0, destaque “mais aleatório que a média”.
+- Se “50/50” ~perfeito, destacar precisão quase perfeita.
+Estrutura Premium:
+1) Título (Tipo Mental)
+2) O que você fez (3 testes + contagens)
+3) Insight central (narrativa única)
+4) Superpoderes mentais (3–4 bullets)
+5) Comparação com mundo (raridade/benchmark)
+6) Dicas aplicáveis (3–4)
+7) Mensagem final forte
+`;
+
 // ✅ cria o client com o access token do .env
 const mpClient = new MercadoPagoConfig({
   accessToken: process.env.MERCADOPAGO_ACCESS_TOKEN
@@ -37,40 +90,7 @@ REGRAS:
 `;
 }
 
-const MANUAL_MANUS = `
-NOME DO ESTILO: MANUS (MindKappa Narrative Style)
 
-VOZ:
-- Clara, confiante, positiva e precisa. Sempre em pt-BR.
-- Sem jargões clínicos ou diagnósticos. Use linguagem humana: “equilíbrio”, “constância”, “variação”, “pressão do tempo”.
-
-OBJETIVO DO RELATÓRIO GRÁTIS:
-- Explicar, de forma útil e agradável, o que os 3 testes medem e o que os dados do usuário sugerem.
-- Entregar valor real sem depender de termos técnicos (κ, von Mises, etc.).
-- Convidar o usuário a continuar a jornada (sem pressão).
-
-ESTRUTURA OBRIGATÓRIA (SEMPRE NA MESMA ORDEM):
-1) **Título** (1 linha) – curto e forte (ex.: “Seu padrão mental em 3 atos”).
-2) **O que você fez** – explique os 3 testes em linguagem simples e mostre a contagem AZUL/VERMELHO de cada um.
-3) **O que isso sugere** – insight central em 3–5 frases; traduza números em linguagem humana (equilíbrio, variação, constância).
-4) **Seus pontos fortes** – 3 bullets, cada um com 1 frase direta.
-5) **Como aproveitar isso no dia a dia** – 3 bullets práticos (1–2 linhas cada).
-6) **Próximo passo** – convite gentil para o premium (“com IA gerativa, PDF e comparações”).
-
-REGRAS:
-- Nunca usar termos técnicos (κ, concentração angular, etc.) no relatório grátis.
-- Sempre escrever em 2ª pessoa (“você”).
-- Sempre usar **AZUL** e **VERMELHO** (não chame de A/B).
-- Não fazer promessas de desempenho (“você vai…”); prefira possibilidades (“você pode…”).
-- Nada de linguagem clínica/terapêutica.
-
-TÉCNICAS DE LINGUAGEM:
-- “Tradução de número → experiência”: se azul≈vermelho, fale “tendência natural ao equilíbrio”; se um domina, fale “preferência estável”.
-- “Contraste contextual”: note diferenças entre instinto (Teste 1), equilíbrio buscado (Teste 2) e pressão temporal (Teste 3).
-
-TAMANHO:
-- 180 a 320 palavras. Sem floreio.
-`;
 
 function montarUserMessagePremium(userData) {
   const nome = userData.name || 'Explorador';
@@ -323,7 +343,7 @@ app.post('/api/generate-premium-report', async (req, res) => {
     if (OPENAI_ENABLED && openai) {
       try {
         const systemPrompt = await gerarSystemPrompt();
-        const userPrompt = montarUserMessagePremium(userData);
+        const userPrompt = gerarPromptPremiumV2(userData);
 
         const messages = [
           { role: "system", content: systemPrompt },
@@ -386,6 +406,7 @@ function gerarPromptGratuito(userData) {
   const t2 = userData?.teste2 || {};
   const t3 = userData?.teste3 || {};
 
+  // Contagens (AZUL/VERMELHO)
   const a1 = Number(t1.statistics?.blueCount || 0);
   const v1 = Number(t1.statistics?.redCount || 0);
   const a2 = Number(t2.statistics?.blueCount || 0);
@@ -393,49 +414,111 @@ function gerarPromptGratuito(userData) {
   const a3 = Number(t3.statistics?.blueCount || 0);
   const v3 = Number(t3.statistics?.redCount || 0);
 
-  // Sinais simples para orientar o tom dos insights
-  const eq1 = Math.abs(a1 - v1);
-  const eq2 = Math.abs(a2 - v2);
-  const eq3 = Math.abs(a3 - v3);
+  // Equilíbrio simples 0–100 (%)
+  const bal = (a, v) => {
+    const tot = a + v;
+    if (!tot) return 0;
+    const dev = Math.abs(a - v);
+    return Math.round((1 - dev / tot) * 100);
+  };
+  const bal1 = bal(a1, v1); // instinto
+  const bal2 = bal(a2, v2); // equilíbrio
+  const bal3 = bal(a3, v3); // pressão
 
-  const pistaInstinto =
-    a1 + v1 === 0 ? 'sem_dados' :
-    eq1 <= 2 ? 'equilibrado' :
-    a1 > v1 ? 'preferencia_azul' : 'preferencia_vermelho';
+  // Alternância no Teste 2
+  let alternancias2 = 0;
+  if (Array.isArray(t2.decisions) && t2.decisions.length > 1) {
+    for (let i = 1; i < t2.decisions.length; i++) {
+      const prev = t2.decisions[i - 1]?.choice;
+      const cur  = t2.decisions[i]?.choice;
+      if (prev && cur && prev !== cur) alternancias2++;
+    }
+  }
+  const total2 = (a2 + v2) || (t2.decisions?.length || 0);
+  const alternanciaRate2 = total2 > 1 ? Math.round((alternancias2 / (total2 - 1)) * 100) : 0;
 
-  const pistaEquilibrio =
-    a2 + v2 === 0 ? 'sem_dados' :
-    eq2 <= 2 ? 'equilibrado' :
-    a2 > v2 ? 'puxa_azul' : 'puxa_vermelho';
+  // Pressão temporal (timeouts + tempo médio de reação válido)
+  let timeouts3 = 0, somaRT3 = 0, contRT3 = 0;
+  if (Array.isArray(t3.decisions)) {
+    for (const d of t3.decisions) {
+      if (d.timedOut) timeouts3++;
+      if (!d.timedOut && Number.isFinite(d.reactionTime)) {
+        somaRT3 += d.reactionTime; contRT3++;
+      }
+    }
+  }
+  const timeoutRate3 = (t3.decisions && t3.decisions.length)
+    ? Math.round((timeouts3 / t3.decisions.length) * 100)
+    : 0;
+  const avgRT3s = contRT3 ? Math.round((somaRT3 / contRT3) / 100) / 10 : 0; // seg., 1 casa
 
-  const pistaPressao =
-    a3 + v3 === 0 ? 'sem_dados' :
-    eq3 <= 3 ? 'mantem_equilibrio' :
-    a3 > v3 ? 'pressao_azul' : 'pressao_vermelho';
+  // pistas heurísticas para narrativa (não imprimir as palavras)
+  const pistaInstinto   = (a1 + v1 === 0) ? 'sem_dados' : (bal1 >= 70 ? 'equilibrado' : (a1 > v1 ? 'pref_azul' : 'pref_vermelho'));
+  const pistaEquilibrio = (a2 + v2 === 0) ? 'sem_dados' : (bal2 >= 75 ? 'equilibrado' : (a2 > v2 ? 'puxa_azul' : 'puxa_vermelho'));
+  const pistaPressao    = (a3 + v3 === 0) ? 'sem_dados' :
+    ((timeoutRate3 <= 20 && bal3 >= 60) ? 'mantem_equilibrio' : (a3 > v3 ? 'pressao_azul' : 'pressao_vermelho'));
 
   return `
-Você é um assistente que escreve relatórios curtos no estilo MANUS.
-Siga o MANUAL MANUS (abaixo) como se fosse um guia de redação obrigatório.
-NUNCA revele κ ou termos técnicos; traduza tudo em linguagem humana.
-Português do Brasil. 2ª pessoa. 180–320 palavras.
+${MANUS_FREE}
 
-MANUAL:
-${MANUAL_MANUS}
-
-DADOS DO USUÁRIO (para base factual):
+DADOS:
 • Nome: ${nome}
-• Teste 1 (Instinto): ${a1} AZUL / ${v1} VERMELHO → pista=${pistaInstinto}
-• Teste 2 (Equilíbrio): ${a2} AZUL / ${v2} VERMELHO → pista=${pistaEquilibrio}
-• Teste 3 (Pressão): ${a3} AZUL / ${v3} VERMELHO → pista=${pistaPressao}
+• Teste 1 (Instinto): ${a1} AZUL / ${v1} VERMELHO
+• Teste 2 (Equilíbrio): ${a2} AZUL / ${v2} VERMELHO
+• Teste 3 (Pressão): ${a3} AZUL / ${v3} VERMELHO
 
-INSTRUÇÕES DE SAÍDA (OBRIGATÓRIO):
-- Use a ESTRUTURA OBRIGATÓRIA do MANUAL, nesta ordem e com títulos.
-- Escreva de forma direta, sem frases longas demais.
-- Não use bullet points excessivos (máximo 3 em cada lista).
-- Use sempre AZUL/VERMELHO quando citar as escolhas.
-- Não inclua κ, “von Mises”, nem qualquer fórmula.
+SINAIS (usar na narrativa, não como tabela):
+• Equilíbrio % — Instinto: ${bal1} | Equilíbrio: ${bal2} | Pressão: ${bal3}
+• Alternância no Teste 2: ${alternancias2} (~${alternanciaRate2}%)
+• Pressão — timeouts: ${timeouts3} (${timeoutRate3}%), tempo médio: ~${avgRT3s}s
+• Pistas: instinto=${pistaInstinto}, equilibrio=${pistaEquilibrio}, pressao=${pistaPressao}
 
-Agora gere o RELATÓRIO GRÁTIS em texto puro (sem markdown extra além de negritos pedidos nos títulos).
+SAÍDA:
+- 180–320 palavras, 2ª pessoa, pt-BR.
+- Títulos com 1 emoji; bullets com 1 emoji.
+- Explique os 3 testes com as contagens e traduza os sinais em experiência humana.
+- Proibido jargões técnicos (κ etc).
+- Inclua “Próximo passo” convidando ao Premium (IA + PDF + comparações).
+`;
+}
+
+function gerarPromptPremiumV2(userData) {
+  const nome = userData?.name || 'Explorador';
+  const t1 = userData?.teste1 || {};
+  const t2 = userData?.teste2 || {};
+  const t3 = userData?.teste3 || {};
+
+  const a1 = Number(t1.statistics?.blueCount || 0);
+  const v1 = Number(t1.statistics?.redCount || 0);
+  const a2 = Number(t2.statistics?.blueCount || 0);
+  const v2 = Number(t2.statistics?.redCount || 0);
+  const a3 = Number(t3.statistics?.blueCount || 0);
+  const v3 = Number(t3.statistics?.redCount || 0);
+
+  const k1 = Number(t1.coherence?.kappa || 0);
+  const k2 = Number(t2.coherence?.kappa || 0);
+  const k3 = Number(t3.coherence?.kappa || 0);
+  const kVals = [k1, k2, k3].filter(n => Number.isFinite(n));
+  const kMed = kVals.length ? (kVals.reduce((s,v)=>s+v,0)/kVals.length) : 0;
+
+  return `
+${MANUS_PREMIUM}
+
+DADOS:
+• Nome: ${nome}
+• Teste 1 (Instinto): ${a1} AZUL / ${v1} VERMELHO | κ1 ≈ ${k1.toFixed(3)}
+• Teste 2 (Equilíbrio): ${a2} AZUL / ${v2} VERMELHO | κ2 ≈ ${k2.toFixed(3)}
+• Teste 3 (Pressão): ${a3} AZUL / ${v3} VERMELHO | κ3 ≈ ${k3.toFixed(3)}
+• κ médio (usuário): ${kMed.toFixed(3)}
+• κ médio (População Primeiros10): 10.476
+• κ médio (Lion): 0.413
+
+INSTRUÇÕES:
+- Classifique o Tipo Mental com base nas três dimensões (use as diretrizes “Tipos Mentais”).
+- Converta κ em linguagem humana (evite fórmulas; pode citar κ pontualmente).
+- Use a Estrutura Premium.
+- Emojis moderados em títulos e bullets.
+- Português (Brasil).
 `;
 }
 
