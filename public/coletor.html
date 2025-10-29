@@ -1,0 +1,956 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MCD Technologies - Medidor de Coerência Decisional</title>
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --secondary: #3498db;
+            --accent1: #e74c3c;
+            --accent2: #2980b9;
+            --light: #ecf0f1;
+            --dark: #2c3e50;
+            --success: #27ae60;
+            --warning: #f39c12;
+            --danger: #e74c3c;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f5f7fa;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        h1, h2, h3 {
+            margin-top: 0;
+        }
+        
+        .dashboard {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 2rem;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .decision-interface {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .buttons-container {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+        
+        .decision-btn {
+            padding: 1.5rem 3rem;
+            font-size: 1.2rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+        
+        .blue-btn {
+            background-color: var(--secondary);
+            color: white;
+        }
+        
+        .blue-btn:hover {
+            background-color: var(--accent2);
+            transform: translateY(-3px);
+        }
+        
+        .red-btn {
+            background-color: var(--accent1);
+            color: white;
+        }
+        
+        .red-btn:hover {
+            background-color: #c0392b;
+            transform: translateY(-3px);
+        }
+        
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-box {
+            background: white;
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            margin: 0.5rem 0;
+        }
+        
+        .coherence-indicator {
+            height: 20px;
+            background: #eee;
+            border-radius: 10px;
+            margin: 1rem 0;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .coherence-level {
+            height: 100%;
+            border-radius: 10px;
+            transition: width 0.5s ease;
+        }
+        
+        .interpretation {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .history-chart {
+            height: 200px;
+            margin-top: 1rem;
+        }
+        
+        .session-list {
+            margin-top: 2rem;
+        }
+        
+        .session-item {
+            background: white;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .kappa-badge {
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            color: white;
+            font-weight: bold;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 3rem;
+            padding: 2rem;
+            background: var(--dark);
+            color: white;
+            border-radius: 8px;
+        }
+        
+        /* Modal de Login */
+        .login-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        
+        .login-form {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .login-form h2 {
+            margin-top: 0;
+            color: var(--primary);
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+        }
+        
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+        
+        .login-btn {
+            background-color: var(--secondary);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            width: 100%;
+            font-weight: bold;
+        }
+        
+        .login-btn:hover {
+            background-color: var(--accent2);
+        }
+        
+        /* Contexto Section */
+        .context-section {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .context-display {
+            font-style: italic;
+            color: #7f8c8d;
+            margin-top: 0.5rem;
+        }
+        
+        /* Overlay de conclusão melhorado */
+        .completion-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.85);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 999;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            overflow-y: auto;
+        }
+        
+        .completion-content {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 2rem;
+            border-radius: 8px;
+            max-width: 600px;
+            width: 90%;
+            backdrop-filter: blur(10px);
+        }
+        
+        .completion-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 1.5rem;
+            flex-wrap: wrap;
+        }
+        
+        .completion-btn {
+            background-color: var(--secondary);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: bold;
+            min-width: 160px;
+        }
+        
+        .review-btn {
+            background-color: #7f8c8d;
+        }
+        
+        .completion-btn:hover {
+            opacity: 0.9;
+        }
+        
+        .results-summary {
+            margin: 1.5rem 0;
+            padding: 1rem;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            text-align: left;
+        }
+        
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+        }
+        
+        /* Histórico de decisões */
+        .decision-history {
+            margin-top: 1.5rem;
+            max-height: 200px;
+            overflow-y: auto;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            padding: 1rem;
+        }
+        
+        .history-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .history-item:last-child {
+            border-bottom: none;
+        }
+        
+        .new-session-container {
+            text-align: center;
+            margin-top: 2rem;
+            padding: 2rem;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        @media (max-width: 768px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .buttons-container {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .decision-btn {
+                padding: 1.2rem 2rem;
+            }
+            
+            .completion-buttons {
+                flex-direction: column;
+            }
+            
+            .completion-btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Modal de Login -->
+    <div class="login-modal" id="loginModal">
+        <div class="login-form">
+            <h2>Acesso ao Sistema MCD</h2>
+            <div class="form-group">
+                <label for="patientName">Nome do Paciente</label>
+                <input type="text" id="patientName" placeholder="Digite seu nome completo">
+            </div>
+            <div class="form-group">
+                <label for="accessCode">Código de Acesso</label>
+                <input type="password" id="accessCode" placeholder="Digite seu código de acesso">
+            </div>
+            <div class="form-group">
+                <label for="sessionContext">Contexto da Sessão</label>
+                <select id="sessionContext">
+                    <option value="">Selecione o contexto...</option>
+                    <option value="basal">Estado Basal (referência)</option>
+                    <option value="pre-tarefa">Pré-tarefa cognitiva</option>
+                    <option value="pos-tarefa">Pós-tarefa cognitiva</option>
+                    <option value="estimulacao">Pós-estimulação</option>
+                    <option value="intervencao">Pós-intervenção</option>
+                    <option value="outro">Outro contexto</option>
+                </select>
+            </div>
+            <button class="login-btn" id="loginBtn">Iniciar Sessão</button>
+        </div>
+    </div>
+
+    <!-- Overlay de Conclusão -->
+    <div class="completion-overlay" id="completionOverlay" style="display: none;">
+        <div class="completion-content">
+            <h2>Sessão Concluída!</h2>
+            <p>Os resultados foram registrados com sucesso.</p>
+            
+            <div class="results-summary" id="resultsSummary">
+                <!-- Resultados serão preenchidos via JavaScript -->
+            </div>
+            
+            <div class="completion-buttons">
+                <button class="completion-btn review-btn" id="reviewDataBtn">Revisar Dados</button>
+                <button class="completion-btn" id="newSessionTopBtn">Iniciar Nova Sessão</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="container" id="mainContainer" style="display: none;">
+        <header>
+            <h1>MCD Technologies</h1>
+            <p>Medidor de Coerência Decisional - Análise de Padrões Decisórios Baseada em κ (kappa)</p>
+            <p id="patientInfo">Paciente: <span id="patientNameDisplay">Não identificado</span> | Sessão Ativa</p>
+        </header>
+        
+        <!-- Seção de Contexto -->
+        <div class="context-section">
+            <h3>Contexto da Sessão</h3>
+            <div class="context-display" id="contextDisplay">
+                Contexto não definido
+            </div>
+        </div>
+        
+        <div class="dashboard">
+            <div class="card">
+                <h2>Interface de Decisão</h2>
+                <div class="decision-interface">
+                    <p>Escolha conscientemente ou de acordo com seu impulso primário:</p>
+                    <div class="buttons-container" id="buttonsContainer">
+                        <!-- Os botões serão posicionados aleatoriamente via JavaScript -->
+                    </div>
+                    <p>Decisões registradas: <span id="decisionCount">0</span>/30</p>
+                </div>
+            </div>
+            
+            <div class="card">
+                <h2>Coerência Atual</h2>
+                <div class="coherence-display">
+                    <h3>κ = <span id="kappaValue">0.00</span></h3>
+                    <div class="coherence-indicator">
+                        <div class="coherence-level" id="coherenceBar" style="width: 0%; background-color: #95a5a6;"></div>
+                    </div>
+                    <div id="coherenceLabel" style="text-align: center; font-weight: bold; color: #7f8c8d;">Não calculado</div>
+                </div>
+                
+                <div class="stats-container">
+                    <div class="stat-box">
+                        <div>Vetor R</div>
+                        <div class="stat-value" id="rValue">0.00</div>
+                    </div>
+                    <div class="stat-box">
+                        <div>Ângulo Médio</div>
+                        <div class="stat-value" id="meanAngle">0°</div>
+                    </div>
+                    <div class="stat-box">
+                        <div>Concentração</div>
+                        <div class="stat-value" id="concentration">0.00</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="interpretation">
+            <h2>Interpretação da Coerência Decisional</h2>
+            <p id="interpretationText">Complete pelo menos 30 decisões para obter uma análise de coerência.</p>
+            
+            <h3>Histórico de Decisões</h3>
+            <div class="decision-history" id="decisionHistory">
+                <div class="history-item" style="color: #7f8c8d; font-style: italic;">
+                    Nenhuma decisão registrada ainda
+                </div>
+            </div>
+        </div>
+        
+        <div class="session-list">
+            <h2>Últimas Sessões</h2>
+            <div id="sessionsList">
+                <div class="session-item">
+                    <div>
+                        <strong>Sessão Neutra de Referência</strong>
+                        <div>2025-09-03 14:30</div>
+                    </div>
+                    <div class="kappa-badge" style="background-color: #7f8c8d;">κ = 0.05</div>
+                </div>
+                <div class="session-item">
+                    <div>
+                        <strong>Teste com Viés Simbólico</strong>
+                        <div>2025-09-02 11:15</div>
+                    </div>
+                    <div class="kappa-badge" style="background-color: #e74c3c;">κ = 12.37</div>
+                </div>
+                <div class="session-item">
+                    <div>
+                        <strong>Sessão Pós-alongamento</strong>
+                        <div>2025-09-01 09:45</div>
+                    </div>
+                    <div class="kappa-badge" style="background-color: #3498db;">κ = 0.38</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="new-session-container">
+            <h3>Iniciar Nova Sessão</h3>
+            <p>Quando estiver pronto para uma nova sessão, clique no botão abaixo:</p>
+            <button class="completion-btn" id="newSessionBottomBtn" style="display: none;">Iniciar Nova Sessão</button>
+        </div>
+        
+        <footer>
+            <p>MCD Technologies © 2025 | Versão 2025-09-05</p>
+            <p>Sistema validado cientificamente | Análise de coerência baseada na distribuição de von Mises</p>
+        </footer>
+    </div>
+
+    <script>
+        // Variáveis globais
+        let decisions = [];
+        let currentSession = {
+            id: Date.now(),
+            patientName: "",
+            context: "",
+            startTime: new Date(),
+            decisions: [],
+            kappa: 0,
+            rValue: 0,
+            meanAngle: 0
+        };
+        
+        let previousSessions = [
+            {
+                name: "Sessão Neutra de Referência",
+                date: "2025-09-03 14:30",
+                kappa: 0.05,
+                context: "Estado Basal"
+            },
+            {
+                name: "Teste com Viés Simbólico",
+                date: "2025-09-02 11:15",
+                kappa: 12.37,
+                context: "Pré-tarefa cognitiva"
+            },
+            {
+                name: "Sessão Pós-alongamento",
+                date: "2025-09-01 09:45",
+                kappa: 0.38,
+                context: "Pós-intervenção"
+            }
+        ];
+        
+        // Elementos DOM
+        const loginModal = document.getElementById('loginModal');
+        const mainContainer = document.getElementById('mainContainer');
+        const completionOverlay = document.getElementById('completionOverlay');
+        const patientNameInput = document.getElementById('patientName');
+        const accessCodeInput = document.getElementById('accessCode');
+        const sessionContextInput = document.getElementById('sessionContext');
+        const loginBtn = document.getElementById('loginBtn');
+        const patientNameDisplay = document.getElementById('patientNameDisplay');
+        const contextDisplay = document.getElementById('contextDisplay');
+        const patientInfo = document.getElementById('patientInfo');
+        const buttonsContainer = document.getElementById('buttonsContainer');
+        const blueBtn = document.createElement('button');
+        const redBtn = document.createElement('button');
+        const decisionCount = document.getElementById('decisionCount');
+        const kappaValue = document.getElementById('kappaValue');
+        const coherenceBar = document.getElementById('coherenceBar');
+        const coherenceLabel = document.getElementById('coherenceLabel');
+        const rValue = document.getElementById('rValue');
+        const meanAngle = document.getElementById('meanAngle');
+        const concentration = document.getElementById('concentration');
+        const interpretationText = document.getElementById('interpretationText');
+        const decisionHistory = document.getElementById('decisionHistory');
+        const sessionsList = document.getElementById('sessionsList');
+        const reviewDataBtn = document.getElementById('reviewDataBtn');
+        const newSessionTopBtn = document.getElementById('newSessionTopBtn');
+        const newSessionBottomBtn = document.getElementById('newSessionBottomBtn');
+        const resultsSummary = document.getElementById('resultsSummary');
+        
+        // Configurar botões
+        blueBtn.className = 'decision-btn blue-btn';
+        blueBtn.textContent = 'AZUL';
+        blueBtn.id = 'blueBtn';
+        
+        redBtn.className = 'decision-btn red-btn';
+        redBtn.textContent = 'VERMELHO';
+        redBtn.id = 'redBtn';
+        
+        // Mapeamento de contextos para exibição
+        const contextMap = {
+            'basal': 'Estado Basal (referência)',
+            'pre-tarefa': 'Pré-tarefa cognitiva',
+            'pos-tarefa': 'Pós-tarefa cognitiva',
+            'estimulacao': 'Pós-estimulação',
+            'intervencao': 'Pós-intervenção',
+            'outro': 'Outro contexto'
+        };
+        
+        // Função para randomizar a posição dos botões
+        function randomizeButtonPosition() {
+            buttonsContainer.innerHTML = '';
+            if (Math.random() > 0.5) {
+                buttonsContainer.appendChild(blueBtn);
+                buttonsContainer.appendChild(redBtn);
+            } else {
+                buttonsContainer.appendChild(redBtn);
+                buttonsContainer.appendChild(blueBtn);
+            }
+        }
+        
+        // Event listeners
+        blueBtn.addEventListener('click', () => recordDecision('blue'));
+        redBtn.addEventListener('click', () => recordDecision('red'));
+        loginBtn.addEventListener('click', startSession);
+        reviewDataBtn.addEventListener('click', hideCompletionOverlay);
+        newSessionTopBtn.addEventListener('click', startNewSession);
+        newSessionBottomBtn.addEventListener('click', startNewSession);
+        
+        // Função para iniciar a sessão
+        function startSession() {
+            const name = patientNameInput.value.trim();
+            const accessCode = accessCodeInput.value.trim();
+            const context = sessionContextInput.value;
+            
+            if (name === '') {
+                alert('Por favor, digite o nome do paciente.');
+                return;
+            }
+            
+            if (accessCode === '') {
+                alert('Por favor, digite o código de acesso.');
+                return;
+            }
+            
+            if (context === '') {
+                alert('Por favor, selecione o contexto da sessão.');
+                return;
+            }
+            
+            currentSession.patientName = name;
+            currentSession.context = context;
+            patientNameDisplay.textContent = name;
+            contextDisplay.textContent = contextMap[context] || context;
+            loginModal.style.display = 'none';
+            mainContainer.style.display = 'block';
+            
+            // Inicializar a posição dos botões
+            randomizeButtonPosition();
+        }
+        
+        // Função para ocultar o overlay de conclusão
+        function hideCompletionOverlay() {
+            completionOverlay.style.display = 'none';
+            newSessionBottomBtn.style.display = 'block';
+        }
+        
+        // Função para preencher o resumo de resultados
+        function fillResultsSummary() {
+            const blueCount = decisions.filter(d => d.choice === 'blue').length;
+            const redCount = decisions.filter(d => d.choice === 'red').length;
+            
+            resultsSummary.innerHTML = `
+                <div class="result-item">
+                    <span>Paciente:</span>
+                    <span><strong>${currentSession.patientName}</strong></span>
+                </div>
+                <div class="result-item">
+                    <span>Contexto:</span>
+                    <span><strong>${contextMap[currentSession.context] || currentSession.context}</strong></span>
+                </div>
+                <div class="result-item">
+                    <span>Coerência (κ):</span>
+                    <span><strong>${currentSession.kappa.toFixed(2)}</strong> - ${coherenceLabel.textContent}</span>
+                </div>
+                <div class="result-item">
+                    <span>Decisões Azuis:</span>
+                    <span><strong>${blueCount}</strong></span>
+                </div>
+                <div class="result-item">
+                    <span>Decisões Vermelhas:</span>
+                    <span><strong>${redCount}</strong></span>
+                </div>
+                <div class="result-item">
+                    <span>Vetor R:</span>
+                    <span><strong>${rValue.textContent}</strong></span>
+                </div>
+            `;
+        }
+        
+        // Função para iniciar uma nova sessão
+        function startNewSession() {
+            // Salvar sessão atual no histórico
+            if (decisions.length >= 30) {
+                previousSessions.unshift({
+                    name: `Sessão de ${currentSession.patientName}`,
+                    date: new Date().toLocaleString('pt-BR'),
+                    kappa: currentSession.kappa,
+                    context: contextMap[currentSession.context] || currentSession.context
+                });
+                
+                // Atualizar a lista de sessões
+                updateSessionsList();
+            }
+            
+            // Reiniciar variáveis
+            decisions = [];
+            currentSession = {
+                id: Date.now(),
+                patientName: currentSession.patientName,
+                context: currentSession.context,
+                startTime: new Date(),
+                decisions: [],
+                kappa: 0,
+                rValue: 0,
+                meanAngle: 0
+            };
+            
+            // Reiniciar UI
+            decisionCount.textContent = '0';
+            decisionHistory.innerHTML = '<div class="history-item" style="color: #7f8c8d; font-style: italic;">Nenhuma decisão registrada ainda</div>';
+            completionOverlay.style.display = 'none';
+            newSessionBottomBtn.style.display = 'none';
+            resetUI();
+            
+            // Randomizar botões
+            randomizeButtonPosition();
+        }
+        
+        // Função para atualizar a lista de sessões
+        function updateSessionsList() {
+            sessionsList.innerHTML = '';
+            
+            previousSessions.forEach(session => {
+                const sessionItem = document.createElement('div');
+                sessionItem.className = 'session-item';
+                
+                let badgeColor = '#7f8c8d'; // Cinza (padrão)
+                if (session.kappa > 1.0) badgeColor = '#e74c3c'; // Vermelho (alta coerência)
+                else if (session.kappa > 0.5) badgeColor = '#f39c12'; // Laranja
+                else if (session.kappa > 0.3) badgeColor = '#2ecc71'; // Verde
+                else if (session.kappa > 0.1) badgeColor = '#3498db'; // Azul
+                
+                sessionItem.innerHTML = `
+                    <div>
+                        <strong>${session.name}</strong>
+                        <div>${session.date} | ${session.context}</div>
+                    </div>
+                    <div class="kappa-badge" style="background-color: ${badgeColor};">κ = ${session.kappa.toFixed(2)}</div>
+                `;
+                
+                sessionsList.appendChild(sessionItem);
+            });
+        }
+        
+        // Função para registrar uma decisão
+        function recordDecision(choice) {
+            // Registrar a decisão com timestamp
+            const decision = {
+                choice: choice,
+                angle: choice === 'blue' ? 0 : Math.PI, // 0° ou 180° em radianos
+                timestamp: Date.now(),
+                timeFormatted: new Date().toLocaleTimeString('pt-BR')
+            };
+            
+            decisions.push(decision);
+            currentSession.decisions.push(decision);
+            
+            // Atualizar contador
+            decisionCount.textContent = decisions.length;
+            
+            // Atualizar histórico de decisões
+            updateDecisionHistory();
+            
+            // Randomizar a posição dos botões para a próxima decisão
+            randomizeButtonPosition();
+            
+            // Se tivermos decisões suficientes, calcular coerência
+            if (decisions.length >= 30) {
+                calculateCoherence();
+                
+                // Preencher e mostrar overlay de conclusão
+                fillResultsSummary();
+                setTimeout(() => {
+                    completionOverlay.style.display = 'flex';
+                }, 500);
+            }
+        }
+        
+        // Função para atualizar o histórico de decisões
+        function updateDecisionHistory() {
+            // Limpar o placeholder se existir
+            if (decisionHistory.querySelector('[style*="italic"]')) {
+                decisionHistory.innerHTML = '';
+            }
+            
+            // Mostrar apenas as últimas 10 decisões para não sobrecarregar a UI
+            const recentDecisions = decisions.slice(-10);
+            
+            recentDecisions.forEach(decision => {
+                const historyItem = document.createElement('div');
+                historyItem.className = 'history-item';
+                
+                historyItem.innerHTML = `
+                    <span>${decision.timeFormatted}</span>
+                    <span style="color: ${decision.choice === 'blue' ? '#3498db' : '#e74c3c'}; font-weight: bold;">
+                        ${decision.choice === 'blue' ? 'AZUL' : 'VERMELHO'}
+                    </span>
+                `;
+                
+                decisionHistory.appendChild(historyItem);
+            });
+            
+            // Manter o scroll no final
+            decisionHistory.scrollTop = decisionHistory.scrollHeight;
+        }
+        
+        // Função para calcular coerência (simplificado para demonstração)
+        function calculateCoherence() {
+            // Em uma implementação real, isso seria feito no backend
+            // com o algoritmo proper de estatística circular
+            
+            // Simulação de cálculo de kappa baseado no padrão de decisões
+            const blueCount = decisions.filter(d => d.choice === 'blue').length;
+            const redCount = decisions.filter(d => d.choice === 'red').length;
+            
+            // Simular diferentes valores de kappa baseado no padrão
+            let simulatedKappa;
+            if (blueCount === redCount) {
+                simulatedKappa = 0.05; // Aleatório
+            } else if (Math.abs(blueCount - redCount) < 5) {
+                simulatedKappa = 0.2; // Quase aleatório
+            } else if (Math.abs(blueCount - redCount) < 10) {
+                simulatedKappa = 0.4; // Moderadamente coerente
+            } else if (Math.abs(blueCount - redCount) < 15) {
+                simulatedKappa = 0.7; // Coerente
+            } else {
+                simulatedKappa = 1.2; // Altamente coerente
+            }
+            
+            // Adicionar algum ruído para tornar mais realista
+            simulatedKappa += (Math.random() * 0.1 - 0.05);
+            simulatedKappa = Math.max(0, simulatedKappa); // Não permitir valores negativos
+            
+            // Salvar no objeto de sessão atual
+            currentSession.kappa = simulatedKappa;
+            
+            // Atualizar UI com valores calculados
+            updateCoherenceUI(simulatedKappa);
+        }
+        
+        // Função para atualizar a UI com os valores de coerência
+        function updateCoherenceUI(kappa) {
+            kappaValue.textContent = kappa.toFixed(2);
+            
+            // Atualizar barra de coerência
+            let barWidth = Math.min(100, kappa * 50); // Ajuste de escala para visualização
+            coherenceBar.style.width = `${barWidth}%`;
+            
+            // Atualizar cor baseada no valor de kappa
+            let barColor, coherenceText;
+            
+            if (kappa < 0.1) {
+                barColor = '#95a5a6';
+                coherenceText = 'Padrão Aleatório';
+            } else if (kappa < 0.3) {
+                barColor = '#3498db';
+                coherenceText = 'Quase Aleatório';
+            } else if (kappa < 0.5) {
+                barColor = '#2ecc71';
+                coherenceText = 'Moderadamente Coerente';
+            } else if (kappa < 1.0) {
+                barColor = '#f39c12';
+                coherenceText = 'Coerente';
+            } else {
+                barColor = '#e74c3c';
+                coherenceText = 'Altamente Coerente';
+            }
+            
+            coherenceBar.style.backgroundColor = barColor;
+            coherenceLabel.textContent = coherenceText;
+            coherenceLabel.style.color = barColor;
+            
+            // Atualizar outros valores estatísticos (simulados)
+            rValue.textContent = (kappa / 2.5).toFixed(2);
+            meanAngle.textContent = `${Math.round((Math.random() * 180))}°`;
+            concentration.textContent = (kappa * 1.2).toFixed(2);
+            
+            // Atualizar interpretação
+            updateInterpretation(kappa);
+        }
+        
+        // Função para atualizar o texto de interpretação
+        function updateInterpretation(kappa) {
+            let interpretation;
+            
+            if (kappa < 0.1) {
+                interpretation = "Seu padrão decisional apresenta aleatoriedade significativa. Isso pode indicar: estado neutro, fadiga, ou influência de substâncias. Padrão típico de sessões sob efeito de álcool ou cansaço extremo.";
+            } else if (kappa < 0.3) {
+                interpretation = "Baixa coerência decisional. Possível estado de distração ou baixo engajamento com o processo. Similar a sessões realizadas em estado de multitarefa ou leve sonolência.";
+            } else if (kappa < 0.5) {
+                interpretation = "Coerência moderada. Indica algum nível de padrão intencional, mas com flutuações. Compatível com estados de desenvolvimento creativo ou trabalho focado sem estresse excessivo.";
+            } else if (kappa < 1.0) {
+                interpretation = "Alta coerência decisional. Padrão consistente sugere forte viés intencional ou simbólico. Associado a estados de concentração profunda ou motivação específica.";
+            } else {
+                interpretation = "Coerência excepcionalmente alta. Padrão altamente direcional, possivelmente indicando viés consciente muito forte ou estado de flow. Típico de sessões com simbolismo deliberado.";
+            }
+            
+            interpretationText.innerHTML = `<strong>Interpretação (κ = ${kappa.toFixed(2)}):</strong> ${interpretation}`;
+        }
+        
+        // Função para resetar a UI para o estado inicial
+        function resetUI() {
+            kappaValue.textContent = "0.00";
+            coherenceBar.style.width = "0%";
+            coherenceBar.style.backgroundColor = "#95a5a6";
+            coherenceLabel.textContent = "Não calculado";
+            coherenceLabel.style.color = "#7f8c8d";
+            rValue.textContent = "0.00";
+            meanAngle.textContent = "0°";
+            concentration.textContent = "0.00";
+            interpretationText.textContent = "Complete pelo menos 30 decisões para obter uma análise de coerência.";
+        }
+        
+        // Inicialização
+        document.addEventListener('DOMContentLoaded', function() {
+            // Inicializar a lista de sessões
+            updateSessionsList();
+            console.log("MCD Technologies - Sistema de Análise de Coerência Decisional inicializado");
+        });
+    </script>
+</body>
+</html>

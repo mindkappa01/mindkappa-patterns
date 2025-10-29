@@ -1,203 +1,1591 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>MindKappa Lab | MCD v2</title>
-  <link rel="stylesheet" href="assets/style.css"/>
-  <style>
-    body {
-      background: radial-gradient(circle at 30% 20%, #0f172a, #111827 60%, #1e293b 100%);
-      color: #e2e8f0; font-family: "Inter", sans-serif;
-      margin: 0; padding: 0;
-    }
-    .lab-wrapper {
-      max-width: 900px; margin: 60px auto; padding: 30px;
-      background: rgba(17,24,39,0.8); border-radius: 20px;
-      box-shadow: 0 10px 40px rgba(0,0,0,0.5);
-    }
-    h1 { text-align: center; color: #60a5fa; margin-bottom: 10px; }
-    h2 { text-align: center; color: #93c5fd; margin-top: 0; font-weight: 400; }
-    .decision-zone { display: flex; justify-content: center; gap: 40px; margin: 40px 0; }
-    .btn-choice {
-      font-size: 1.3rem; font-weight: 600; width: 160px; height: 160px;
-      border-radius: 100%; cursor: pointer; border: none; transition: all .25s;
-      color: #fff; box-shadow: 0 0 15px rgba(0,0,0,0.4);
-    }
-    .btn-choice.blue { background: linear-gradient(145deg,#3b82f6,#1e40af); }
-    .btn-choice.red  { background: linear-gradient(145deg,#ef4444,#991b1b); }
-    .btn-choice:hover { transform: scale(1.05); }
-    .status { text-align: center; font-size: 1rem; color: #cbd5e1; margin-bottom: 15px; }
-    .progress-bar {
-      width: 100%; height: 12px; background: #1e293b; border-radius: 6px; overflow: hidden;
-    }
-    .progress-bar-inner {
-      height: 12px; width: 0%; background: linear-gradient(90deg,#3b82f6,#60a5fa);
-      transition: width .3s ease;
-    }
-    canvas { margin: 30px auto; display: block; }
-    .results { text-align: center; margin-top: 25px; }
-    .results span { display: inline-block; margin: 8px 12px; font-size: 1rem; color: #f8fafc; }
-    .btn-small {
-      margin-top: 20px; background: #0ea5e9; color: #fff; border: none; padding: 12px 30px;
-      border-radius: 50px; cursor: pointer; font-weight: 600; transition: all .3s;
-    }
-    .btn-small:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(14,165,233,.3); }
-  </style>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MCD Technologies - Sistema Completo</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --secondary: #3498db;
+            --accent1: #e74c3c;
+            --accent2: #2980b9;
+            --light: #ecf0f1;
+            --dark: #2c3e50;
+            --success: #27ae60;
+            --warning: #f39c12;
+            --danger: #e74c3c;
+            --gray: #95a5a6;
+            --text: #2c3e50;
+            --background: #f5f7fa;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text);
+            background-color: var(--background);
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        /* Header Styles */
+        header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .header-info {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .user-info {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+        
+        /* Navigation */
+        .nav-tabs {
+            display: flex;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .nav-tab {
+            flex: 1;
+            padding: 1rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+        
+        .nav-tab.active {
+            background: var(--secondary);
+            color: white;
+        }
+        
+        .nav-tab:hover:not(.active) {
+            background: var(--light);
+        }
+        
+        /* Content Sections */
+        .content-section {
+            display: none;
+            background: white;
+            border-radius: 10px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .content-section.active {
+            display: block;
+        }
+        
+        /* Login Form */
+        .login-form {
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+        }
+        
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+        
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            border-color: var(--secondary);
+            outline: none;
+        }
+        
+        .btn {
+            padding: 15px 25px;
+            background: var(--secondary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        
+        .btn:hover {
+            background: var(--accent2);
+            transform: translateY(-2px);
+        }
+        
+        .btn-success {
+            background: var(--success);
+        }
+        
+        .btn-success:hover {
+            background: #219653;
+        }
+        
+        .btn-warning {
+            background: var(--warning);
+        }
+        
+        .btn-warning:hover {
+            background: #e67e22;
+        }
+        
+        .btn-danger {
+            background: var(--danger);
+        }
+        
+        .btn-danger:hover {
+            background: #c0392b;
+        }
+        
+        /* Decision Interface */
+        .decision-interface {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .buttons-container {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin: 2rem 0;
+            flex-wrap: wrap;
+        }
+        
+        .decision-btn {
+            padding: 1.5rem 3rem;
+            font-size: 1.2rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+            min-width: 140px;
+        }
+        
+        .decision-btn:active {
+            transform: scale(0.95);
+        }
+        
+        .blue-btn {
+            background-color: var(--secondary);
+            color: white;
+        }
+        
+        .blue-btn:hover {
+            background-color: var(--accent2);
+        }
+        
+        .red-btn {
+            background-color: var(--accent1);
+            color: white;
+        }
+        
+        .red-btn:hover {
+            background-color: #c0392b;
+        }
+        
+        /* Stats and Dashboard */
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-box {
+            background: var(--light);
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            margin: 0.5rem 0;
+        }
+        
+        .coherence-indicator {
+            height: 20px;
+            background: #eee;
+            border-radius: 10px;
+            margin: 1rem 0;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .coherence-level {
+            height: 100%;
+            border-radius: 10px;
+            transition: width 0.5s ease;
+        }
+        
+        /* Context Form */
+        .context-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 4px solid var(--secondary);
+        }
+        
+        .context-section h3 {
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .context-section h3 span {
+            margin-right: 10px;
+            font-size: 20px;
+        }
+        
+        /* Analysis Results */
+        .kappa-value {
+            font-size: 48px;
+            font-weight: bold;
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .interpretation {
+            text-align: center;
+            font-size: 20px;
+            margin-bottom: 30px;
+            padding: 15px;
+            border-radius: 10px;
+        }
+        
+        .aleatorio { background: #ffeaa7; color: #d63031; }
+        .quase-aleatorio { background: #fab1a0; color: #e17055; }
+        .moderado { background: #74b9ff; color: #0984e3; }
+        .coerente { background: #55efc4; color: #00b894; }
+        .altamente { background: #a29bfe; color: #6c5ce7; }
+        
+        .graficos {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .grafico-container {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+        }
+        
+        .detalhes {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        
+        .detalhes h3 {
+            margin-top: 0;
+            color: #333;
+        }
+        
+        .detalhes-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .detalhes-item:last-child {
+            border-bottom: none;
+        }
+        
+        /* Session List */
+        .session-list {
+            margin-top: 2rem;
+        }
+        
+        .session-item {
+            background: white;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .kappa-badge {
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            color: white;
+            font-weight: bold;
+        }
+        
+        /* Status Messages */
+        #status {
+            margin-top: 15px;
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: bold;
+        }
+        
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        .info { background: #d1ecf1; color: #0c5460; }
+        .warning { background: #fff3cd; color: #856404; }
+        
+        /* Footer */
+        footer {
+            text-align: center;
+            margin-top: 3rem;
+            padding: 2rem;
+            background: var(--dark);
+            color: white;
+            border-radius: 8px;
+        }
+        
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            .buttons-container {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .decision-btn {
+                width: 100%;
+            }
+            
+            .stats-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .nav-tabs {
+                flex-direction: column;
+            }
+            
+            header {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .user-info {
+                margin-top: 1rem;
+            }
+        }
+    </style>
 </head>
-
 <body>
-  <div class="lab-wrapper">
-    <h1>MindKappa Lab</h1>
-    <h2>Análise Experimental • MCD v2</h2>
-    <div class="status" id="status">0 / 45 decisões</div>
-    <div class="progress-bar"><div id="progress" class="progress-bar-inner"></div></div>
-
-    <div class="decision-zone">
-      <button class="btn-choice blue" onclick="recordChoice('azul')">AZUL</button>
-      <button class="btn-choice red"  onclick="recordChoice('vermelho')">VERMELHO</button>
+    <div class="container">
+        <!-- Header -->
+        <header>
+            <div class="header-info">
+                <h1>MCD Technologies</h1>
+                <p>Medidor de Coerência Decisional - Análise de Padrões Decisórios Baseada em κ (kappa)</p>
+            </div>
+            <div class="user-info" id="userInfo">
+                Não autenticado • <a href="#" onclick="showSection('login')" style="color: white;">Fazer Login</a>
+            </div>
+        </header>
+        
+        <!-- Navigation Tabs -->
+        <div class="nav-tabs">
+            <div class="nav-tab" onclick="showSection('login')">Login</div>
+            <div class="nav-tab" onclick="showSection('collect')">Coletar Decisões</div>
+            <div class="nav-tab" onclick="showSection('context')">Registrar Contexto</div>
+            <div class="nav-tab" onclick="showSection('analyze')">Analisar Dados</div>
+            <div class="nav-tab" onclick="showSection('results')">Resultados</div>
+            <div class="nav-tab" onclick="showSection('history')">Histórico</div>
+        </div>
+        
+        <!-- Login Section -->
+        <section id="login" class="content-section">
+            <h2>Autenticação do Paciente</h2>
+            <div class="login-form">
+                <div class="form-group">
+                    <label for="patientName">Nome do Paciente:</label>
+                    <input type="text" id="patientName" placeholder="Digite seu nome">
+                </div>
+                <div class="form-group">
+                    <label for="patientCode">Código de Acesso (opcional):</label>
+                    <input type="text" id="patientCode" placeholder="Código de acesso">
+                </div>
+                <button class="btn" onclick="login()">Acessar Sistema</button>
+            </div>
+        </section>
+        
+        <!-- Data Collection Section -->
+        <section id="collect" class="content-section">
+            <h2>Coletor de Decisões</h2>
+            <div class="decision-interface">
+                <p>Escolha conscientemente ou de acordo com seu impulso primário:</p>
+                <div class="buttons-container" id="buttonsContainer">
+                    <!-- Buttons will be positioned randomly by JavaScript -->
+                </div>
+                <p>Decisões registradas: <span id="decisionCount">0</span>/30</p>
+                <div id="collectTimestamp" class="timestamp" style="text-align: center; color: #666; margin: 10px 0;">
+                    Timestamp: -
+                </div>
+            </div>
+            
+            <div class="context-section">
+                <h3><span>📝</span> Contexto da Sessão</h3>
+                <div class="form-group">
+                    <label for="sessionContext">Contexto/Estado Atual:</label>
+                    <input type="text" id="sessionContext" placeholder="Ex: Cansado, Pós-trabalho, Com fome, Animado...">
+                </div>
+                <div class="form-group">
+                    <label for="sessionName">Nome da Sessão:</label>
+                    <input type="text" id="sessionName" placeholder="Ex: Teste Manhã, Pós-Almoço...">
+                </div>
+            </div>
+            
+            <div style="text-align: center;">
+                <button class="btn btn-success" onclick="exportCollection()">Exportar Dados da Coleta</button>
+                <button class="btn btn-danger" onclick="resetCollection()">Reiniciar Coleta</button>
+            </div>
+            
+            <div id="collectStatus" class="info">⏳ Aguardando decisões... Preencha o contexto acima.</div>
+        </section>
+        
+        <!-- Context Registration Section -->
+        <section id="context" class="content-section">
+            <h2>Registro Contextual Detalhado</h2>
+            <div id="contextTimestamp" class="timestamp" style="text-align: center; color: #666; margin: 10px 0;">
+                Carregando timestamp...
+            </div>
+            
+            <div class="context-section">
+                <h3><span>⏰</span> FISIOLÓGICO</h3>
+                <div class="form-group">
+                    <label for="sono">Horas de sono:</label>
+                    <select id="sono">
+                        <option value="">-- Selecionar --</option>
+                        <option value="0-4">0-4 horas (Crítico)</option>
+                        <option value="4-6">4-6 horas (Insuficiente)</option>
+                        <option value="6-7">6-7 horas (Regular)</option>
+                        <option value="7-8">7-8 horas (Ideal)</option>
+                        <option value="8+">8+ horas (Excesso)</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="cafe">Café/estimulantes:</label>
+                    <select id="cafe">
+                        <option value="">-- Selecionar --</option>
+                        <option value="nenhum">Nenhum (0h)</option>
+                        <option value="15min">15 minutos atrás</option>
+                        <option value="30min">30 minutos atrás</option>
+                        <option value="1h">1 hora atrás</option>
+                        <option value="2h">2 horas atrás</option>
+                        <option value="3h+">3+ horas atrás</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="refeicao">Última refeição:</label>
+                    <select id="refeicao">
+                        <option value="">-- Selecionar --</option>
+                        <option value="15min">15 minutos atrás</option>
+                        <option value="30min">30 minutos atrás</option>
+                        <option value="1h">1 hora atrás</option>
+                        <option value="2h">2 horas atrás</option>
+                        <option value="3h">3 horas atrás</option>
+                        <option value="4h+">4+ horas atrás</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="substancias">Substâncias:</label>
+                    <select id="substancias">
+                        <option value="nenhuma">Nenhuma</option>
+                        <option value="nicotina">Nicotina (recente)</option>
+                        <option value="alcool">Álcool (recente)</option>
+                        <option value="thc">THC (recente)</option>
+                        <option value="medicamento">Medicamento</option>
+                        <option value="outro">Outro</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="context-section">
+                <h3><span>🎯</span> COMPORTAMENTAL</h3>
+                <div class="form-group">
+                    <label for="foco">Foco em tarefa principal:</label>
+                    <select id="foco">
+                        <option value="">-- Selecionar --</option>
+                        <option value="baixo">Baixo (distraído)</option>
+                        <option value="medio">Médio (normal)</option>
+                        <option value="alto">Alto (concentrado)</option>
+                        <option value="hiperfoco">Hiperfoco (absorvido)</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="mudancas">Mudanças de tarefa (última hora):</label>
+                    <select id="mudancas">
+                        <option value="">-- Selecionar --</option>
+                        <option value="0-2">0-2 vezes (focado)</option>
+                        <option value="3-5">3-5 vezes (normal)</option>
+                        <option value="6-10">6-10 vezes (distraído)</option>
+                        <option value="10+">10+ vezes (muito distraído)</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="phone">Checagens phone (última hora):</label>
+                    <select id="phone">
+                        <option value="">-- Selecionar --</option>
+                        <option value="0-2">0-2 vezes (focado)</option>
+                        <option value="3-5">3-5 vezes (normal)</option>
+                        <option value="6-10">6-10 vezes (distraído)</option>
+                        <option value="10+">10+ vezes (muito distraído)</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="fala">Velocidade da fala:</label>
+                    <select id="fala">
+                        <option value="">-- Selecionar --</option>
+                        <option value="lenta">Lenta (cansaço)</option>
+                        <option value="normal">Normal</option>
+                        <option value="rapida">Rápida (acelerado)</option>
+                        <option value="muito_rapida">Muito rápida (ansioso)</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="context-section">
+                <h3><span>🏢</span> AMBIENTAL</h3>
+                <div class="form-group">
+                    <label for="ambiente">Ambiente sonoro:</label>
+                    <select id="ambiente">
+                        <option value="">-- Selecionar --</option>
+                        <option value="silencioso">Silencioso</option>
+                        <option value="ruido_leve">Ruído leve</option>
+                        <option value="ruido_moderado">Ruído moderado</option>
+                        <option value="ruido_alto">Ruído alto</option>
+                        <option value="discussoes">Discussões/conflitos</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="pressao">Nível de pressão:</label>
+                    <select id="pressao">
+                        <option value="">-- Selecionar --</option>
+                        <option value="nenhuma">Nenhuma</option>
+                        <option value="leve">Leve (prazos normais)</option>
+                        <option value="moderada">Moderada (cobranças)</option>
+                        <option value="alta">Alta (urgências)</option>
+                        <option value="extrema">Extrema (crisis)</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="interacoes">Tipo de interações recentes:</label>
+                    <select id="interacoes">
+                        <option value="">-- Selecionar --</option>
+                        <option value="neutras">Neutras</option>
+                        <option value="positivas">Positivas</option>
+                        <option value="conflituosas">Conflituosas</option>
+                        <option value="evitadas">Evitadas (isolamento)</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="context-section">
+                <h3><span>❤️</span> SINAIS FÍSICOS</h3>
+                <div class="form-group">
+                    <label for="batimento">Batimento cardíaco:</label>
+                    <select id="batimento">
+                        <option value="">-- Selecionar --</option>
+                        <option value="normal">Normal (60-100bpm)</option>
+                        <option value="acelerado">Acelerado (>100bpm)</option>
+                        <option value="muito_acelerado">Muito acelerado (>120bpm)</option>
+                        <option value="lento">Lento (<60bpm)</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="maos">Estado das mãos:</label>
+                    <select id="maos">
+                        <option value="">-- Selecionar --</option>
+                        <option value="secas">Secas</option>
+                        <option value="suadas">Suadas</option>
+                        <option value="muito_suadas">Muito suadas</option>
+                        <option value="tremulas">Trêmulas</option>
+                        <option value="frias">Frias</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="cabeca">Sensação na cabeça:</label>
+                    <select id="cabeca">
+                        <option value="">-- Selecionar --</option>
+                        <option value="leve">Leve/clara</option>
+                        <option value="normal">Normal</option>
+                        <option value="pesada">Pesada</option>
+                        <option value="dor_leve">Dor leve</option>
+                        <option value="dor_forte">Dor forte</option>
+                        <option value="nevoeiro">Nevoeiro mental</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="observacoes">Observações adicionais:</label>
+                    <input type="text" id="observacoes" placeholder="Ex: evento específico, emoção forte...">
+                </div>
+            </div>
+            
+            <button class="btn" onclick="saveContext()">💾 SALVAR CONTEXTO</button>
+            
+            <div id="contextStatus" class="info">Preencha os campos acima e clique para salvar</div>
+        </section>
+        
+        <!-- Data Analysis Section -->
+        <section id="analyze" class="content-section">
+            <h2>Análise de Dados MCD</h2>
+            
+            <div class="upload-area" style="border: 3px dashed #007bff; border-radius: 10px; padding: 30px; text-align: center; margin: 20px 0; cursor: pointer;">
+                <input type="file" id="fileInput" accept=".csv" multiple style="display: none;">
+                <div style="font-size: 48px;">📁📋</div>
+                <h3>Arraste os CSVs ou clique para selecionar</h3>
+                <p>1. CSV das decisões (do coletor)</p>
+                <p>2. CSV do contexto (opcional)</p>
+                <button class="btn" onclick="document.getElementById('fileInput').click()">SELECIONAR ARQUIVOS</button>
+            </div>
+            
+            <div class="file-list" id="fileList" style="display: none; background: #f8f9fa; padding: 15px; border-radius: 10px; margin: 20px 0;">
+                <h4>📋 Arquivos Selecionados:</h4>
+                <div id="listaArquivos"></div>
+            </div>
+            
+            <div style="text-align: center; margin: 20px 0;">
+                <button class="btn btn-success" onclick="analyzeData()" id="btnAnalisar" disabled>ANALISAR DADOS</button>
+            </div>
+            
+            <div id="analyzeStatus" class="info">⏳ Selecione pelo menos o arquivo de decisões</div>
+        </section>
+        
+        <!-- Results Section -->
+        <section id="results" class="content-section">
+            <h2>Resultados da Análise</h2>
+            
+            <div class="kappa-value" id="kappaValue">κ = 0.0000</div>
+            <div class="interpretacao" id="interpretacao">Interpretação</div>
+            
+            <div class="contexto-info" id="contextoInfo" style="display: none;">
+                <h3>🎯 Contexto da Sessão</h3>
+                <div id="contextoDetalhes"></div>
+            </div>
+            
+            <div class="graficos">
+                <div class="grafico-container">
+                    <canvas id="graficoKappa"></canvas>
+                </div>
+                <div class="grafico-container">
+                    <canvas id="graficoProporcoes"></canvas>
+                </div>
+            </div>
+            
+            <div class="detalhes">
+                <h3>📋 Detalhes da Análise</h3>
+                <div class="detalhes-item">
+                    <span>Arquivo:</span>
+                    <span id="detailArquivo">-</span>
+                </div>
+                <div class="detalhes-item">
+                    <span>Total de decisões:</span>
+                    <span id="detailTotal">0</span>
+                </div>
+                <div class="detalhes-item">
+                    <span>Azul:</span>
+                    <span id="detailAzul">0</span>
+                </div>
+                <div class="detalhes-item">
+                    <span>Vermelho:</span>
+                    <span id="detailVermelho">0</span>
+                </div>
+                <div class="detalhes-item">
+                    <span>Proporção Azul/Vermelho:</span>
+                    <span id="detailProporcao">0% / 0%</span>
+                </div>
+                <div class="detalhes-item">
+                    <span>Vetor Resultante (R):</span>
+                    <span id="detailVetorR">0.0000</span>
+                </div>
+                <div class="detalhes-item">
+                    <span>Ângulo Médio:</span>
+                    <span id="detailAngulo">0°</span>
+                </div>
+                <div class="detalhes-item">
+                    <span>Direção Preferencial:</span>
+                    <span id="detailDirecao">-</span>
+                </div>
+                <div class="detalhes-item">
+                    <span>Contexto:</span>
+                    <span id="detailContexto">-</span>
+                </div>
+            </div>
+            
+            <div class="correlacao" id="correlacaoBox" style="display: none;">
+                <h3>🔗 Correlações Detectadas</h3>
+                <div id="correlacoes"></div>
+            </div>
+            
+            <div style="text-align: center; margin-top: 20px;">
+                <button class="btn btn-success" onclick="exportResults()">EXPORTAR RELATÓRIO</button>
+                <button class="btn" onclick="saveToHistory()">SALVAR NOS HISTÓRICOS</button>
+            </div>
+        </section>
+        
+        <!-- History Section -->
+        <section id="history" class="content-section">
+            <h2>Histórico de Sessões</h2>
+            
+            <div class="session-list" id="sessionList">
+                <!-- Sessions will be loaded here -->
+            </div>
+            
+            <div style="text-align: center; margin-top: 20px;">
+                <button class="btn" onclick="clearHistory()">LIMPAR HISTÓRICO</button>
+                <button class="btn btn-success" onclick="exportAllHistory()">EXPORTAR TODOS OS DADOS</button>
+            </div>
+        </section>
+        
+        <footer>
+            <p>MCD Technologies © 2025 | Versão 2025-09-05</p>
+            <p>Sistema validado cientificamente | Análise de coerência baseada na distribuição de von Mises</p>
+        </footer>
     </div>
 
-    <div class="results" id="results">
-      <span>κ = —</span>
-      <span>R = —</span>
-      <span>σ = —</span>
-    </div>
+    <script>
+        // Global variables
+        let currentUser = null;
+        let decisions = [];
+        let currentSession = {
+            id: Date.now(),
+            startTime: new Date(),
+            decisions: [],
+            context: {},
+            kappa: 0,
+            rValue: 0,
+            meanAngle: 0
+        };
+        
+        let analysisData = null;
+        let chartKappa = null;
+        let chartProporcoes = null;
+        let selectedFiles = {};
+        
+        // Initialize the application
+        function initApp() {
+            // Check if user is logged in
+            const savedUser = localStorage.getItem('mcd_user');
+            if (savedUser) {
+                currentUser = JSON.parse(savedUser);
+                updateUserInfo();
+                showSection('collect');
+            } else {
+                showSection('login');
+            }
+            
+            // Load decision data if exists
+            loadDecisions();
+            
+            // Setup file input
+            document.getElementById('fileInput').addEventListener('change', handleFileSelect);
+            
+            // Update context timestamp
+            updateContextTimestamp();
+            setInterval(updateContextTimestamp, 1000);
+            
+            // Create decision buttons
+            createDecisionButtons();
+            
+            // Load history
+            loadHistory();
+        }
+        
+        // Show a specific section
+        function showSection(sectionId) {
+            // Hide all sections
+            document.querySelectorAll('.content-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Deactivate all tabs
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Show the selected section
+            document.getElementById(sectionId).classList.add('active');
+            
+            // Activate the corresponding tab
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                if (tab.textContent.toLowerCase().includes(sectionId)) {
+                    tab.classList.add('active');
+                }
+            });
+            
+            // Special handling for specific sections
+            if (sectionId === 'collect') {
+                updateCollectTimestamp();
+            }
+        }
+        
+        // User authentication
+        function login() {
+            const patientName = document.getElementById('patientName').value;
+            const patientCode = document.getElementById('patientCode').value;
+            
+            if (!patientName) {
+                alert('Por favor, informe seu nome.');
+                return;
+            }
+            
+            currentUser = {
+                name: patientName,
+                code: patientCode || 'default',
+                loginTime: new Date().toISOString()
+            };
+            
+            // Save user to localStorage
+            localStorage.setItem('mcd_user', JSON.stringify(currentUser));
+            
+            // Update UI
+            updateUserInfo();
+            
+            // Show the collection section
+            showSection('collect');
+            
+            // Notify success
+            document.getElementById('collectStatus').textContent = '✅ Login realizado! Preencha o contexto e comece as decisões.';
+            document.getElementById('collectStatus').className = 'success';
+        }
+        
+        // Update user info in header
+        function updateUserInfo() {
+            if (currentUser) {
+                document.getElementById('userInfo').textContent = `Paciente: ${currentUser.name} • ${new Date().toLocaleDateString()}`;
+            }
+        }
+        
+        // Create decision buttons with random positioning
+        function createDecisionButtons() {
+            const buttonsContainer = document.getElementById('buttonsContainer');
+            buttonsContainer.innerHTML = '';
+            
+            const blueBtn = document.createElement('button');
+            blueBtn.className = 'decision-btn blue-btn';
+            blueBtn.textContent = 'AZUL';
+            blueBtn.onclick = () => recordDecision('azul');
+            
+            const redBtn = document.createElement('button');
+            redBtn.className = 'decision-btn red-btn';
+            redBtn.textContent = 'VERMELHO';
+            redBtn.onclick = () => recordDecision('vermelho');
+            
+            // Randomize button order
+            const buttons = [blueBtn, redBtn];
+            buttons.sort(() => Math.random() - 0.5);
+            
+            buttons.forEach(button => buttonsContainer.appendChild(button));
+        }
+        
+        // Record a decision
+        function recordDecision(choice) {
+            // Get session context
+            const sessionContext = document.getElementById('sessionContext').value;
+            const sessionName = document.getElementById('sessionName').value;
+            
+            if (!sessionContext) {
+                document.getElementById('collectStatus').textContent = '❌ Preencha o contexto da sessão primeiro!';
+                document.getElementById('collectStatus').className = 'warning';
+                return;
+            }
+            
+            // Create decision record
+            const decision = {
+                timestamp: new Date().toISOString(),
+                choice: choice,
+                angle: choice === 'azul' ? 0 : Math.PI,
+                context: sessionContext,
+                sessionName: sessionName || `Sessão ${new Date().toLocaleDateString()}`,
+                patient: currentUser.name
+            };
+            
+            // Add to collections
+            decisions.push(decision);
+            currentSession.decisions.push(decision);
+            
+            // Update UI
+            document.getElementById('decisionCount').textContent = decisions.length;
+            updateCollectTimestamp();
+            
+            // Change button positions
+            createDecisionButtons();
+            
+            // Update status
+            if (decisions.length >= 30) {
+                document.getElementById('collectStatus').textContent = '✅ 30 decisões coletadas! Você pode exportar os dados.';
+                document.getElementById('collectStatus').className = 'success';
+            } else {
+                document.getElementById('collectStatus').textContent = `📊 ${decisions.length}/30 decisões - Continue!`;
+                document.getElementById('collectStatus').className = 'info';
+            }
+            
+            // Save to localStorage
+            saveDecisions();
+        }
+        
+        // Update collection timestamp
+        function updateCollectTimestamp() {
+            document.getElementById('collectTimestamp').textContent = 
+                `Timestamp: ${new Date().toLocaleTimeString()}`;
+        }
+        
+        // Update context timestamp
+        function updateContextTimestamp() {
+            document.getElementById('contextTimestamp').textContent = 
+                `📅 ${new Date().toLocaleDateString()} ⏰ ${new Date().toLocaleTimeString()}`;
+        }
+        
+        // Save decisions to localStorage
+        function saveDecisions() {
+            localStorage.setItem('mcd_decisions', JSON.stringify(decisions));
+            localStorage.setItem('mcd_current_session', JSON.stringify(currentSession));
+        }
+        
+        // Load decisions from localStorage
+        function loadDecisions() {
+            const savedDecisions = localStorage.getItem('mcd_decisions');
+            const savedSession = localStorage.getItem('mcd_current_session');
+            
+            if (savedDecisions) {
+                decisions = JSON.parse(savedDecisions);
+                document.getElementById('decisionCount').textContent = decisions.length;
+            }
+            
+            if (savedSession) {
+                currentSession = JSON.parse(savedSession);
+            }
+        }
+        
+        // Export collection data
+        function exportCollection() {
+            if (decisions.length === 0) {
+                alert('Nenhuma decisão registrada para exportar.');
+                return;
+            }
+            
+            // Create CSV content
+            let csv = 'timestamp,choice,context,session_name,patient\n';
+            decisions.forEach(decision => {
+                csv += `"${decision.timestamp}","${decision.choice}","${decision.context}","${decision.sessionName}","${decision.patient}"\n`;
+            });
+            
+            // Create download
+            downloadFile(csv, `mcd_decisions_${new Date().toISOString().split('T')[0]}.csv`, 'text/csv');
+            
+            // Notify user
+            document.getElementById('collectStatus').textContent = '✅ Dados exportados com sucesso!';
+            document.getElementById('collectStatus').className = 'success';
+        }
+        
+        // Reset collection
+        function resetCollection() {
+            if (confirm('Tem certeza que deseja reiniciar a coleta? Todos os dados não exportados serão perdidos.')) {
+                decisions = [];
+                currentSession = {
+                    id: Date.now(),
+                    startTime: new Date(),
+                    decisions: [],
+                    context: {},
+                    kappa: 0,
+                    rValue: 0,
+                    meanAngle: 0
+                };
+                
+                document.getElementById('decisionCount').textContent = '0';
+                document.getElementById('collectStatus').textContent = '⏳ Aguardando decisões... Preencha o contexto acima.';
+                document.getElementById('collectStatus').className = 'info';
+                
+                saveDecisions();
+                createDecisionButtons();
+            }
+        }
+        
+        // Save context information
+        function saveContext() {
+            // Validate required fields
+            const requiredFields = ['sono', 'cafe', 'refeicao', 'foco'];
+            for (const field of requiredFields) {
+                if (!document.getElementById(field).value) {
+                    document.getElementById('contextStatus').textContent = 
+                        `❌ Preencha o campo "${document.querySelector(`label[for="${field}"]`).textContent}"`;
+                    document.getElementById('contextStatus').className = 'error';
+                    return;
+                }
+            }
+            
+            // Collect all context data
+            const contextData = {
+                timestamp: new Date().toISOString(),
+                sono: document.getElementById('sono').value,
+                cafe: document.getElementById('cafe').value,
+                refeicao: document.getElementById('refeicao').value,
+                substancias: document.getElementById('substancias').value,
+                foco: document.getElementById('foco').value,
+                mudancas: document.getElementById('mudancas').value,
+                phone: document.getElementById('phone').value,
+                fala: document.getElementById('fala').value,
+                ambiente: document.getElementById('ambiente').value,
+                pressao: document.getElementById('pressao').value,
+                interacoes: document.getElementById('interacoes').value,
+                batimento: document.getElementById('batimento').value,
+                maos: document.getElementById('maos').value,
+                cabeca: document.getElementById('cabeca').value,
+                observacoes: document.getElementById('observacoes').value
+            };
+            
+            // Save to current session
+            currentSession.context = contextData;
+            saveDecisions();
+            
+            // Generate CSV and TXT files
+            const csv = Object.keys(contextData).join(',') + '\n' + 
+                       Object.values(contextData).map(v => `"${v}"`).join(',');
+            
+            const txt = `REGISTRO CONTEXTUAL MCD - ${new Date().toLocaleString()}
+===================================================
 
-    <canvas id="vectorChart" width="360" height="300"></canvas>
+FISIOLÓGICO:
+- Sono: ${contextData.sono}
+- Café/estimulantes: ${contextData.cafe}
+- Refeição: ${contextData.refeicao}
+- Substâncias: ${contextData.substancias}
 
-    <div style="text-align:center;">
-  <button class="btn-small" onclick="exportCSV()">📄 Exportar CSV</button>
-  <button class="btn-small" onclick="saveToBackend()">💾 Salvar no MindKappa Lab</button>
-  <button class="btn-small" onclick="resetLab()">🔄 Reiniciar</button>
-  <button class="btn-small" onclick="window.location.href='index.html'">🏠 Início</button>
-</div>
-  </div>
+COMPORTAMENTAL:
+- Foco: ${contextData.foco}
+- Mudanças de tarefa: ${contextData.mudancas}
+- Checagens phone: ${contextData.phone}
+- Fala: ${contextData.fala}
 
-<script>
-let decisions = [];
-const maxDecisions = 45;
-const ctx = document.getElementById('vectorChart');
-let chart;
+AMBIENTAL:
+- Ambiente: ${contextData.ambiente}
+- Pressão: ${contextData.pressao}
+- Interações: ${contextData.interacoes}
 
-function recordChoice(choice) {
-  if (decisions.length >= maxDecisions) return;
-  const timestamp = Date.now();
-  decisions.push({ choice, timestamp });
-  updateProgress();
-  calculateKappa();
-  if (decisions.length === maxDecisions) saveToLocal();
-}
+SINAIS FÍSICOS:
+- Batimento: ${contextData.batimento}
+- Mãos: ${contextData.maos}
+- Cabeça: ${contextData.cabeca}
 
-function updateProgress() {
-  const pct = (decisions.length / maxDecisions) * 100;
-  document.getElementById('progress').style.width = pct + '%';
-  document.getElementById('status').innerText = `${decisions.length} / ${maxDecisions} decisões`;
-}
+OBSERVAÇÕES:
+${contextData.observacoes || 'Nenhuma'}
 
-// === MCD v2 Equation ===
-function calculateKappa() {
-  const thetas = decisions.map(d => d.choice === 'azul' ? 0 : Math.PI);
-  const N = thetas.length;
-  if (N === 0) return;
+===================================================`;
+            
+            // Offer downloads
+            downloadFile(csv, `mcd_context_${new Date().toISOString().split('T')[0]}.csv`, 'text/csv');
+            downloadFile(txt, `mcd_context_${new Date().toISOString().split('T')[0]}.txt`, 'text/plain');
+            
+            // Update status
+            document.getElementById('contextStatus').textContent = '✅ Contexto salvo e arquivos gerados!';
+            document.getElementById('contextStatus').className = 'success';
+            
+            // Clear form after a delay
+            setTimeout(() => {
+                document.querySelectorAll('#context select, #context input').forEach(el => {
+                    if (el.id !== 'observacoes') el.value = '';
+                });
+                document.getElementById('observacoes').value = '';
+            }, 2000);
+        }
+        
+        // Handle file selection for analysis
+        function handleFileSelect(e) {
+            const files = Array.from(e.target.files);
+            selectedFiles = {};
+            
+            files.forEach(file => {
+                const nome = file.name.toLowerCase();
+                if (nome.includes('context') || nome.includes('mcd_')) {
+                    selectedFiles.contexto = file;
+                } else if (nome.includes('decisions') || nome.includes('escol') || nome.includes('choice')) {
+                    selectedFiles.decisoes = file;
+                }
+            });
+            
+            displaySelectedFiles();
+            document.getElementById('btnAnalisar').disabled = !selectedFiles.decisoes;
+        }
+        
+        // Display selected files
+        function displaySelectedFiles() {
+            const lista = document.getElementById('listaArquivos');
+            lista.innerHTML = '';
+            
+            if (selectedFiles.decisoes) {
+                const div = document.createElement('div');
+                div.className = 'file-item';
+                div.innerHTML = `
+                    <span>${selectedFiles.decisoes.name}</span>
+                    <span class="file-type type-decisoes">DECISÕES</span>
+                `;
+                lista.appendChild(div);
+            }
+            
+            if (selectedFiles.contexto) {
+                const div = document.createElement('div');
+                div.className = 'file-item';
+                div.innerHTML = `
+                    <span>${selectedFiles.contexto.name}</span>
+                    <span class="file-type type-contexto">CONTEXTO</span>
+                `;
+                lista.appendChild(div);
+            }
+            
+            document.getElementById('fileList').style.display = 'block';
+            document.getElementById('analyzeStatus').textContent = 
+                selectedFiles.decisoes ? '✅ Arquivos prontos para análise' : '❌ Necessita arquivo de decisões';
+        }
+        
+        // Analyze the data
+        async function analyzeData() {
+            const status = document.getElementById('analyzeStatus');
+            status.textContent = "📊 Analisando arquivos...";
+            status.className = "info";
+            
+            try {
+                // Read and parse the decision data
+                const decisionsData = await readCSV(selectedFiles.decisoes);
+                
+                // Parse context data if available
+                let contextData = null;
+                if (selectedFiles.contexto) {
+                    const contextRows = await readCSV(selectedFiles.contexto);
+                    if (contextRows.length > 0) {
+                        contextData = contextRows[0]; // Use first row
+                    }
+                }
+                
+                // Perform analysis
+                analysisData = analyzeDecisions(decisionsData, contextData, selectedFiles.decisoes.name);
+                
+                // Display results
+                displayResults(analysisData);
+                
+                status.textContent = "✅ Análise concluída!";
+                status.className = "success";
+                
+            } catch (error) {
+                status.textContent = `❌ Erro: ${error.message}`;
+                status.className = "error";
+            }
+        }
+        
+        // Read CSV file
+        function readCSV(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    try {
+                        const lines = e.target.result.split('\n').filter(line => line.trim());
+                        const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''));
+                        const data = [];
+                        
+                        for (let i = 1; i < lines.length; i++) {
+                            const values = lines[i].split(',').map(v => v.trim().replace(/"/g, ''));
+                            if (values.length === headers.length) {
+                                const entry = {};
+                                headers.forEach((header, index) => {
+                                    entry[header] = values[index];
+                                });
+                                data.push(entry);
+                            }
+                        }
+                        resolve(data);
+                    } catch (error) {
+                        reject(error);
+                    }
+                };
+                reader.readAsText(file);
+            });
+        }
+        
+        // Analyze decisions and calculate kappa
+        function analyzeDecisions(decisionsData, contextData, fileName) {
+            let azul = 0, vermelho = 0;
+            const escolhas = [];
+            
+            decisionsData.forEach(decision => {
+                const escolha = decision.choice || decision.escolha;
+                if (escolha && (escolha.includes('azul') || escolha.includes('blue') || escolha === 'a' || escolha === '0')) {
+                    azul++;
+                    escolhas.push(0); // 0 degrees for blue
+                } else if (escolha && (escolha.includes('vermelho') || escolha.includes('red') || escolha === 'v' || escolha === '1')) {
+                    vermelho++;
+                    escolhas.push(Math.PI); // 180 degrees for red
+                }
+            });
+            
+            const total = azul + vermelho;
+            if (total === 0) throw new Error("Nenhuma escolha válida encontrada");
+            
+            // Calculate resultant vector R
+            const angulosRad = escolhas;
+            const x = angulosRad.reduce((sum, ang) => sum + Math.cos(ang), 0) / total;
+            const y = angulosRad.reduce((sum, ang) => sum + Math.sin(ang), 0) / total;
+            const R = Math.sqrt(x * x + y * y);
+            
+            // Calculate mean angle
+            const anguloMedioRad = Math.atan2(y, x);
+            let anguloMedioGraus = (anguloMedioRad * 180 / Math.PI) % 360;
+            if (anguloMedioGraus < 0) anguloMedioGraus += 360;
+            
+            // Estimate kappa
+            let kappa;
+            if (R < 0.53) {
+                kappa = 2 * R + Math.pow(R, 3) + 5 * Math.pow(R, 5) / 6;
+            } else if (R < 0.85) {
+                kappa = -0.4 + 1.39 * R + 0.43 / (1 - R);
+            } else {
+                kappa = 1 / (Math.pow(R, 3) - 4 * Math.pow(R, 2) + 3 * R);
+            }
+            
+            // Interpretation
+            let interpretacao, classe;
+            if (kappa < 0.1) {
+                interpretacao = "Aleatório";
+                classe = "aleatorio";
+            } else if (kappa < 0.3) {
+                interpretacao = "Quase Aleatório";
+                classe = "quase-aleatorio";
+            } else if (kappa < 0.5) {
+                interpretacao = "Moderadamente Coerente";
+                classe = "moderado";
+            } else if (kappa < 1.0) {
+                interpretacao = "Coerente";
+                classe = "coerente";
+            } else {
+                interpretacao = "Altamente Coerente";
+                classe = "altamente";
+            }
+            
+            // Preferred direction
+            let direcao;
+            if (45 <= anguloMedioGraus && anguloMedioGraus < 135) {
+                direcao = "Viés para Cima";
+            } else if (135 <= anguloMedioGraus && anguloMedioGraus < 225) {
+                direcao = "Viés para Vermelho (Esquerda)";
+            } else if (225 <= anguloMedioGraus && anguloMedioGraus < 315) {
+                direcao = "Viés para Baixo";
+            } else {
+                direcao = "Viés para Azul (Direita)";
+            }
+            
+            return {
+                nomeArquivo: fileName,
+                total,
+                azul,
+                vermelho,
+                proporcaoAzul: (azul / total * 100).toFixed(1),
+                proporcaoVermelho: (vermelho / total * 100).toFixed(1),
+                vetorR: R.toFixed(4),
+                anguloMedio: anguloMedioGraus.toFixed(1),
+                kappa: kappa.toFixed(4),
+                interpretacao,
+                classe,
+                direcao,
+                contexto: contextData || "Não especificado"
+            };
+        }
+        
+        // Display analysis results
+        function displayResults(dados) {
+            document.getElementById('kappaValue').textContent = `κ = ${dados.kappa}`;
+            document.getElementById('interpretacao').textContent = dados.interpretacao;
+            document.getElementById('interpretacao').className = `interpretacao ${dados.classe}`;
+            
+            document.getElementById('detailArquivo').textContent = dados.nomeArquivo;
+            document.getElementById('detailTotal').textContent = dados.total;
+            document.getElementById('detailAzul').textContent = dados.azul;
+            document.getElementById('detailVermelho').textContent = dados.vermelho;
+            document.getElementById('detailProporcao').textContent = `${dados.proporcaoAzul}% / ${dados.proporcaoVermelho}%`;
+            document.getElementById('detailVetorR').textContent = dados.vetorR;
+            document.getElementById('detailAngulo').textContent = `${dados.anguloMedio}°`;
+            document.getElementById('detailDirecao').textContent = dados.direcao;
+            document.getElementById('detailContexto').textContent = typeof dados.contexto === 'object' ? 'Contexto detalhado disponível' : dados.contexto;
+            
+            // Show context details if available
+            if (typeof dados.contexto === 'object') {
+                document.getElementById('contextoInfo').style.display = 'block';
+                let contextoHTML = '';
+                for (const [key, value] of Object.entries(dados.contexto)) {
+                    if (key !== 'timestamp') {
+                        contextoHTML += `<div class="contexto-item"><span class="contexto-label">${key}:</span> <span class="contexto-value">${value}</span></div>`;
+                    }
+                }
+                document.getElementById('contextoDetalhes').innerHTML = contextoHTML;
+            }
+            
+            // Create charts
+            createCharts(dados);
+            
+            // Show results section
+            showSection('results');
+        }
+        
+        // Create charts for visualization
+        function createCharts(dados) {
+            // Destroy existing charts
+            if (chartKappa) chartKappa.destroy();
+            if (chartProporcoes) chartProporcoes.destroy();
+            
+            // Kappa chart
+            const ctxKappa = document.getElementById('graficoKappa').getContext('2d');
+            chartKappa = new Chart(ctxKappa, {
+                type: 'bar',
+                data: {
+                    labels: ['Coerência (κ)'],
+                    datasets: [{
+                        label: 'Valor de κ',
+                        data: [parseFloat(dados.kappa)],
+                        backgroundColor: [getKappaColor(parseFloat(dados.kappa))],
+                        borderColor: [getKappaColor(parseFloat(dados.kappa))],
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: Math.max(1.0, parseFloat(dados.kappa) * 1.2)
+                        }
+                    }
+                }
+            });
+            
+            // Proportions chart
+            const ctxProporcoes = document.getElementById('graficoProporcoes').getContext('2d');
+            chartProporcoes = new Chart(ctxProporcoes, {
+                type: 'pie',
+                data: {
+                    labels: ['Azul', 'Vermelho'],
+                    datasets: [{
+                        data: [dados.azul, dados.vermelho],
+                        backgroundColor: ['#007bff', '#dc3545'],
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Get color based on kappa value
+        function getKappaColor(kappa) {
+            if (kappa < 0.1) return '#ffeaa7';
+            if (kappa < 0.3) return '#fab1a0';
+            if (kappa < 0.5) return '#74b9ff';
+            if (kappa < 1.0) return '#55efc4';
+            return '#a29bfe';
+        }
+        
+        // Export results
+        function exportResults() {
+            if (!analysisData) return;
+            
+            const relatorio = `
+RELATÓRIO DE ANÁLISE MCD - ${new Date().toLocaleDateString()}
+===================================================
 
-  const sumCos = thetas.reduce((s,t)=>s+Math.cos(t),0);
-  const sumSin = thetas.reduce((s,t)=>s+Math.sin(t),0);
-  const R = Math.sqrt(sumCos**2 + sumSin**2)/N;
+Arquivo: ${analysisData.nomeArquivo}
+Data da análise: ${new Date().toLocaleString()}
+Paciente: ${currentUser ? currentUser.name : 'Não especificado'}
 
-  // variância angular σ
-  const meanAngle = Math.atan2(sumSin, sumCos);
-  const diffs = thetas.map(t => Math.atan2(Math.sin(t-meanAngle), Math.cos(t-meanAngle)));
-  const sigma = Math.sqrt(diffs.reduce((s,t)=>s+t**2,0)/N);
+📊 RESULTADOS:
+-------------
+Total de decisões: ${analysisData.total}
+Azul: ${analysisData.azul} (${analysisData.proporcaoAzul}%)
+Vermelho: ${analysisData.vermelho} (${analysisData.proporcaoVermelho}%)
 
-  // nova equação adaptativa
-  const kappa = (R*(2 - R**2)) / ((1 - R**2) + sigma);
+🧠 COERÊNCIA DECISIONAL:
+-----------------------
+κ (kappa): ${analysisData.kappa}
+Interpretação: ${analysisData.interpretacao}
+Vetor Resultante (R): ${analysisData.vetorR}
+Ângulo Médio: ${analysisData.anguloMedio}°
+Direção Preferencial: ${analysisData.direcao}
 
-  document.getElementById('results').innerHTML =
-    `<span>κ = ${kappa.toFixed(3)}</span><span>R = ${R.toFixed(3)}</span><span>σ = ${sigma.toFixed(3)}</span>`;
-  renderVector(R, meanAngle);
-  return {kappa,R,sigma};
-}
+🎯 CONTEXTO:
+-----------
+${typeof analysisData.contexto === 'object' ? 
+    Object.entries(analysisData.contexto)
+        .filter(([key]) => key !== 'timestamp')
+        .map(([key, value]) => `${key}: ${value}`)
+        .join('\n') : 
+    analysisData.contexto}
 
-function renderVector(R, theta) {
-  if (!chart) {
-    chart = new Chart(ctx,{
-      type:'scatter',
-      data:{datasets:[{label:'Vetor R',data:[],backgroundColor:'#60a5fa'}]},
-      options:{
-        scales:{
-          x:{min:-1,max:1,grid:{color:'#334155'},ticks:{display:false}},
-          y:{min:-1,max:1,grid:{color:'#334155'},ticks:{display:false}}
-        },
-        plugins:{legend:{display:false}}
-      }
-    });
-  }
-  const x = R*Math.cos(theta);
-  const y = R*Math.sin(theta);
-  chart.data.datasets[0].data = [{x,y}];
-  chart.update();
-}
-
-function saveToLocal(){
-  const {kappa,R,sigma} = calculateKappa();
-  const userData = JSON.parse(localStorage.getItem('mindkappa_user')) || {};
-  userData.labSession = { decisions, kappa, R, sigma, timestamp: new Date().toISOString() };
-  localStorage.setItem('mindkappa_user', JSON.stringify(userData));
-  alert('🧠 Sessão concluída e salva localmente!');
-}
-
-function exportCSV(){
-  if (!decisions.length) return;
-  const rows = ['choice,timestamp',...decisions.map(d=>`${d.choice},${d.timestamp}`)];
-  const blob = new Blob([rows.join('\n')],{type:'text/csv'});
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = 'mindkappa_lab_session.csv';
-  a.click();
-}
-
-function resetLab(){
-  if (confirm('Reiniciar a sessão experimental?')){
-    decisions = [];
-    updateProgress();
-    document.getElementById('results').innerHTML='<span>κ = —</span><span>R = —</span><span>σ = —</span>';
-    if(chart){chart.data.datasets[0].data=[];chart.update();}
-  }
-}
-
-window.onload = () => { updateProgress(); };
-</script>
-<script>
-async function saveToBackend() {
-  if (decisions.length < maxDecisions) {
-    alert('⚠️ Complete as 45 decisões antes de salvar.');
-    return;
-  }
-
-  const { kappa, R, sigma } = calculateKappa();
-  const userData = JSON.parse(localStorage.getItem('mindkappa_user')) || { name: 'Anônimo' };
-  const labSession = { decisions, kappa, R, sigma, timestamp: new Date().toISOString() };
-
-  try {
-    const res = await fetch('https://mindkappa-backend.onrender.com/api/save-lab-data', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ userData, labSession })
-    });
-
-    const data = await res.json();
-    if (data.success) {
-      alert(`🧠 Sessão salva com sucesso!\nκ=${data.results.kappa}\nR=${data.results.R}\nσ=${data.results.sigma}`);
-    } else {
-      throw new Error(data.error || 'Erro desconhecido');
-    }
-  } catch (err) {
-    console.error('❌ Erro ao salvar no backend:', err);
-    alert('⚠️ Não foi possível salvar no servidor. Verifique a conexão e tente novamente.');
-  }
-}
-</script>
+===================================================
+Relatório gerado pelo Sistema MCD Technologies
+            `.trim();
+            
+            downloadFile(relatorio, `relatorio_mcd_${new Date().toISOString().split('T')[0]}.txt`, 'text/plain');
+        }
+        
+        // Save to history
+        function saveToHistory() {
+            if (!analysisData) return;
+            
+            // Get existing history
+            const history = JSON.parse(localStorage.getItem('mcd_history') || '[]');
+            
+            // Add current analysis
+            history.push({
+                id: Date.now(),
+                timestamp: new Date().toISOString(),
+                data: analysisData,
+                patient: currentUser ? currentUser.name : 'Anônimo'
+            });
+            
+            // Save back to localStorage
+            localStorage.setItem('mcd_history', JSON.stringify(history));
+            
+            // Reload history display
+            loadHistory();
+            
+            // Notify user
+            alert('Análise salva no histórico!');
+        }
+        
+        // Load history from localStorage
+        function loadHistory() {
+            const history = JSON.parse(localStorage.getItem('mcd_history') || '[]');
+            const sessionList = document.getElementById('sessionList');
+            
+            if (history.length === 0) {
+                sessionList.innerHTML = '<p>Nenhuma sessão salva no histórico.</p>';
+                return;
+            }
+            
+            // Sort by timestamp (newest first)
+            history.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+            
+            let html = '';
+            history.forEach(session => {
+                const date = new Date(session.timestamp);
+                html += `
+                    <div class="session-item">
+                        <div>
+                            <strong>${session.data.nomeArquivo}</strong>
+                            <div>${date.toLocaleDateString()} ${date.toLocaleTimeString()} • ${session.patient}</div>
+                        </div>
+                        <div class="kappa-badge" style="background-color: ${getKappaColor(parseFloat(session.data.kappa))};">
+                            κ = ${session.data.kappa}
+                        </div>
+                    </div>
+                `;
+            });
+            
+            sessionList.innerHTML = html;
+        }
+        
+        // Clear history
+        function clearHistory() {
+            if (confirm('Tem certeza que deseja limpar todo o histórico? Esta ação não pode ser desfeita.')) {
+                localStorage.removeItem('mcd_history');
+                loadHistory();
+            }
+        }
+        
+        // Export all history
+        function exportAllHistory() {
+            const history = JSON.parse(localStorage.getItem('mcd_history') || '[]');
+            
+            if (history.length === 0) {
+                alert('Nenhum dado no histórico para exportar.');
+                return;
+            }
+            
+            // Convert to CSV
+            let csv = 'timestamp,patient,filename,kappa,interpretation,total,blue,red,vector_r,mean_angle,direction\n';
+            history.forEach(session => {
+                csv += `"${session.timestamp}","${session.patient}","${session.data.nomeArquivo}","${session.data.kappa}","${session.data.interpretacao}","${session.data.total}","${session.data.azul}","${session.data.vermelho}","${session.data.vetorR}","${session.data.anguloMedio}","${session.data.direcao}"\n`;
+            });
+            
+            downloadFile(csv, `mcd_full_history_${new Date().toISOString().split('T')[0]}.csv`, 'text/csv');
+        }
+        
+        // Utility function to download files
+        function downloadFile(content, fileName, contentType) {
+            const blob = new Blob([content], { type: contentType });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = fileName;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+        
+        // Initialize the application when the page loads
+        window.onload = initApp;
+    </script>
 </body>
 </html>
