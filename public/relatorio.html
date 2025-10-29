@@ -3,498 +3,212 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Seu Relatório MindKappa | Resultados</title>
+  <title>Relatório Era K | MindKappa</title>
   <link rel="stylesheet" href="assets/style.css" />
-  <style>
-    .report-container { text-align: center; padding: 20px; }
-    .loading-spinner { width: 60px; height: 60px; border: 6px solid #e2e8f0; border-top: 6px solid #63b3ed; border-radius: 50%; animation: spin 1s linear infinite; margin: 30px auto; }
-    @keyframes spin { 0% { transform: rotate(0deg);} 100% { transform: rotate(360deg);} }
-    .report-content { text-align: left; background: #fff; padding: 30px; border-radius: 15px; margin: 20px 0; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
-    .premium-cta { background: linear-gradient(135deg, #667eea, #764ba2); color: #fff; padding: 25px; border-radius: 15px; margin: 30px 0; box-shadow: 0 10px 30px rgba(0,0,0,0.15); }
-    .feature-list { text-align: left; margin: 20px 0; }
-    .feature-item { margin: 12px 0; padding-left: 25px; position: relative; font-size: 1rem; }
-    .feature-item:before { content: "✓"; position: absolute; left: 0; color: #48bb78; font-weight: bold; }
-    .insight-item { background: rgba(99, 179, 237, 0.1); padding: 15px; border-radius: 10px; margin: 15px 0; border-left: 4px solid #63b3ed; }
-    .user-header { background: linear-gradient(135deg, #667eea, #764ba2); color: #fff; padding: 20px; border-radius: 15px; margin-bottom: 25px; }
-    .btn { background: linear-gradient(45deg, #63b3ed, #4299e1); color:#fff; border:none; padding:15px 30px; font-size:1.1rem; font-weight:600; border-radius:50px; cursor:pointer; transition: all .3s; width:100%; margin-top:10px; }
-    .btn:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(99,179,237,0.4); }
-    .fallback-message { background: #fff3cd; border: 1px solid #ffeaa7; padding: 20px; border-radius: 10px; margin: 20px 0; color: #856404; }
-  </style>
+
+  <!-- Chart.js & PDF -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-</head>
-<body>
-  <div class="container">
-    <div class="card">
-      <!-- Cabeçalho -->
-      <header style="text-align:center; padding:20px 0 0 0;">
-        <div style="font-size:2rem;">🧠</div>
-        <div style="font-size:1.5rem; font-weight:700; color:#1e40af;">MindKappa</div>
-        <div style="color:#6b7280; font-size:.9rem; margin-top:5px;">Análise de Padrões Decisorais</div>
-      </header>
 
-      <div class="report-container">
-        <div class="logo">📊</div>
-        <div class="title">Seu Relatório MindKappa</div>
-        <div class="subtitle">Análise científica baseada em 45 decisões</div>
-        <div id="reportContent"><!-- dinâmico --></div>
+  <style>
+    .report-container { text-align:center; padding:20px; }
+    .report-content {
+      background: rgba(255,255,255,0.95);
+      padding:30px; border-radius:18px;
+      box-shadow:0 10px 35px rgba(0,0,0,0.15);
+      text-align:left; margin-top:20px;
+    }
+    .user-header {
+      background:linear-gradient(135deg,#1e3a8a,#3730a3);
+      color:#fff; padding:22px; border-radius:15px;
+      box-shadow:0 10px 30px rgba(30,58,138,.35);
+      margin-bottom:25px;
+    }
+    .hero-line {font-size:1.1rem;color:#475569;margin-bottom:20px;}
+    .premium-cta {
+      background:linear-gradient(135deg,#312e81,#7c3aed);
+      color:#fff; padding:25px; border-radius:15px;
+      text-align:center; margin:30px 0;
+      box-shadow:0 10px 30px rgba(49,46,129,.3);
+    }
+    .loading-spinner{
+      width:70px;height:70px;border:6px solid #e2e8f0;
+      border-top:6px solid #6366f1;border-radius:50%;
+      margin:40px auto;animation:spin 1s linear infinite;
+    }
+    @keyframes spin{0%{transform:rotate(0)}100%{transform:rotate(360deg)}}
+    canvas {max-width:300px;margin:20px auto;display:block;}
+  </style>
+</head>
+
+<body>
+<div class="container">
+  <div class="card">
+    <header style="text-align:center;padding-top:20px;">
+      <div style="font-size:2rem;">🧠</div>
+      <div style="font-size:1.6rem;font-weight:700;color:#1e40af;">MindKappa | Era K</div>
+      <div style="color:#6b7280;font-size:.9rem;">Relatório de Coerência Decisional</div>
+    </header>
+
+    <div class="report-container">
+      <div id="reportContent">
+        <div class="loading-spinner"></div>
+        <p style="color:#4b5563;">Gerando seu relatório Era K...</p>
       </div>
     </div>
   </div>
+</div>
 
-  <script>
-    // ========= CONFIG BACKEND =========
-    const API_URL =
-    (window.env && window.env.API_URL) ||
-    'https://mindkappa-backend.onrender.com';
+<script>
+const API_URL = 'https://mindkappa-backend.onrender.com';
+const el = {reportContent: document.getElementById('reportContent')};
 
-    const elements = {
-      reportContent: document.getElementById('reportContent')
-    };
+window.addEventListener('load', initReport);
 
-    function initializeReport() {
-      const userData = JSON.parse(localStorage.getItem('mindkappa_user'));
-      if (!userData) { window.location.href = 'index.html'; return; }
+async function initReport(){
+  const userData = JSON.parse(localStorage.getItem('mindkappa_user'));
+  if(!userData){window.location.href='index.html';return;}
+  const params = new URLSearchParams(window.location.search);
+  const approved = params.get('collection_status')==='approved'||params.get('status')==='approved';
+  approved ? await generatePremium(userData) : showFree(userData);
+}
 
-      // Se voltou do Checkout aprovado -> gera premium automaticamente
-      const params = new URLSearchParams(window.location.search);
-      const approved =
-        params.get('collection_status') === 'approved' ||
-        params.get('status') === 'approved';
-      if (approved) {
-        generatePremiumReport(); // gera premium direto
-        return;
-      }
+/* ---------- Relatório Gratuito UAU ---------- */
+function showFree(userData){
+  const {kappa,R,theta}=computeKappa(userData);
+  const interp=interpretK(kappa);
 
-      showGenerateButton(userData);
+  el.reportContent.innerHTML=`
+    <div class="user-header">
+      <div style="font-size:1.3rem;">${userData.name||'Explorador'}</div>
+      <div style="opacity:.9;">Relatório UAU • ${new Date().toLocaleDateString()}</div>
+    </div>
+
+    <div class="report-content">
+      <h2 style="color:#1e40af;margin-top:0;">🌀 Seu K = ${kappa.toFixed(3)}</h2>
+      <p class="hero-line">${interp.texto}</p>
+
+      <canvas id="kappaChart"></canvas>
+
+      <p style="margin-top:20px;">
+        <strong>Como o K é calculado:</strong><br>
+        A coerência (κ) representa o alinhamento entre suas decisões — o comprimento
+        do vetor resultante R em uma circunferência de intenções. Quanto maior R, mais
+        consistente é o padrão; quanto menor, mais criativo e oscilante.
+      </p>
+      <div style="background:#eef2ff;padding:15px;border-radius:10px;margin-top:20px;">
+        <em>“O K é a assinatura invisível da coerência. Cada mente traça seu próprio
+        círculo entre caos e forma.”</em>
+      </div>
+
+      <div class="premium-cta">
+        <h3>💎 Desbloqueie o Relatório Completo Era K</h3>
+        <p style="opacity:.9;">Análise expandida + PDF + gráficos de coerência</p>
+        <button class="btn" onclick="buyPremium()"
+          style="background:#10b981;max-width:320px;margin-top:10px;">Gerar Relatório Premium R$ 9,90</button>
+      </div>
+
+      <div style="display:flex;gap:10px;justify-content:center;">
+        <button class="btn" onclick="window.location.href='index.html'"
+          style="background:#e2e8f0;color:#374151;">🏠 Início</button>
+        <button class="btn" onclick="newAnalysis()">🔄 Nova Análise</button>
+      </div>
+    </div>`;
+  drawChart(R,theta);
+}
+
+function computeKappa(userData){
+  const all=userData.teste1?.decisions.concat(userData.teste2?.decisions||[],userData.teste3?.decisions||[])||[];
+  const thetas=all.filter(d=>d.choice!=='timeout').map(d=>d.choice==='azul'?0:Math.PI);
+  const N=thetas.length;
+  const sumCos=thetas.reduce((s,t)=>s+Math.cos(t),0);
+  const sumSin=thetas.reduce((s,t)=>s+Math.sin(t),0);
+  const Rlen=Math.sqrt(sumCos**2+sumSin**2)/N||0;
+  const kappa=Rlen<0.999?(Rlen*(2-Rlen**2))/(1-Rlen**2):10;
+  const theta=Math.atan2(sumSin,sumCos);
+  return {kappa,R:Rlen,theta};
+}
+
+function interpretK(k){
+  if(k<0.2) return {texto:'Seu K indica um campo de escolhas aleatórias — uma mente em pura exploração.'};
+  if(k<0.5) return {texto:'Seu K revela uma coerência oscilante — a criatividade vive no equilíbrio entre foco e fluidez.'};
+  if(k<0.8) return {texto:'Seu K mostra alinhamento estável — decisões coerentes com o centro da intenção.'};
+  return {texto:'Seu K é elevado — coerência extrema, quase cristalina. Cuidado para não se tornar rígido.'};
+}
+
+function drawChart(R,theta){
+  const ctx=document.getElementById('kappaChart').getContext('2d');
+  const x=R*Math.cos(theta),y=R*Math.sin(theta);
+  new Chart(ctx,{
+    type:'scatter',
+    data:{
+      datasets:[
+        {label:'Vetor R',data:[{x,y}],backgroundColor:'#6366f1'},
+        {label:'Circunferência',data:circlePoints(),showLine:true,borderColor:'#d1d5db',pointRadius:0}
+      ]
+    },
+    options:{
+      scales:{x:{min:-1,max:1},y:{min:-1,max:1}},
+      plugins:{legend:{display:false}},aspectRatio:1
     }
+  });
+}
+function circlePoints(){
+  const pts=[];for(let a=0;a<=2*Math.PI;a+=0.1){pts.push({x:Math.cos(a),y:Math.sin(a)});}
+  return pts;
+}
 
-    function showGenerateButton(userData) {
-      elements.reportContent.innerHTML = `
-        <div class="user-header">
-          <div style="font-size:1.3rem; margin-bottom:5px;">${userData.name || 'Explorador'}</div>
-          <div style="opacity:.9;">Relatório Personalizado • ${new Date().toLocaleDateString()}</div>
-        </div>
+/* ---------- Relatório Premium ---------- */
+async function buyPremium(){
+  try{
+    const res=await fetch(`${API_URL}/api/simple-subscription`,{method:'POST',headers:{'Content-Type':'application/json'}});
+    const data=await res.json();
+    if(data.success&&data.payment_link) window.location.href=data.payment_link;
+    else alert('Pagamento indisponível.');
+  }catch(e){alert('Erro ao iniciar pagamento.');}
+}
 
-        <div style="margin:30px 0;">
-          <div style="color:#4a5568; margin-bottom:25px; line-height:1.6;">
-            <strong>3 testes completos • 45 decisões analisadas</strong><br/>
-            <span style="color:#718096; font-size:.95rem;">⚡ Instinto Puro • ⚖️ Equilíbrio Mental • ⏰ Pressão Temporal</span>
-          </div>
-
-          <button class="btn" onclick="generateReport()" style="font-size:1.2rem; padding:18px 40px;">
-            🧠 Gerar Meu Relatório. (Grátis)
-          </button>
-
-          <div class="premium-cta">
-            <h3 style="margin:0 0 10px 0;">🚀 DESBLOQUEIE SUA ANÁLISE COMPLETA</h3>
-            <p style="margin:0 0 15px 0; opacity:.9;">Relatório Premium com IA Generativa + PDF para download imediato</p>
-            <button onclick="buyPremiumReport()"
-  style="background: linear-gradient(135deg, #10b981, #059669); color:#fff; border:none; padding:18px 40px; font-size:1.1rem; border-radius:50px; cursor:pointer; font-weight:700; transition: all .3s; width:100%; max-width:320px; box-shadow:0 8px 25px rgba(16,185,129,.3);">
-  💎 Gerar Relatório Premium
-</button>
-            <div class="feature-list">
-              <div class="feature-item">Análise aprofundada dos seus 3 testes</div>
-              <div class="feature-item">PDF para download e compartilhamento</div>
-              <div class="feature-item">Comparação com base populacional</div>
-              <div class="feature-item">Recomendações práticas personalizadas</div>
-            </div>
-          </div>
-        </div>
-
-        <div style="margin-top:25px; display:flex; gap:10px; justify-content:center;">
-          <button class="btn" onclick="window.location.href='index.html'"
-            style="background:#e2e8f0; color:#4a5568; flex:1;">🏠 Voltar ao Início</button>
-          <button class="btn" onclick="newAnalysis()" style="background:#63b3ed; color:#fff; flex:1;">🔄 Nova Análise</button>
-        </div>
-      `;
-    }
-
-    // ===== Relatório Grátis =====
-    async function generateReport() {
-      elements.reportContent.innerHTML = `
-        <div style="margin:40px 0;">
-          <div class="loading-spinner"></div>
-          <div style="color:#4a5568; margin-top:20px;">Calculando coerência e analisando padrões...</div>
-          <div style="color:#718096; font-size:.9rem; margin-top:10px;">Processando 45 decisões • Gerando insights exclusivos</div>
-        </div>
-      `;
-
-      try {
-        const userData = JSON.parse(localStorage.getItem('mindkappa_user'));
-        const sessionId = localStorage.getItem('mindkappa_session');
-
-        // Atualizar coerência
-        const updateResponse = await fetch(`${API_URL}/api/update-user-coherence`, {
-          method: 'POST', headers: {'Content-Type':'application/json'},
-          body: JSON.stringify({ userData, sessionId })
-        });
-        if (!updateResponse.ok) throw new Error('Erro ao calcular coerência');
-        const updateData = await updateResponse.json();
-        const userDataComCoerencia = updateData.updatedUserData;
-        localStorage.setItem('mindkappa_user', JSON.stringify(userDataComCoerencia));
-
-        // Gerar relatório grátis
-        const response = await fetch(`${API_URL}/api/generate-report`, {
-          method: 'POST', headers: {'Content-Type':'application/json'},
-          body: JSON.stringify({ userData: userDataComCoerencia })
-        });
-        if (!response.ok) throw new Error('Erro no relatório grátis');
-        const gptResponse = await response.json();
-
-        showFinalReport(gptResponse, userDataComCoerencia);
-
-      } catch (error) {
-        console.error('Erro:', error);
-        showErrorState();
-      }
-    }
-
-    function showFinalReport(gptResponse, userData) {
-      elements.reportContent.innerHTML = `
-        <div class="user-header">
-          <div style="font-size:1.3rem; margin-bottom:5px;">${userData.name || 'Explorador'}</div>
-          <div style="opacity:.9;">Relatório Personalizado • ${new Date().toLocaleDateString()}</div>
-        </div>
-
-        <div class="report-content">
-          <div style="color:#4a5568; line-height:1.7; white-space:pre-line;">
-            ${gptResponse.relatorio}
-          </div>
-
-          ${gptResponse.source === 'fallback_enhanced' ? `
-            <div style="margin-top:20px; padding:15px; background:#f0f9ff; border-radius:10px; border-left:4px solid #63b3ed;">
-              <strong>📊 Análise Científica MindKappa</strong><br/>
-              <small>Relatório gerado em modo básico. Para análise completa com IA, use a versão Premium.</small>
-            </div>
-          ` : ''}
-
-          <div class="premium-cta">
-            <h3 style="margin:0 0 10px 0;">🚀 DESBLOQUEIE SUA ANÁLISE COMPLETA</h3>
-            <p style="margin:0 0 15px 0; opacity:.9;">Relatório Premium com IA Generativa + PDF para download imediato</p>
-            <button onclick="startPremiumFlow()"
-              style="background: linear-gradient(135deg, #10b981, #059669); color:#fff; border:none; padding:18px 40px; font-size:1.1rem; border-radius:50px; cursor:pointer; font-weight:700; transition: all .3s; width:100%; max-width:320px; box-shadow:0 8px 25px rgba(16,185,129,.3);">
-              💎 Pagar e Gerar Relatório Premium
-            </button>
-          </div>
-        </div>
-
-        <div style="margin-top:25px; display:flex; gap:10px; justify-content:center;">
-          <button class="btn" onclick="window.location.href='index.html'"
-            style="background:#e2e8f0; color:#4a5568; flex:1;">🏠 Voltar ao Início</button>
-          <button class="btn" onclick="newAnalysis()" style="background:#63b3ed; color:#fff; flex:1;">🔄 Nova Análise</button>
-        </div>
-      `;
-    }
-
-    function showErrorState() {
-      elements.reportContent.innerHTML = `
-        <div class="fallback-message">
-          <div style="font-size:1.2rem; margin-bottom:10px;">😕 Sistema em atualização</div>
-          <div style="margin-bottom:15px;">
-            Nossa análise com IA está passando por melhorias. Enquanto isso, você pode ver a versão básica:
-          </div>
-          <button class="btn" onclick="showBasicAnalysis()" style="background:#667eea; color:#fff;">📊 Ver Análise Básica</button>
-        </div>
-      `;
-    }
-
-    // ====== Fallback local (mesmo do seu código, simplificado) ======
-    function showBasicAnalysis() {
-      const userData = JSON.parse(localStorage.getItem('mindkappa_user'));
-      const fallback = generateEnhancedFallbackReport(userData);
-      showFinalReport(fallback, userData);
-    }
-
-    function generateEnhancedFallbackReport(userData) {
-      const analysis = analyzeAllTests(userData);
-      return {
-        relatorio: `
-🧠 Seu Relatório MindKappa - Análise Científica
-
-📊 RESUMO DOS SEUS TESTES:
-
-${analysis.teste1.kappa ? `⚡ INSTINTO: κ ${analysis.teste1.kappa} (${analysis.teste1.kappaLevel}) • ${analysis.teste1.blueCount} azuis • ${analysis.teste1.redCount} vermelhos` : '⚡ Dados em análise'}
-${analysis.teste2.kappa ? `⚖️ EQUILÍBRIO: κ ${analysis.teste2.kappa} (${analysis.teste2.kappaLevel}) • ${analysis.teste2.blueCount} azuis • ${analysis.teste2.redCount} vermelhos` : '⚖️ Dados em análise'}
-${analysis.teste3.kappa ? `⏰ PRESSÃO: κ ${analysis.teste3.kappa} (${analysis.teste3.kappaLevel}) • Timeouts ${analysis.teste3.timeouts}/15` : '⏰ Dados em análise'}
-
-💡 Análise: seus padrões revelam características únicas de coerência.
-🎯 Para análise completa com IA generativa, ative a versão Premium.
-        `,
-        source: 'fallback_enhanced'
-      };
-    }
-
-    function analyzeAllTests(userData) {
-      return {
-        teste1: analyzeTestWithKappa(userData.teste1, 'Instinto'),
-        teste2: analyzeTestWithKappa(userData.teste2, 'Equilíbrio'),
-        teste3: analyzeTestWithKappa(userData.teste3, 'Pressão')
-      };
-    }
-
-    function analyzeTestWithKappa(testeData, testType) {
-      if (!testeData || !testeData.decisions) return { pattern: 'Dados em análise' };
-      const choices = testeData.decisions.filter(d => d.choice !== 'timeout').map(d => d.choice === 'azul' ? 'Azul' : 'Vermelho');
-      if (!choices.length) return { pattern: 'Sem dados válidos' };
-      const k = calculateLocalKappa(choices);
-      const blueCount = choices.filter(c => c === 'Azul').length;
-      const redCount  = choices.filter(c => c === 'Vermelho').length;
-      return {
-        kappa: k.kappa.toFixed(3),
-        kappaLevel: k.level,
-        blueCount, redCount,
-        timeouts: testeData.decisions.filter(d => d.timedOut).length || 0
-      };
-    }
-
-    function calculateLocalKappa(choices) {
-      const thetas = choices.map(c => c === 'Azul' ? 0 : Math.PI);
-      const N = thetas.length;
-      const sumCos = thetas.reduce((s, t) => s + Math.cos(t), 0);
-      const sumSin = thetas.reduce((s, t) => s + Math.sin(t), 0);
-      const R = Math.sqrt(sumCos**2 + sumSin**2) / N;
-      let kappa = 0;
-      if (R > 0.001 && R < 0.999) kappa = (R * (2 - R**2)) / (1 - R**2);
-      else if (R >= 0.999) kappa = 10;
-      let level = "BAIXA";
-      if (kappa >= 1.0) level = "ALTA";
-      else if (kappa >= 0.5) level = "MODERADA";
-      return { kappa: Math.min(kappa, 10), level };
-    }
-
-    function newAnalysis() {
-      if (confirm('Isso irá reiniciar todo o processo. Tem certeza?')) {
-        localStorage.removeItem('mindkappa_user');
-        localStorage.removeItem('mindkappa_session');
-        window.location.href = 'index.html';
-      }
-    }
-
-    // ===== Fluxo Premium (Pagamento ➜ Volta ➜ Gera) =====
-    async function startPremiumFlow() {
-      try {
-        console.log('🔄 Iniciando pagamento (Checkout Pro)…');
-        const res = await fetch(`${API_URL}/api/simple-subscription`, { method:'POST', headers:{'Content-Type':'application/json'} });
-        const data = await res.json();
-        if (data.success && data.payment_link) {
-          window.location.href = data.payment_link; // redireciona pro Mercado Pago
-        } else {
-          throw new Error('Link de pagamento não gerado');
-        }
-      } catch (e) {
-        console.error('❌ Erro no pagamento:', e);
-        alert('⚠️ Sistema de pagamento em manutenção. Tente novamente em alguns minutos.');
-      }
-    }
-
-    async function generatePremiumReport() {
-      try {
-        console.log('💎 Gerando relatório premium…');
-        const userData = JSON.parse(localStorage.getItem('mindkappa_user'));
-        const sessionId = localStorage.getItem('mindkappa_session');
-
-        // Loading
-        elements.reportContent.innerHTML = `
-          <div style="margin:40px 0;">
-            <div class="loading-spinner"></div>
-            <div style="color:#4a5568; margin-top:20px;">Gerando sua análise premium…</div>
-            <div style="color:#718096; font-size:.9rem; margin-top:10px;">Processamento avançado com IA • Insights exclusivos</div>
-          </div>
-        `;
-
-        // Atualiza coerência (garante consistência)
-        const updateResponse = await fetch(`${API_URL}/api/update-user-coherence`, {
-          method: 'POST', headers: {'Content-Type':'application/json'},
-          body: JSON.stringify({ userData, sessionId })
-        });
-        if (!updateResponse.ok) throw new Error('Erro ao calcular coerência');
-        const updateData = await updateResponse.json();
-        const userDataComCoerencia = updateData.updatedUserData;
-        localStorage.setItem('mindkappa_user', JSON.stringify(userDataComCoerencia));
-
-        // Gera Premium
-        const premiumResponse = await fetch(`${API_URL}/api/generate-premium-report`, {
-          method: 'POST', headers: {'Content-Type':'application/json'},
-          body: JSON.stringify({ userData: userDataComCoerencia, sessionId })
-        });
-        if (!premiumResponse.ok) throw new Error('Erro no relatório premium');
-        const premiumData = await premiumResponse.json();
-        showPremiumReport(premiumData.relatorio, userDataComCoerencia);
-
-      } catch (e) {
-        console.error('❌ Erro no premium:', e);
-        alert('⚠️ Serviço premium indisponível no momento. Tente novamente mais tarde.');
-      }
-    }
-
-    function showPremiumReport(relatorio, userData) {
-      elements.reportContent.innerHTML = `
-        <div class="user-header">
-          <div style="font-size:1.3rem; margin-bottom:5px;">${userData.name || 'Explorador'}</div>
-          <div style="opacity:.9;">Relatório Premium • ${new Date().toLocaleDateString()}</div>
-        </div>
-
-        <div class="report-content">
-          <div style="color:#4a5568; line-height:1.7; white-space:pre-line;">${relatorio}</div>
-        </div>
-
-        <div style="margin:30px 0; text-align:center;">
-          <button class="btn" onclick="downloadPDF()" style="background: linear-gradient(135deg, #10b981, #059669);">
-            📄 Download PDF Premium
-          </button>
-          <div style="color:#718096; font-size:.9rem; margin-top:10px;">Salve seu relatório completo para consulta futura</div>
-        </div>
-
-        <div style="margin-top:25px; display:flex; gap:10px; justify-content:center;">
-          <button class="btn" onclick="window.location.href='index.html'" style="background:#e2e8f0; color:#4a5568; flex:1;">🏠 Voltar ao Início</button>
-          <button class="btn" onclick="newAnalysis()" style="background:#63b3ed; color:#fff; flex:1;">🔄 Nova Análise</button>
-        </div>
-      `;
-    }
-
-    // ===== PDF Premium =====
-    async function downloadPDF() {
-      try {
-        const { jsPDF } = window.jspdf;
-        const doc = new jsPDF();
-        const userData = JSON.parse(localStorage.getItem('mindkappa_user'));
-        const userName = (userData?.name || 'Explorador').toString();
-
-        const t1 = userData?.teste1 || {};
-        const t2 = userData?.teste2 || {};
-        const t3 = userData?.teste3 || {};
-
-        const k1 = Number(t1?.coherence?.kappa || 0);
-        const k2 = Number(t2?.coherence?.kappa || 0);
-        const k3 = Number(t3?.coherence?.kappa || 0);
-
-        const az1 = t1?.statistics?.blueCount || 0, vr1 = t1?.statistics?.redCount || 0;
-        const az2 = t2?.statistics?.blueCount || 0, vr2 = t2?.statistics?.redCount || 0;
-        const az3 = t3?.statistics?.blueCount || 0, vr3 = t3?.statistics?.redCount || 0;
-
-        // CAPA
-        doc.setFillColor(30,64,175);
-        doc.rect(0,0,210,297,'F');
-        doc.setTextColor(255,255,255);
-        doc.setFontSize(32); doc.text('🧠', 105, 60, {align:'center'});
-        doc.setFontSize(24); doc.text('RELATÓRIO PREMIUM', 105, 80, {align:'center'});
-        doc.setFontSize(18); doc.text('MindKappa MCD', 105, 100, {align:'center'});
-        doc.setFontSize(16); doc.text(userName, 105, 120, {align:'center'});
-        doc.setFontSize(12); doc.text('Análise Avançada de Padrões Decisorais', 105, 135, {align:'center'});
-        doc.text(`Gerado em: ${new Date().toLocaleDateString()}`, 105, 150, {align:'center'});
-
-        // Página 1
-        doc.addPage();
-        doc.setTextColor(30,64,175); doc.setFontSize(20);
-        doc.text('📊 SEU MAPA DECISIONAL COMPLETO', 20, 30);
-        doc.setDrawColor(30,64,175); doc.line(20, 35, 190, 35);
-        doc.setTextColor(0,0,0); doc.setFontSize(12);
-        const intro = `Olá, ${userName}!\n\nEste relatório premium revela insights profundos sobre seus padrões únicos de tomada de decisão, baseado em 45 escolhas analisadas pelo algoritmo MCD.`;
-        doc.text(doc.splitTextToSize(intro, 170), 20, 50);
-
-        // Página 2
-        doc.addPage();
-        doc.setTextColor(30,64,175); doc.setFontSize(18);
-        doc.text('🎯 RESULTADOS DOS 3 TESTES', 20, 30);
-        doc.line(20, 35, 190, 35);
-        doc.setTextColor(0,0,0); doc.setFontSize(12);
-
-        doc.text(`⚡ Instinto Puro: ${az1} azuis | ${vr1} vermelhos`, 20, 50);
-        doc.text(`κ = ${k1.toFixed(3)} (${t1?.coherence?.level || 'N/A'})`, 20, 60);
-        doc.text(`⚖️ Equilíbrio Mental: ${az2} azuis | ${vr2} vermelhos`, 20, 80);
-        doc.text(`κ = ${k2.toFixed(3)} (${t2?.coherence?.level || 'N/A'})`, 20, 90);
-        doc.text(`⏰ Pressão Temporal: ${az3} azuis | ${vr3} vermelhos`, 20, 110);
-        doc.text(`κ = ${k3.toFixed(3)} (${t3?.coherence?.level || 'N/A'})`, 20, 120);
-
-        // Gráfico barras κ
-        doc.setFontSize(14); doc.text('📈 Perfil de Coerência (κ)', 20, 145);
-        const maxK = Math.max(k1, k2, k3, 1);
-        doc.setFillColor(99,179,237);
-        doc.rect(40, 155, (k1/maxK)*100, 8, 'F'); doc.text('Instinto', 150, 161);
-        doc.rect(40, 170, (k2/maxK)*100, 8, 'F'); doc.text('Equilíbrio', 150, 176);
-        doc.rect(40, 185, (k3/maxK)*100, 8, 'F'); doc.text('Pressão', 150, 191);
-
-        // Página 3
-        doc.addPage();
-        doc.setTextColor(30,64,175); doc.setFontSize(18);
-        doc.text('💡 Exercícios Personalizados', 20, 30);
-        doc.line(20, 35, 190, 35);
-        doc.setTextColor(0,0,0); doc.setFontSize(11);
-        const tips = [
-          '🎯 Observação consciente: em decisões diárias, pause 5s e observe seu processo mental.',
-          '🔄 Flexibilidade: resolva um problema por 3 caminhos diferentes.',
-          '⚡ Intuição vs Razão: simples = intuição; complexas = prós e contras.',
-          '🎪 Perspectiva: imagine como outra pessoa resolveria seu desafio.'
-        ];
-        let y=50;
-        tips.forEach(t => { const lines = doc.splitTextToSize(t, 170); doc.text(lines, 20, y); y += lines.length*6 + 8; });
-
-        // Rodapé
-        doc.setFontSize(10); doc.setTextColor(100,100,100);
-        const disc = '💡 Este relatório é uma ferramenta de autoconhecimento. Não substitui avaliação profissional. MindKappa 🧠';
-        doc.text(doc.splitTextToSize(disc, 170), 20, 270);
-
-        doc.save(`Relatorio_Premium_MindKappa_${userName.replace(/\s+/g,'_')}.pdf`);
-        console.log('✅ PDF premium gerado');
-      } catch (err) {
-        console.error('❌ Erro ao gerar PDF:', err);
-        alert('📄 Erro ao gerar PDF. Tente novamente.');
-      }
-    }
-
-    // ===== LGPD =====
-    function checkLGPD() {
-      if (!localStorage.getItem('lgpd_accepted_v1')) {
-        document.getElementById('lgpdModal').style.display = 'flex';
-        document.body.style.overflow = 'hidden';
-      }
-    }
-    function acceptLGPD() {
-      localStorage.setItem('lgpd_accepted_v1', 'true');
-      document.getElementById('lgpdModal').style.display = 'none';
-      document.body.style.overflow = '';
-    }
-
-    window.addEventListener('load', () => { checkLGPD(); initializeReport(); });
-    window.generateReport = generateReport;
-    window.generatePremiumReport = generatePremiumReport;
-    window.startPremiumFlow = startPremiumFlow;
-  </script>
-
-  <script>
-async function buyPremiumReport() {
-  try {
-    const res = await fetch(`${API_URL}/api/simple-subscription`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' }
+async function generatePremium(userData){
+  el.reportContent.innerHTML=`<div class="loading-spinner"></div><p>Gerando relatório premium...</p>`;
+  try{
+    const res=await fetch(`${API_URL}/api/generate-premium-report`,{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({userData})
     });
-    const data = await res.json();
-    if (data.success && data.payment_link) {
-      window.location.href = data.payment_link;
-    } else {
-      throw new Error('Link de pagamento não gerado');
-    }
-  } catch (err) {
-    console.error('Pagamento erro:', err);
-    alert('⚠️ Pagamento indisponível no momento. Tente novamente.');
+    if(!res.ok)throw new Error('Erro');
+    const data=await res.json();
+    showPremium(data.relatorio,userData);
+  }catch(e){
+    el.reportContent.innerHTML='<p style="color:#ef4444;">Erro ao gerar relatório premium.</p>';
   }
 }
 
-</script>
-
-  <!-- LGPD Modal -->
-  <div id="lgpdModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.45); z-index:10000; justify-content:center; align-items:center; font-family:Arial,sans-serif;">
-    <div style="background:#fff; padding:2rem; border-radius:15px; max-width:520px; margin:1rem; box-shadow:0 10px 30px rgba(0,0,0,.3);">
-      <h3 style="color:#1e40af; margin-bottom:.8rem;">📋 Termo de Consentimento</h3>
-      <p style="margin-bottom:.8rem;"><strong>Respeitamos sua privacidade:</strong></p>
-      <ul style="margin-bottom:1rem; padding-left:1.5rem; color:#374151;">
-        <li><strong>Coletamos:</strong> escolhas (AZUL/VERMELHO) e métricas do teste.</li>
-        <li><strong>Não coletamos:</strong> dados sensíveis.</li>
-        <li><strong>Finalidade:</strong> gerar seu relatório e melhorar o MindKappa.</li>
-      </ul>
-      <button onclick="acceptLGPD()" style="background:#111827; color:#fff; border:none; padding:12px 30px; border-radius:8px; cursor:pointer; font-size:1rem; width:100%;">✅ Concordo e continuar</button>
-    </div>
+function showPremium(text,userData){
+  el.reportContent.innerHTML=`
+  <div class="user-header">
+    <div style="font-size:1.3rem;">${userData.name||'Explorador'}</div>
+    <div style="opacity:.9;">Relatório Premium • ${new Date().toLocaleDateString()}</div>
   </div>
+  <div class="report-content">
+    <pre style="white-space:pre-line;color:#1e293b;">${text}</pre>
+    <button class="btn" onclick="downloadPDF()" style="background:#10b981;">📄 Baixar PDF Premium</button>
+  </div>`;
+}
+
+/* ---------- PDF ---------- */
+async function downloadPDF(){
+  const {jsPDF}=window.jspdf;const pdf=new jsPDF();
+  const content=document.querySelector('.report-content');
+  const canvas=await html2canvas(content);const img=canvas.toDataURL('image/png');
+  pdf.addImage(img,'PNG',10,10,190,0);
+  pdf.save('Relatorio_EraK.pdf');
+}
+
+/* ---------- Utilidades ---------- */
+function newAnalysis(){
+  if(confirm('Reiniciar?')){localStorage.clear();window.location.href='index.html';}
+}
+</script>
 </body>
 </html>

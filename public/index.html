@@ -3,41 +3,134 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>MindKappa - Descubra Seu Estilo de Decisão</title>
+  <title>MindKappa — Descubra o seu K</title>
   <link rel="stylesheet" href="assets/style.css" />
   <style>
-    .hero-section { text-align: center; padding: 40px 20px; }
-    .hero-title { font-size: 2.5rem; color: #1e40af; margin-bottom: 15px; font-weight: 700; }
-    .hero-subtitle { font-size: 1.3rem; color: #4b5563; margin-bottom: 40px; line-height: 1.5; }
+    :root {
+      --primary: #1e3a8a;
+      --accent: #7c3aed;
+      --text-dark: #1f2937;
+      --text-light: #6b7280;
+      --bg-light: #f9fafb;
+      --shadow: rgba(0,0,0,0.1);
+    }
+
+    body {
+      margin: 0;
+      font-family: "Inter", "Segoe UI", Arial, sans-serif;
+      background: var(--bg-light);
+      color: var(--text-dark);
+    }
+
+    .container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 8px 30px var(--shadow);
+      width: 100%;
+      max-width: 600px;
+      padding: 40px 25px;
+    }
+
+    .hero-section { text-align: center; }
+    .hero-title { font-size: 2.2rem; color: var(--primary); margin-bottom: 10px; font-weight: 700; }
+    .hero-subtitle { font-size: 1.1rem; color: var(--text-light); margin-bottom: 35px; line-height: 1.6; }
+
     .cta-button {
-      background: linear-gradient(135deg, #7c3aed, #1e40af);
-      color: #fff; border: none; padding: 18px 40px; font-size: 1.3rem;
-      border-radius: 50px; cursor: pointer; transition: all .3s ease; margin-bottom: 40px;
+      background: linear-gradient(135deg, var(--accent), var(--primary));
+      color: #fff;
+      border: none;
+      padding: 16px 38px;
+      font-size: 1.2rem;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: all .3s ease;
       box-shadow: 0 8px 25px rgba(124,58,237,.3);
+      margin-bottom: 35px;
     }
     .cta-button:hover { transform: translateY(-3px); box-shadow: 0 12px 35px rgba(124,58,237,.4); }
-    .benefits-grid { display: grid; gap: 20px; max-width: 500px; margin: 0 auto; text-align: left; }
-    .benefit-item { padding: 20px; background: #fff; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,.1); border-left: 4px solid #7c3aed; }
-    .benefit-icon { font-size: 1.5rem; margin-bottom: 10px; }
-    .benefit-title { font-weight: 600; color: #1f2937; margin-bottom: 5px; }
-    .benefit-desc { color: #6b7280; line-height: 1.5; }
-    .disclaimer { margin-top: 40px; padding: 15px; background: #f3f4f6; border-radius: 10px; font-size: .9rem; color: #6b7280; }
 
-    /* LGPD overlay (apenas quando visível) */
+    .benefits-grid {
+      display: grid;
+      gap: 18px;
+      max-width: 500px;
+      margin: 0 auto;
+      text-align: left;
+    }
+
+    .benefit-item {
+      padding: 18px;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px var(--shadow);
+      border-left: 4px solid var(--accent);
+    }
+
+    .benefit-icon { font-size: 1.5rem; margin-bottom: 8px; }
+    .benefit-title { font-weight: 600; color: var(--text-dark); margin-bottom: 4px; }
+    .benefit-desc { color: var(--text-light); line-height: 1.5; }
+
+    .disclaimer {
+      margin-top: 40px;
+      padding: 15px;
+      background: #f3f4f6;
+      border-radius: 10px;
+      font-size: .9rem;
+      color: var(--text-light);
+      line-height: 1.4;
+    }
+
+    /* LGPD overlay */
     #lgpdModal {
-      display: none; position: fixed; inset: 0; background: rgba(0,0,0,.45);
-      z-index: 10000; justify-content: center; align-items: center; font-family: Arial, sans-serif;
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.45);
+      z-index: 10000;
+      justify-content: center;
+      align-items: center;
+      font-family: "Inter", sans-serif;
+      padding: 15px;
     }
+
     #lgpdBox {
-      background: #fff; padding: 26px; border-radius: 14px; max-width: 520px;
-      margin: 20px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,.25);
+      background: #fff;
+      padding: 26px;
+      border-radius: 14px;
+      max-width: 480px;
+      text-align: center;
+      box-shadow: 0 10px 30px rgba(0,0,0,.25);
     }
+
     .btn-primary {
-      background: linear-gradient(135deg, #7c3aed, #1e40af); color: #fff; border: none;
-      padding: 12px 30px; border-radius: 25px; cursor: pointer; font-size: 1rem; transition: all .3s ease;
+      background: linear-gradient(135deg, var(--accent), var(--primary));
+      color: #fff;
+      border: none;
+      padding: 12px 30px;
+      border-radius: 25px;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: all .3s ease;
     }
+
     .btn-primary:hover { transform: translateY(-2px); }
-    .link { color: #7c3aed; text-decoration: underline; }
+
+    .link { color: var(--accent); text-decoration: underline; }
+
+    /* Responsividade */
+    @media (max-width: 480px) {
+      .hero-title { font-size: 1.8rem; }
+      .hero-subtitle { font-size: 1rem; }
+      .cta-button { width: 100%; padding: 15px; font-size: 1.1rem; }
+      .benefits-grid { gap: 15px; }
+    }
   </style>
 </head>
 <body>
@@ -45,46 +138,49 @@
     <div class="card">
       <div class="hero-section">
         <!-- Marca -->
-        <div style="text-align: center; margin-bottom: 20px;">
-          <div style="font-size: 2.5rem; margin-bottom: 10px;">🧠</div>
-          <div style="font-size: 1.8rem; font-weight: 700; color: #1e40af; letter-spacing: -0.5px;">
+        <div style="text-align: center; margin-bottom: 25px;">
+          <div style="font-size: 2.5rem; margin-bottom: 10px;">🧬</div>
+          <div style="font-size: 1.8rem; font-weight: 700; color: var(--primary); letter-spacing: -0.5px;">
             MindKappa
           </div>
-          <div style="color: #6b7280; font-size: .9rem; margin-top: 5px;">
-            Análise de Padrões Decisorais
+          <div style="color: var(--text-light); font-size: .9rem; margin-top: 5px;">
+            Espelho Matemático da Mente
           </div>
         </div>
 
         <!-- Headline -->
-        <h1 class="hero-title">Qual é o Seu Estilo de Decisão?</h1>
-        <p class="hero-subtitle">Descubra os padrões por trás das suas escolhas em 5 minutos</p>
+        <h1 class="hero-title">Descubra o seu K</h1>
+        <p class="hero-subtitle">
+          Em poucos minutos, observe como suas decisões se alinham — ou oscilam — entre intenção e ação.<br/>
+          Uma experiência científica e poética da coerência.
+        </p>
 
         <!-- CTA -->
-        <button class="cta-button" onclick="startTest()">🧠 Analisar Meu Estilo</button>
+        <button class="cta-button" onclick="startTest()">✨ Iniciar Reflexão</button>
 
         <!-- Benefícios -->
         <div class="benefits-grid">
           <div class="benefit-item">
             <div class="benefit-icon">🔍</div>
-            <div class="benefit-title">Padrões Únicos</div>
-            <div class="benefit-desc">Cada pessoa decide de um jeito diferente.</div>
+            <div class="benefit-title">Padrão Pessoal</div>
+            <div class="benefit-desc">Cada mente tem uma assinatura de coerência única. O K revela a sua.</div>
           </div>
           <div class="benefit-item">
-            <div class="benefit-icon">📊</div>
-            <div class="benefit-title">Método Científico</div>
-            <div class="benefit-desc">Análise baseada em dados e métricas reais.</div>
+            <div class="benefit-icon">📈</div>
+            <div class="benefit-title">Base Científica</div>
+            <div class="benefit-desc">Métrica derivada da estatística circular — o mesmo princípio usado em pesquisas de direção e sincronia.</div>
           </div>
           <div class="benefit-item">
-            <div class="benefit-icon">🎯</div>
-            <div class="benefit-title">Autoconhecimento</div>
-            <div class="benefit-desc">Entenda como sua mente realmente funciona.</div>
+            <div class="benefit-icon">💡</div>
+            <div class="benefit-title">Autopercepção</div>
+            <div class="benefit-desc">Compreenda o equilíbrio entre sua consistência e sua criatividade decisional.</div>
           </div>
         </div>
 
         <!-- Disclaimer -->
         <div class="disclaimer">
-          💡 <strong>Importante:</strong> Esta é uma ferramenta de autoconhecimento.
-          Não substitui avaliação psicológica profissional.
+          ⚖️ <strong>MindKappa</strong> é uma ferramenta de auto-observação cognitiva.<br/>
+          Não realiza diagnósticos, nem substitui avaliações clínicas.
         </div>
       </div>
     </div>
@@ -96,39 +192,39 @@
     }
   </script>
 
-  <!-- LGPD Modal (corrigido) -->
+  <!-- LGPD Modal -->
   <div id="lgpdModal" role="dialog" aria-modal="true" aria-labelledby="lgpd-title" aria-describedby="lgpd-desc">
     <div id="lgpdBox">
-      <div style="font-size: 2rem; margin-bottom: 12px;">🍪</div>
-      <h2 id="lgpd-title" style="color: #1e40af; margin-bottom: 10px;">Privacidade & Cookies</h2>
-      <p id="lgpd-desc" style="color: #4b5563; line-height: 1.55; margin-bottom: 16px;">
-        Usamos cookies essenciais para o funcionamento do teste.
-        <strong>Não coletamos dados pessoais sensíveis</strong> — apenas padrões de decisão anônimos para gerar seu relatório.
+      <div style="font-size: 2rem; margin-bottom: 12px;">🔒</div>
+      <h2 id="lgpd-title" style="color: var(--primary); margin-bottom: 10px;">Privacidade e Dados</h2>
+      <p id="lgpd-desc" style="color: var(--text-light); line-height: 1.55; margin-bottom: 16px;">
+        Utilizamos apenas cookies essenciais para o funcionamento da experiência.
+        Nenhum dado sensível é coletado. Os padrões de decisão são processados de forma
+        <strong>anônima e local</strong> para gerar o seu K.
       </p>
       <div style="display: flex; gap: 12px; justify-content: center; align-items: center; flex-wrap: wrap;">
-        <a href="/politica-de-privacidade" class="link">Ler Política de Privacidade</a>
-        <button class="btn-primary" onclick="acceptLGPD()">✅ Aceitar e Continuar</button>
+        <a href="/politica-de-privacidade" class="link">Política de Privacidade</a>
+        <button class="btn-primary" onclick="acceptLGPD()">✅ Aceitar e continuar</button>
       </div>
-      <p style="font-size: .8rem; color: #6b7280; margin-top: 14px;">
+      <p style="font-size: .8rem; color: var(--text-light); margin-top: 14px;">
         Ao continuar, você concorda com nossos <a href="/termos" class="link">Termos de Uso</a>.
       </p>
     </div>
   </div>
 
   <script>
-    // LGPD — chave única (evita reabrir)
     const LGPD_KEY = 'lgpd_accepted_v1';
 
     function showLGPD() {
       const modal = document.getElementById('lgpdModal');
       modal.style.display = 'flex';
-      document.body.style.overflow = 'hidden'; // trava scroll enquanto lê
+      document.body.style.overflow = 'hidden';
     }
 
     function hideLGPD() {
       const modal = document.getElementById('lgpdModal');
       modal.style.display = 'none';
-      document.body.style.overflow = ''; // destrava sempre
+      document.body.style.overflow = '';
     }
 
     function acceptLGPD() {
@@ -139,7 +235,6 @@
     document.addEventListener('DOMContentLoaded', function () {
       const ok = localStorage.getItem(LGPD_KEY) === 'true';
       if (!ok) showLGPD();
-      // ⚠️ Importante: NÃO chamar também no window.load (evita “modal fantasma”)
     });
   </script>
 </body>

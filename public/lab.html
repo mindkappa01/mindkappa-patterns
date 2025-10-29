@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>MindKappa Lab | MCD v2</title>
+  <link rel="stylesheet" href="assets/style.css"/>
+  <style>
+    body {
+      background: radial-gradient(circle at 30% 20%, #0f172a, #111827 60%, #1e293b 100%);
+      color: #e2e8f0; font-family: "Inter", sans-serif;
+      margin: 0; padding: 0;
+    }
+    .lab-wrapper {
+      max-width: 900px; margin: 60px auto; padding: 30px;
+      background: rgba(17,24,39,0.8); border-radius: 20px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+    }
+    h1 { text-align: center; color: #60a5fa; margin-bottom: 10px; }
+    h2 { text-align: center; color: #93c5fd; margin-top: 0; font-weight: 400; }
+    .decision-zone { display: flex; justify-content: center; gap: 40px; margin: 40px 0; }
+    .btn-choice {
+      font-size: 1.3rem; font-weight: 600; width: 160px; height: 160px;
+      border-radius: 100%; cursor: pointer; border: none; transition: all .25s;
+      color: #fff; box-shadow: 0 0 15px rgba(0,0,0,0.4);
+    }
+    .btn-choice.blue { background: linear-gradient(145deg,#3b82f6,#1e40af); }
+    .btn-choice.red  { background: linear-gradient(145deg,#ef4444,#991b1b); }
+    .btn-choice:hover { transform: scale(1.05); }
+    .status { text-align: center; font-size: 1rem; color: #cbd5e1; margin-bottom: 15px; }
+    .progress-bar {
+      width: 100%; height: 12px; background: #1e293b; border-radius: 6px; overflow: hidden;
+    }
+    .progress-bar-inner {
+      height: 12px; width: 0%; background: linear-gradient(90deg,#3b82f6,#60a5fa);
+      transition: width .3s ease;
+    }
+    canvas { margin: 30px auto; display: block; }
+    .results { text-align: center; margin-top: 25px; }
+    .results span { display: inline-block; margin: 8px 12px; font-size: 1rem; color: #f8fafc; }
+    .btn-small {
+      margin-top: 20px; background: #0ea5e9; color: #fff; border: none; padding: 12px 30px;
+      border-radius: 50px; cursor: pointer; font-weight: 600; transition: all .3s;
+    }
+    .btn-small:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(14,165,233,.3); }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+  <div class="lab-wrapper">
+    <h1>MindKappa Lab</h1>
+    <h2>Análise Experimental • MCD v2</h2>
+    <div class="status" id="status">0 / 45 decisões</div>
+    <div class="progress-bar"><div id="progress" class="progress-bar-inner"></div></div>
+
+    <div class="decision-zone">
+      <button class="btn-choice blue" onclick="recordChoice('azul')">AZUL</button>
+      <button class="btn-choice red"  onclick="recordChoice('vermelho')">VERMELHO</button>
+    </div>
+
+    <div class="results" id="results">
+      <span>κ = —</span>
+      <span>R = —</span>
+      <span>σ = —</span>
+    </div>
+
+    <canvas id="vectorChart" width="360" height="300"></canvas>
+
+    <div style="text-align:center;">
+  <button class="btn-small" onclick="exportCSV()">📄 Exportar CSV</button>
+  <button class="btn-small" onclick="saveToBackend()">💾 Salvar no MindKappa Lab</button>
+  <button class="btn-small" onclick="resetLab()">🔄 Reiniciar</button>
+  <button class="btn-small" onclick="window.location.href='index.html'">🏠 Início</button>
+</div>
+  </div>
+
+<script>
+let decisions = [];
+const maxDecisions = 45;
+const ctx = document.getElementById('vectorChart');
+let chart;
+
+function recordChoice(choice) {
+  if (decisions.length >= maxDecisions) return;
+  const timestamp = Date.now();
+  decisions.push({ choice, timestamp });
+  updateProgress();
+  calculateKappa();
+  if (decisions.length === maxDecisions) saveToLocal();
+}
+
+function updateProgress() {
+  const pct = (decisions.length / maxDecisions) * 100;
+  document.getElementById('progress').style.width = pct + '%';
+  document.getElementById('status').innerText = `${decisions.length} / ${maxDecisions} decisões`;
+}
+
+// === MCD v2 Equation ===
+function calculateKappa() {
+  const thetas = decisions.map(d => d.choice === 'azul' ? 0 : Math.PI);
+  const N = thetas.length;
+  if (N === 0) return;
+
+  const sumCos = thetas.reduce((s,t)=>s+Math.cos(t),0);
+  const sumSin = thetas.reduce((s,t)=>s+Math.sin(t),0);
+  const R = Math.sqrt(sumCos**2 + sumSin**2)/N;
+
+  // variância angular σ
+  const meanAngle = Math.atan2(sumSin, sumCos);
+  const diffs = thetas.map(t => Math.atan2(Math.sin(t-meanAngle), Math.cos(t-meanAngle)));
+  const sigma = Math.sqrt(diffs.reduce((s,t)=>s+t**2,0)/N);
+
+  // nova equação adaptativa
+  const kappa = (R*(2 - R**2)) / ((1 - R**2) + sigma);
+
+  document.getElementById('results').innerHTML =
+    `<span>κ = ${kappa.toFixed(3)}</span><span>R = ${R.toFixed(3)}</span><span>σ = ${sigma.toFixed(3)}</span>`;
+  renderVector(R, meanAngle);
+  return {kappa,R,sigma};
+}
+
+function renderVector(R, theta) {
+  if (!chart) {
+    chart = new Chart(ctx,{
+      type:'scatter',
+      data:{datasets:[{label:'Vetor R',data:[],backgroundColor:'#60a5fa'}]},
+      options:{
+        scales:{
+          x:{min:-1,max:1,grid:{color:'#334155'},ticks:{display:false}},
+          y:{min:-1,max:1,grid:{color:'#334155'},ticks:{display:false}}
+        },
+        plugins:{legend:{display:false}}
+      }
+    });
+  }
+  const x = R*Math.cos(theta);
+  const y = R*Math.sin(theta);
+  chart.data.datasets[0].data = [{x,y}];
+  chart.update();
+}
+
+function saveToLocal(){
+  const {kappa,R,sigma} = calculateKappa();
+  const userData = JSON.parse(localStorage.getItem('mindkappa_user')) || {};
+  userData.labSession = { decisions, kappa, R, sigma, timestamp: new Date().toISOString() };
+  localStorage.setItem('mindkappa_user', JSON.stringify(userData));
+  alert('🧠 Sessão concluída e salva localmente!');
+}
+
+function exportCSV(){
+  if (!decisions.length) return;
+  const rows = ['choice,timestamp',...decisions.map(d=>`${d.choice},${d.timestamp}`)];
+  const blob = new Blob([rows.join('\n')],{type:'text/csv'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'mindkappa_lab_session.csv';
+  a.click();
+}
+
+function resetLab(){
+  if (confirm('Reiniciar a sessão experimental?')){
+    decisions = [];
+    updateProgress();
+    document.getElementById('results').innerHTML='<span>κ = —</span><span>R = —</span><span>σ = —</span>';
+    if(chart){chart.data.datasets[0].data=[];chart.update();}
+  }
+}
+
+window.onload = () => { updateProgress(); };
+</script>
+<script>
+async function saveToBackend() {
+  if (decisions.length < maxDecisions) {
+    alert('⚠️ Complete as 45 decisões antes de salvar.');
+    return;
+  }
+
+  const { kappa, R, sigma } = calculateKappa();
+  const userData = JSON.parse(localStorage.getItem('mindkappa_user')) || { name: 'Anônimo' };
+  const labSession = { decisions, kappa, R, sigma, timestamp: new Date().toISOString() };
+
+  try {
+    const res = await fetch('https://mindkappa-backend.onrender.com/api/save-lab-data', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userData, labSession })
+    });
+
+    const data = await res.json();
+    if (data.success) {
+      alert(`🧠 Sessão salva com sucesso!\nκ=${data.results.kappa}\nR=${data.results.R}\nσ=${data.results.sigma}`);
+    } else {
+      throw new Error(data.error || 'Erro desconhecido');
+    }
+  } catch (err) {
+    console.error('❌ Erro ao salvar no backend:', err);
+    alert('⚠️ Não foi possível salvar no servidor. Verifique a conexão e tente novamente.');
+  }
+}
+</script>
+</body>
+</html>
