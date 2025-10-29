@@ -6,6 +6,7 @@
   <title>Teste 3 - Pressão Temporal | MindKappa</title>
   <link rel="stylesheet" href="assets/style.css" />
   <style>
+    body { background: #f9fafb; }
     .test-container { text-align: center; padding: 20px; }
     .progress-info { margin-bottom: 30px; color: #4a5568; }
     .progress-bar-container { width: 100%; height: 8px; background: #e2e8f0; border-radius: 10px; margin: 20px 0; overflow: hidden; }
@@ -29,7 +30,6 @@
     }
     .timer-text { font-size: 1.05rem; color: #4a5568; margin-bottom: 5px; }
     .time-limit { font-size: 0.9rem; color: #718096; }
-
     .timeout-message { color: #e53e3e; font-weight: bold; margin: 10px 0; font-size: 1.1rem; }
 
     .pressure-preview {
@@ -38,18 +38,26 @@
       border-left: 4px solid #ed8936;
     }
     .btn-next {
-      background: #111827; color: #fff; border: none; padding: 14px 20px; border-radius: 10px;
+      background: #1e3a8a; color: #fff; border: none; padding: 14px 20px; border-radius: 10px;
       cursor: pointer; font-weight: 700; box-shadow: 0 8px 20px rgba(0,0,0,.15);
+      transition: all .2s ease;
+    }
+    .btn-next:hover { background: #1d4ed8; }
+
+    /* 🔹 Responsividade */
+    @media (max-width: 600px) {
+      .buttons-container { flex-direction: column; gap: 15px; }
+      .choice-btn { width: 100%; height: 100px; font-size: 1.1rem; }
     }
   </style>
 </head>
 <body>
   <div class="container">
     <div class="card">
-      <header style="text-align:center; padding: 20px 0 0 0;">
-        <div style="font-size: 2rem;">🧠</div>
-        <div style="font-size: 1.5rem; font-weight: 700; color: #1e40af;">MindKappa</div>
-        <div style="color: #6b7280; font-size: .9rem; margin-top: 5px;">Análise de Padrões Decisorais</div>
+      <header style="text-align:center; padding:20px 0 0 0;">
+        <div style="font-size:2rem;">🧠</div>
+        <div style="font-size:1.5rem; font-weight:700; color:#1e40af;">MindKappa</div>
+        <div style="color:#6b7280; font-size:.9rem; margin-top:5px;">Análise de Padrões Decisorais</div>
       </header>
 
       <div class="test-container">
@@ -59,9 +67,7 @@
 
         <div class="progress-info">
           <div class="decision-count">Decisão: <span id="currentDecision">0</span>/15</div>
-          <div class="progress-bar-container">
-            <div class="progress-fill" id="progressFill"></div>
-          </div>
+          <div class="progress-bar-container"><div class="progress-fill" id="progressFill"></div></div>
         </div>
 
         <div class="timer-container">
@@ -71,8 +77,8 @@
         </div>
 
         <div id="contentArea">
-          <div class="buttons-container" id="buttonsContainer"><!-- botões via JS --></div>
-          <div style="color:#718096; font-size:.9rem; margin-top: 30px;">O tempo diminui aos poucos — confie no seu instinto</div>
+          <div class="buttons-container" id="buttonsContainer"></div>
+          <div style="color:#718096; font-size:.9rem; margin-top:30px;">O tempo diminui aos poucos — confie no seu instinto</div>
         </div>
       </div>
     </div>
@@ -84,11 +90,9 @@
       totalDecisions: 15,
       timeProgression: [3000,2800,2600,2400,2200,2000,1800,1600,1400,1200,1000,900,800,700,600],
       decisionDelay: 200,
-      minReactionTime: 50
+      minReactionTime: 100
     };
-    const API_URL = (window.env && window.env.API_URL) ||
-                    (typeof importMeta !== 'undefined' && importMeta.env && importMeta.env.VITE_API_URL) ||
-                    'http://localhost:3000';
+    const API_URL = window.location.origin;
 
     // ===== Estado =====
     let testState = {
@@ -116,7 +120,6 @@
     // ===== Init =====
     function initializeTest() {
       console.log('🧠 Iniciando Teste 3 - Pressão Temporal');
-
       let sessionId = localStorage.getItem('mindkappa_session');
       if (!sessionId) {
         sessionId = 'mk-' + Date.now() + '-' + Math.random().toString(36).slice(2,10);
@@ -124,19 +127,14 @@
       }
       testState.sessionId = sessionId;
       testState.testStartedAt = Date.now();
-
       showNextDecision(true);
     }
 
     // ===== Fluxo =====
     function showNextDecision(isFirst=false) {
       if (!isFirst) testState.currentDecision++;
-      if (isFirst) testState.currentDecision = 1;
-
-      if (testState.currentDecision > TEST_CONFIG.totalDecisions) {
-        completeTest();
-        return;
-      }
+      else testState.currentDecision = 1;
+      if (testState.currentDecision > TEST_CONFIG.totalDecisions) return completeTest();
 
       updateProgressUI();
       updateTimeLimit();
@@ -159,21 +157,12 @@
     }
 
     function renderDecisionButtons() {
-      const positions = getRandomizedPositions();
+      const positions = Math.random() > 0.5 ? 'row' : 'row-reverse';
       elements.buttonsContainer.innerHTML = `
-        <button class="choice-btn btn-azul" onclick="handleDecision('azul', ${positions.azulPosition})">AZUL</button>
-        <button class="choice-btn btn-vermelho" onclick="handleDecision('vermelho', ${positions.vermelhoPosition})">VERMELHO</button>
+        <button class="choice-btn btn-azul" onclick="handleDecision('azul')">AZUL</button>
+        <button class="choice-btn btn-vermelho" onclick="handleDecision('vermelho')">VERMELHO</button>
       `;
-      elements.buttonsContainer.style.flexDirection = positions.direction;
-    }
-
-    function getRandomizedPositions() {
-      const useNormalLayout = Math.random() > 0.5;
-      const azulFirst = Math.random() > 0.5;
-      if (useNormalLayout) {
-        return { direction:'row', azulPosition: azulFirst ? 0 : 1, vermelhoPosition: azulFirst ? 1 : 0 };
-      }
-      return { direction:'row-reverse', azulPosition: azulFirst ? 1 : 0, vermelhoPosition: azulFirst ? 0 : 1 };
+      elements.buttonsContainer.style.flexDirection = positions;
     }
 
     // ===== Timer =====
@@ -182,10 +171,7 @@
       clearInterval(testState.timerInterval);
       testState.timerInterval = setInterval(() => {
         testState.timeRemaining -= 100;
-        if (testState.timeRemaining <= 0) {
-          handleTimeout();
-          return;
-        }
+        if (testState.timeRemaining <= 0) return handleTimeout();
         updateTimerDisplay();
       }, 100);
     }
@@ -193,17 +179,14 @@
     function updateTimerDisplay(reset=false) {
       const seconds = (testState.timeRemaining / 1000).toFixed(1);
       elements.timerValue.textContent = seconds;
-
       const ratio = Math.max(testState.timeRemaining,0) / testState.currentTimeLimit;
       const degrees = 360 * ratio;
       const color = ratio > 0.6 ? '#48bb78' : ratio > 0.3 ? '#ed8936' : '#e53e3e';
       elements.timerCircle.style.background = `conic-gradient(${color} ${degrees}deg, #e2e8f0 ${degrees}deg)`;
-      if (reset) elements.timerCircle.offsetHeight; // reflow pra suavizar
+      if (reset) elements.timerCircle.offsetHeight;
     }
 
-    function stopTimer() {
-      clearInterval(testState.timerInterval);
-    }
+    function stopTimer() { clearInterval(testState.timerInterval); }
 
     function handleTimeout() {
       stopTimer();
@@ -223,24 +206,22 @@
           <button class="choice-btn btn-azul" disabled>AZUL</button>
           <button class="choice-btn btn-vermelho" disabled>VERMELHO</button>
         </div>
-        <div style="color:#718096; font-size:.9rem; margin-top: 30px;">Preparando a próxima decisão…</div>
+        <div style="color:#718096; font-size:.9rem; margin-top:30px;">Preparando a próxima decisão…</div>
       `;
-
       setTimeout(() => showNextDecision(), TEST_CONFIG.decisionDelay);
     }
 
     // ===== Decisão =====
-    function handleDecision(choice, buttonPosition) {
+    function handleDecision(choice) {
       const reactionTime = Date.now() - testState.lastTickAt;
       if (reactionTime < TEST_CONFIG.minReactionTime) return;
-
       stopTimer();
+
       testState.decisions.push({
         choice,
         timestamp: new Date().toISOString(),
         reactionTime,
         decisionNumber: testState.currentDecision,
-        buttonPosition,
         timeLimit: testState.currentTimeLimit,
         timedOut: false,
         timeRemaining: testState.timeRemaining
@@ -255,10 +236,8 @@
 
     // ===== Backend MCD =====
     async function calcularKappaBackend(choices, testType, sessionId) {
-      const url = `${API_URL}/api/calculate-coherence`;
-      const res = await fetch(url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const res = await fetch(`${API_URL}/api/calculate-coherence`, {
+        method:'POST', headers:{'Content-Type':'application/json'},
         body: JSON.stringify({ choices, testType, sessionId })
       });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -271,48 +250,32 @@
       const valid = testState.decisions.filter(d => !d.timedOut);
       if (!valid.length) return 0;
       const avgMs = valid.reduce((s,d)=>s+d.reactionTime,0) / valid.length;
-      return Math.round(avgMs/100) / 10; // em segundos, 1 casa
+      return Math.round(avgMs/100) / 10;
     }
 
-    // ===== Fim =====
+    // ===== Final =====
     async function completeTest() {
       stopTimer();
       const durationMs = Date.now() - testState.testStartedAt;
-
-      // Salva bruto
       let userData = JSON.parse(localStorage.getItem('mindkappa_user') || '{}');
-      userData.teste3 = {
-        decisions: testState.decisions,
-        completedAt: new Date().toISOString(),
-        durationMs
-      };
+      userData.teste3 = { decisions: testState.decisions, completedAt: new Date().toISOString(), durationMs };
       localStorage.setItem('mindkappa_user', JSON.stringify(userData));
 
       try {
         console.log('📡 Enviando escolhas válidas ao backend para calcular κ…');
-        const validChoices = testState.decisions
-          .filter(d => !d.timedOut)
-          .map(d => d.choice === 'azul' ? 'Azul' : 'Vermelho');
-
+        const validChoices = testState.decisions.filter(d => !d.timedOut).map(d => d.choice === 'azul' ? 'Azul' : 'Vermelho');
         const resultado = await calcularKappaBackend(validChoices, 'pressao', testState.sessionId);
 
-        // Persistência coherence + statistics
         userData = JSON.parse(localStorage.getItem('mindkappa_user') || '{}');
-        userData.teste3 = {
-          ...userData.teste3,
-          coherence: resultado.coherence,
-          statistics: resultado.statistics
-        };
+        userData.teste3 = { ...userData.teste3, coherence: resultado.coherence, statistics: resultado.statistics };
         localStorage.setItem('mindkappa_user', JSON.stringify(userData));
 
         const { kappa, level, description, emoji, color } = resultado.coherence;
         const avgReactionTime = calculateQuickAvgReactionTime();
         const timeoutRate = Math.round((testState.timeouts / TEST_CONFIG.totalDecisions) * 100);
-
-        let performanceNote = "";
-        if (kappa < 0.3 && timeoutRate < 20) performanceNote = "🎯 Excelente sob pressão!";
-        else if (kappa < 0.6 && timeoutRate < 40) performanceNote = "⚡ Boa adaptação!";
-        else performanceNote = "🔍 Padrão interessante!";
+        let performanceNote = (kappa < 0.3 && timeoutRate < 20) ? "🎯 Excelente sob pressão!"
+                            : (kappa < 0.6 && timeoutRate < 40) ? "⚡ Boa adaptação!"
+                            : "🔍 Padrão interessante!";
 
         elements.contentArea.innerHTML = `
           <div class="completion-message">✅ Teste de Pressão Concluído!</div>
@@ -325,20 +288,18 @@
             <small>Timeouts: ${testState.timeouts}/${TEST_CONFIG.totalDecisions} (${timeoutRate}%)</small><br/>
             <small>Tempo médio: ${avgReactionTime}s</small>
           </div>
-          <div style="color:#718096; margin-bottom: 24px;">Análise sob pressão concluída.</div>
+          <div style="color:#718096; margin-bottom:24px;">Análise sob pressão concluída.</div>
           <button class="btn-next" onclick="proximoTeste()">📊 Ver Meu Relatório Completo</button>
         `;
         elements.progressFill.style.width = '100%';
 
       } catch (err) {
         console.error('❌ Erro no cálculo MCD:', err);
-
         const avgReactionTime = calculateQuickAvgReactionTime();
         const timeoutRate = Math.round((testState.timeouts / TEST_CONFIG.totalDecisions) * 100);
         let performanceNote = timeoutRate < 20 ? "🎯 Excelente sob pressão!"
                            : timeoutRate < 40 ? "⚡ Boa adaptação!"
                            : "🔍 Padrão interessante!";
-
         elements.contentArea.innerHTML = `
           <div class="completion-message">✅ Teste de Pressão Concluído!</div>
           <div class="pressure-preview">
@@ -346,46 +307,32 @@
             <small>Timeouts: ${testState.timeouts}/${TEST_CONFIG.totalDecisions} (${timeoutRate}%)</small><br/>
             <small>Tempo médio: ${avgReactionTime}s</small>
           </div>
-          <div style="color:#718096; margin-bottom: 24px;">Seu padrão sob pressão foi mapeado.</div>
+          <div style="color:#718096; margin-bottom:24px;">Seu padrão sob pressão foi mapeado.</div>
           <button class="btn-next" onclick="proximoTeste()">📊 Ver Meu Relatório Completo</button>
         `;
         elements.progressFill.style.width = '100%';
       }
     }
 
-    function proximoTeste() {
-      window.location.href = 'relatorio.html';
-    }
+    function proximoTeste() { window.location.href = 'relatorio.html'; }
 
-    // ===== Boot =====
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', initializeTest);
-    } else {
-      initializeTest();
-    }
-
-    window.addEventListener('beforeunload', function (e) {
-      if (testState.currentDecision > 0 && testState.currentDecision < TEST_CONFIG.totalDecisions) {
-        e.preventDefault();
-        e.returnValue = 'Seu progresso será perdido. Tem certeza que quer sair?';
-      }
-    });
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initializeTest);
+    else initializeTest();
   </script>
 
-  <!-- LGPD (só aparece se ainda não aceitou) -->
+  <!-- LGPD -->
   <div id="lgpdModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.45); z-index:10000; justify-content:center; align-items:center; font-family:Arial,sans-serif;">
     <div style="background:#fff; padding:2rem; border-radius:15px; max-width:520px; margin:1rem; box-shadow:0 10px 30px rgba(0,0,0,.3);">
       <h3 style="color:#1e40af; margin-bottom:.8rem;">📋 Termo de Consentimento</h3>
-      <p style="margin-bottom:.8rem;"><strong>Respeitamos sua privacidade:</strong></p>
+      <p><strong>Respeitamos sua privacidade:</strong></p>
       <ul style="margin-bottom:1rem; padding-left:1.5rem; color:#374151;">
         <li><strong>Coletamos:</strong> escolhas (AZUL/VERMELHO) e métricas do teste.</li>
         <li><strong>Não coletamos:</strong> dados sensíveis.</li>
-        <li><strong>Finalidade:</strong> gerar seu relatório e melhorar o MindKappa.</li>
+        <li><strong>Finalidade:</strong> gerar seu relatório e aprimorar o MindKappa.</li>
       </ul>
       <button onclick="acceptLGPD()" style="background:#111827; color:#fff; border:none; padding:12px 30px; border-radius:8px; cursor:pointer; font-size:1rem; width:100%;">✅ Concordo e continuar</button>
     </div>
   </div>
-
   <script>
     function checkLGPD() {
       if (!localStorage.getItem('lgpd_accepted_v1')) {

@@ -5,7 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Teste 1 - Instinto Puro | MindKappa</title>
   <link rel="stylesheet" href="assets/style.css" />
+
   <style>
+    body {
+      background: #f9fafb;
+    }
     .test-container { text-align: center; padding: 20px; }
     .progress-info { margin-bottom: 30px; color: #4a5568; }
     .progress-bar-container { width: 100%; height: 8px; background: #e2e8f0; border-radius: 10px; margin: 20px 0; overflow: hidden; }
@@ -20,8 +24,15 @@
     .loading { opacity: 0.7; pointer-events: none; }
     .kappa-preview { background: rgba(99,179,237,.1); padding: 15px; border-radius: 10px; margin: 20px 0; border-left: 4px solid #63b3ed; }
     .btn-next {
-      background: #111827; color: #fff; border: none; padding: 14px 20px; border-radius: 10px;
-      cursor: pointer; font-weight: 700; box-shadow: 0 8px 20px rgba(0,0,0,.15);
+      background: #1e3a8a; color: #fff; border: none; padding: 14px 20px; border-radius: 10px;
+      cursor: pointer; font-weight: 700; box-shadow: 0 8px 20px rgba(0,0,0,.15); transition: all .2s ease;
+    }
+    .btn-next:hover { background: #1d4ed8; }
+
+    /* 🔹 Melhor responsividade */
+    @media (max-width: 600px) {
+      .buttons-container { flex-direction: column; gap: 15px; }
+      .choice-btn { width: 100%; height: 100px; font-size: 1.1rem; }
     }
   </style>
 </head>
@@ -47,9 +58,7 @@
         </div>
 
         <div id="contentArea">
-          <div class="buttons-container" id="buttonsContainer">
-            <!-- Botões inseridos via JS -->
-          </div>
+          <div class="buttons-container" id="buttonsContainer"></div>
           <div style="color:#718096; font-size:.9rem; margin-top: 30px;">⚡ Clique na sua primeira reação</div>
         </div>
       </div>
@@ -58,17 +67,17 @@
 
   <script>
     // ========= Config =========
-    const TEST_CONFIG = { totalDecisions: 15, decisionDelay: 100, minReactionTime: 50 };
-    const API_URL = (window.env && window.env.API_URL) ||
-                    (typeof importMeta !== 'undefined' && importMeta.env && importMeta.env.VITE_API_URL) ||
-                    'window.location.origin';
+    const TEST_CONFIG = { totalDecisions: 15, decisionDelay: 100 };
+    const MIN_RT = 100;   // tempo mínimo de reação (ms)
+    const MAX_RT = 5000;  // tempo máximo aceitável (ms)
+    const API_URL = window.location.origin;
 
     // ========= Estado =========
     let testState = {
       currentDecision: 0,
       decisions: [],
-      testStartedAt: null,   // início do teste
-      lastClickAt: null,     // para reaction time
+      testStartedAt: null,
+      lastClickAt: null,
       sessionId: null
     };
 
@@ -88,7 +97,6 @@
         localStorage.setItem('mindkappa_session', sessionId);
       }
       testState.sessionId = sessionId;
-
       testState.testStartedAt = Date.now();
       showNextDecision(true);
     }
@@ -96,9 +104,7 @@
     // ========= Lógica =========
     function showNextDecision(isFirst = false) {
       if (!isFirst) testState.currentDecision++;
-
-      // Avança contagem antes de desenhar
-      if (isFirst) testState.currentDecision = 1;
+      else testState.currentDecision = 1;
 
       if (testState.currentDecision > TEST_CONFIG.totalDecisions) {
         completeTest();
@@ -107,7 +113,6 @@
 
       updateProgressUI();
       renderDecisionButtons();
-      // Marca lastClickAt para medir reaction time da próxima escolha
       testState.lastClickAt = Date.now();
     }
 
@@ -118,43 +123,27 @@
     }
 
     function renderDecisionButtons() {
-      const positions = getRandomizedPositions();
+      const positions = Math.random() > 0.5 ? 'row' : 'row-reverse';
       elements.buttonsContainer.innerHTML = `
-        <button class="choice-btn btn-azul" onclick="handleDecision('azul', ${positions.azulPosition})" aria-label="Escolher Azul">
-          AZUL
-        </button>
-        <button class="choice-btn btn-vermelho" onclick="handleDecision('vermelho', ${positions.vermelhoPosition})" aria-label="Escolher Vermelho">
-          VERMELHO
-        </button>
+        <button class="choice-btn btn-azul" onclick="handleDecision('azul')" aria-label="Escolher Azul">AZUL</button>
+        <button class="choice-btn btn-vermelho" onclick="handleDecision('vermelho')" aria-label="Escolher Vermelho">VERMELHO</button>
       `;
-      elements.buttonsContainer.style.flexDirection = positions.direction;
+      elements.buttonsContainer.style.flexDirection = positions;
     }
 
-    function getRandomizedPositions() {
-      const useNormalLayout = Math.random() > 0.5;
-      const azulFirst = Math.random() > 0.5;
-      if (useNormalLayout) {
-        return { direction: 'row', azulPosition: azulFirst ? 0 : 1, vermelhoPosition: azulFirst ? 1 : 0 };
-      }
-      return { direction: 'row-reverse', azulPosition: azulFirst ? 1 : 0, vermelhoPosition: azulFirst ? 0 : 1 };
-    }
-
-    function handleDecision(choice, buttonPosition) {
+    function handleDecision(choice) {
       const now = Date.now();
       const reactionTime = now - (testState.lastClickAt || now);
-
-      if (reactionTime < TEST_CONFIG.minReactionTime) return; // evita toques acidentais/múltiplos
+      if (reactionTime < MIN_RT || reactionTime > MAX_RT) return;
 
       testState.decisions.push({
         choice,
         timestamp: new Date().toISOString(),
         reactionTime,
-        decisionNumber: testState.currentDecision,
-        buttonPosition
+        decisionNumber: testState.currentDecision
       });
 
       elements.buttonsContainer.classList.add('loading');
-
       setTimeout(() => {
         elements.buttonsContainer.classList.remove('loading');
         showNextDecision();
@@ -179,7 +168,6 @@
     async function completeTest() {
       const totalDurationMs = Date.now() - testState.testStartedAt;
 
-      // salva decisões brutas no localStorage
       let userData = JSON.parse(localStorage.getItem('mindkappa_user') || '{}');
       userData.teste1 = {
         decisions: testState.decisions,
@@ -193,7 +181,6 @@
         const choices = testState.decisions.map(d => d.choice === 'azul' ? 'Azul' : 'Vermelho');
         const resultado = await calcularKappaBackend(choices, 'instinto', testState.sessionId);
 
-        // Guarda coherence + statistics no localStorage (para o relatório)
         userData = JSON.parse(localStorage.getItem('mindkappa_user') || '{}');
         userData.teste1 = {
           ...userData.teste1,
@@ -215,7 +202,6 @@
           <div style="color:#718096; margin-bottom: 24px;">Análise científica do seu instinto concluída.</div>
           <button class="btn-next" onclick="proximoTeste()">➡️ Ir para o Teste 2</button>
         `;
-        // zera a barra para 100% na conclusão
         elements.progressFill.style.width = '100%';
 
       } catch (err) {
@@ -251,17 +237,17 @@
     }
   </script>
 
-  <!-- LGPD (mantido; não aparece se já aceitou na index) -->
+  <!-- LGPD (mantido) -->
   <div id="lgpdModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.45); z-index:10000; justify-content:center; align-items:center; font-family:Arial,sans-serif;">
     <div style="background:#fff; padding:2rem; border-radius:15px; max-width:520px; margin:1rem; box-shadow:0 10px 30px rgba(0,0,0,.3);">
       <h3 style="color:#1e40af; margin-bottom: .8rem;">📋 Termo de Consentimento</h3>
-      <p style="margin-bottom: .8rem;"><strong>Respeitamos sua privacidade:</strong></p>
+      <p><strong>Respeitamos sua privacidade:</strong></p>
       <ul style="margin-bottom: 1rem; padding-left: 1.5rem; color:#374151;">
         <li><strong>Coletamos:</strong> escolhas (AZUL/VERMELHO) e métricas do teste.</li>
         <li><strong>Não coletamos:</strong> dados sensíveis.</li>
-        <li><strong>Finalidade:</strong> gerar seu relatório e melhorar o MindKappa.</li>
+        <li><strong>Finalidade:</strong> gerar seu relatório e aprimorar o MindKappa.</li>
       </ul>
-      <button onclick="acceptLGPD()" style="background:#111827; color:#fff; border:none; padding:12px 30px; border-radius:8px; cursor:pointer; font-size:1rem; width:100%;">✅ Concordo e continuar</button>
+      <button onclick="acceptLGPD()" style="background:#1e3a8a; color:#fff; border:none; padding:12px 30px; border-radius:8px; cursor:pointer; font-size:1rem; width:100%;">✅ Concordo e continuar</button>
     </div>
   </div>
 
@@ -277,7 +263,6 @@
       document.getElementById('lgpdModal').style.display = 'none';
       document.body.style.overflow = '';
     }
-    // Só exibe se ainda não aceitou (index já cuidou disto)
     document.addEventListener('DOMContentLoaded', checkLGPD);
   </script>
 </body>
