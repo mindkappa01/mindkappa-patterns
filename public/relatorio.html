@@ -24,13 +24,104 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
 <body>
+  <!-- 🔹 NAVBAR MINDKAPPA -->
+<nav class="mk-navbar">
+  <div class="mk-nav-inner">
+    <!-- LOGO -->
+    <div class="mk-logo" onclick="window.location.href='index.html'">
+    <span>MindKappa</span>
+    </div>
+
+    <!-- LINKS -->
+    <div class="mk-links">
+      <a href="index.html" class="mk-link">Início</a>
+      <a href="coletor.html" class="mk-link">Medidor de (κ)</a>
+      <a href="lab.html" class="mk-link">MindKappa Lab</a>
+      <a href="sobre.html" class="mk-link">Sobre</a>
+    </div>
+
+    <!-- STATUS / SALDO -->
+    <div class="mk-status" id="mkStatus">
+      💠 <span id="kcoinBalance">0</span> K-Coins
+    </div>
+  </div>
+</nav>
+
+<style>
+  /* ====== NAVBAR MINDKAPPA ====== */
+  .mk-navbar {
+    width: 100%;
+    background: linear-gradient(90deg, #c8c8f1, #3b82f6);
+    color: #ffffff;
+    padding: 12px 0;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  }
+  .mk-nav-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+  }
+  .mk-logo {
+    font-weight: 700;
+    font-size: 1.3rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: opacity .2s;
+  }
+  .mk-logo:hover { opacity: 0.9; }
+
+  .mk-links {
+    display: flex;
+    gap: 25px;
+  }
+  .mk-link {
+    color: #e0e7ff;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color .2s;
+  }
+  .mk-link:hover {
+    color: #fff;
+  }
+  .mk-status {
+    background: rgba(255,255,255,0.15);
+    border-radius: 25px;
+    padding: 6px 14px;
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  @media (max-width: 720px) {
+    .mk-links { display: none; }
+    .mk-status { font-size: 0.85rem; }
+  }
+</style>
+
+<script>
+  // Atualiza saldo de K-Coins (futuro)
+  document.addEventListener('DOMContentLoaded', () => {
+    const storedBalance = localStorage.getItem('kcoins_balance') || 0;
+    document.getElementById('kcoinBalance').textContent = storedBalance;
+  });
+</script>
+
   <div class="container">
     <div class="card">
       <!-- Cabeçalho -->
       <header style="text-align:center; padding:20px 0 0 0;">
         <div style="font-size:2rem;">🧠</div>
         <div style="font-size:1.5rem; font-weight:700; color:#1e40af;">MindKappa</div>
-        <div style="color:#6b7280; font-size:.9rem; margin-top:5px;">Análise de Padrões Decisorais</div>
+        <div style="color:#6b7280; font-size:.9rem; margin-top:5px;">A Matemática da Mente</div>
       </header>
 
       <div class="report-container">
@@ -88,15 +179,15 @@
 
           <div class="premium-cta">
             <h3 style="margin:0 0 10px 0;">🚀 DESBLOQUEIE SUA ANÁLISE COMPLETA</h3>
-            <p style="margin:0 0 15px 0; opacity:.9;">Relatório Premium com IA Generativa + PDF para download imediato</p>
+            <p style="margin:0 0 15px 0; opacity:.9;">Relatório completo em PDF para download imediato</p>
             <button onclick="buyPremiumReport()"
   style="background: linear-gradient(135deg, #10b981, #059669); color:#fff; border:none; padding:18px 40px; font-size:1.1rem; border-radius:50px; cursor:pointer; font-weight:700; transition: all .3s; width:100%; max-width:320px; box-shadow:0 8px 25px rgba(16,185,129,.3);">
-  💎 Gerar Relatório Premium
+  💎 Gerar Relatório Completo
 </button>
             <div class="feature-list">
-              <div class="feature-item">Análise aprofundada dos seus 3 testes</div>
+              <div class="feature-item">Análise e cáuculo dos seus 3 testes</div>
               <div class="feature-item">PDF para download e compartilhamento</div>
-              <div class="feature-item">Comparação com base populacional</div>
+              <div class="feature-item">Comparação e graficos com base matemática</div>
               <div class="feature-item">Recomendações práticas personalizadas</div>
             </div>
           </div>
@@ -105,7 +196,7 @@
         <div style="margin-top:25px; display:flex; gap:10px; justify-content:center;">
           <button class="btn" onclick="window.location.href='index.html'"
             style="background:#e2e8f0; color:#4a5568; flex:1;">🏠 Voltar ao Início</button>
-          <button class="btn" onclick="newAnalysis()" style="background:#63b3ed; color:#fff; flex:1;">🔄 Nova Análise</button>
+          <button class="btn" onclick="newAnalysis()" style="background:#63b3ed; color:#fff; flex:1;">🔄 Novo Cáuculo (k)</button>
         </div>
       `;
     }
@@ -171,10 +262,10 @@
 
           <div class="premium-cta">
             <h3 style="margin:0 0 10px 0;">🚀 DESBLOQUEIE SUA ANÁLISE COMPLETA</h3>
-            <p style="margin:0 0 15px 0; opacity:.9;">Relatório Premium com IA Generativa + PDF para download imediato</p>
+            <p style="margin:0 0 15px 0; opacity:.9;">Relatório Completo + PDF para download imediato</p>
             <button onclick="startPremiumFlow()"
               style="background: linear-gradient(135deg, #10b981, #059669); color:#fff; border:none; padding:18px 40px; font-size:1.1rem; border-radius:50px; cursor:pointer; font-weight:700; transition: all .3s; width:100%; max-width:320px; box-shadow:0 8px 25px rgba(16,185,129,.3);">
-              💎 Pagar e Gerar Relatório Premium
+              💎 Pagar e Gerar Relatório Completo
             </button>
           </div>
         </div>
@@ -290,7 +381,7 @@ ${analysis.teste3.kappa ? `⏰ PRESSÃO: κ ${analysis.teste3.kappa} (${analysis
 
     async function generatePremiumReport() {
       try {
-        console.log('💎 Gerando relatório premium…');
+        console.log('💎 Gerando relatório completo…');
         const userData = JSON.parse(localStorage.getItem('mindkappa_user'));
         const sessionId = localStorage.getItem('mindkappa_session');
 
@@ -298,7 +389,7 @@ ${analysis.teste3.kappa ? `⏰ PRESSÃO: κ ${analysis.teste3.kappa} (${analysis
         elements.reportContent.innerHTML = `
           <div style="margin:40px 0;">
             <div class="loading-spinner"></div>
-            <div style="color:#4a5568; margin-top:20px;">Gerando sua análise premium…</div>
+            <div style="color:#4a5568; margin-top:20px;">Gerando sua análise completa…</div>
             <div style="color:#718096; font-size:.9rem; margin-top:10px;">Processamento avançado com IA • Insights exclusivos</div>
           </div>
         `;
@@ -332,7 +423,7 @@ ${analysis.teste3.kappa ? `⏰ PRESSÃO: κ ${analysis.teste3.kappa} (${analysis
       elements.reportContent.innerHTML = `
         <div class="user-header">
           <div style="font-size:1.3rem; margin-bottom:5px;">${userData.name || 'Explorador'}</div>
-          <div style="opacity:.9;">Relatório Premium • ${new Date().toLocaleDateString()}</div>
+          <div style="opacity:.9;">Relatório Completo • ${new Date().toLocaleDateString()}</div>
         </div>
 
         <div class="report-content">
@@ -341,7 +432,7 @@ ${analysis.teste3.kappa ? `⏰ PRESSÃO: κ ${analysis.teste3.kappa} (${analysis
 
         <div style="margin:30px 0; text-align:center;">
           <button class="btn" onclick="downloadPDF()" style="background: linear-gradient(135deg, #10b981, #059669);">
-            📄 Download PDF Premium
+            📄 Download PDF Completo
           </button>
           <div style="color:#718096; font-size:.9rem; margin-top:10px;">Salve seu relatório completo para consulta futura</div>
         </div>
@@ -436,7 +527,7 @@ ${analysis.teste3.kappa ? `⏰ PRESSÃO: κ ${analysis.teste3.kappa} (${analysis
         doc.text(doc.splitTextToSize(disc, 170), 20, 270);
 
         doc.save(`Relatorio_Premium_MindKappa_${userName.replace(/\s+/g,'_')}.pdf`);
-        console.log('✅ PDF premium gerado');
+        console.log('✅ PDF completo gerado');
       } catch (err) {
         console.error('❌ Erro ao gerar PDF:', err);
         alert('📄 Erro ao gerar PDF. Tente novamente.');
