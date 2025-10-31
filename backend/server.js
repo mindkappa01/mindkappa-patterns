@@ -23,9 +23,10 @@ Regras:
 
 ---
 
-### 🔹 Estrutura obrigatória
+🔹 Estrutura obrigatória
 
-1️⃣ 🧠 **O TÍTULO (A Revelação)**  
+1-🧠 Oque seu K pode dizer sobre você?**
+Seu (k): (mostrar k resultante.)  
 Título: Use o **Tipo Mental** descoberto (heurístico).  
 Exemplo: “Sua Mente: A Equilibrista Determinada”  
 Subtítulo: Frase curta e impactante.  
@@ -33,7 +34,7 @@ Exemplo: “Você tem a rara capacidade de manter direção mesmo em meio à mud
 
 ---
 
-2️⃣ 🎯 **O QUE VOCÊ FEZ (Tradução dos Dados)**  
+2️⃣ 🎯 O QUE VOCÊ FEZ **  
 Explique de forma humana o que os três testes revelaram:  
 - **Teste Aleatório:** como sua mente reage ao inesperado.  
 - **Teste 50/50:** como decide sob equilíbrio.  
@@ -45,7 +46,7 @@ Exemplo:
 
 ---
 
-3️⃣ 🔍 **O QUE DESCOBRIMOS SOBRE VOCÊ (Insight Central)**  
+3️⃣ 🔍 O QUE DESCOBRIMOS SOBRE VOCÊ.
 Conte a história do Tipo Mental.  
 Mostre como suas decisões se alinham com o tempo e com a intenção.  
 Exemplo:  
@@ -54,7 +55,7 @@ Exemplo:
 
 ---
 
-4️⃣ ⭐ **SEUS SUPERPODERES MENTAIS**  
+4️⃣ ⭐-SEUS SUPERPODERES MENTAIS 
 Liste 3 a 4 pontos fortes.  
 Exemplo:  
 - Foco Direcional 🔭: você mantém o curso mesmo sob pressão.  
@@ -63,7 +64,7 @@ Exemplo:
 
 ---
 
-5️⃣ 💡 **DICAS PARA O SEU DIA A DIA**  
+5️⃣ 💡 - DICAS PARA O SEU DIA A DIA  
 Conselhos práticos baseados no Tipo Mental:  
 - Use sua clareza em decisões rápidas — ela é sua bússola.  
 - Valorize pausas: nelas o K se reorganiza.  
@@ -71,14 +72,14 @@ Conselhos práticos baseados no Tipo Mental:
 
 ---
 
-6️⃣ 🚀 **PRÓXIMO PASSO**  
+6️⃣ 🚀 RÓXIMO PASSO 
 Encerramento com convite leve:  
 > “Quer entender o seu K com profundidade?  
 > Gere o Relatório Completo ou Científico do MindKappa e veja o gráfico do seu vetor decisional.”  
 
 ---
 
-7️⃣ 🔹 **NOTA DE BASE CIENTÍFICA**  
+7️⃣ 🔹 NOTA DE BASE CIENTÍFICA
 > “O MCD é o instrumento oficial de medição da Coerência Decisional, descoberta por **Lion N1 (2025)**.  
 > Ele traduz o alinhamento entre suas decisões em um número — o seu K, uma assinatura da sua mente em movimento.”
 
@@ -116,7 +117,7 @@ O texto deve unir precisão matemática e clareza descritiva, sem termos clínic
 
 ---
 
-### ⚙️ Estrutura do Relatório Científico
+⚙️ Estrutura do Relatório Científico
 
 #### 1️⃣ **IDENTIFICAÇÃO**
 - Participante: Anônimo / ID do experimento.  
