@@ -3,77 +3,167 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Pagamento Não Aprovado - MindKappa</title>
-  <link rel="stylesheet" href="assets/style.css" />
+  <title>Pagamento não concluído | MindKappa</title>
+
   <style>
-    body { background:#f9fafb; color:#1a202c; font-family:Arial, sans-serif; }
-    .failure-container { text-align:center; padding:40px 20px; max-width:640px; margin:0 auto; }
-    .icon { font-size:4rem; margin-bottom:20px; }
-    .subtitle { color:#4a5568; font-size:1.05rem; margin-bottom:20px; }
+    * { margin:0; padding:0; box-sizing:border-box; }
+
+    body {
+      font-family: "Inter", sans-serif;
+      background: linear-gradient(120deg, #dbeafe, #e0e7ff, #f9fafb);
+      background-size: 400% 400%;
+      animation: moveGradient 12s ease infinite;
+      color: #1e293b;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    @keyframes moveGradient {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    /* ===== NAVBAR ===== */
+    .mk-navbar {
+      width: 100%;
+      background: linear-gradient(90deg, #3b82f6, #6366f1);
+      color: #fff;
+      padding: 12px 0;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+
+    .mk-nav-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+    }
+
+    .mk-logo { font-weight:700; font-size:1.3rem; display:flex; align-items:center; gap:6px; }
+    .mk-status {
+      background: rgba(255,255,255,0.15);
+      border-radius: 25px;
+      padding: 6px 14px;
+      font-size: 0.95rem;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* ===== CARD ===== */
+    .failure-container {
+      background: #fff;
+      border-radius: 20px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+      max-width: 520px;
+      width: 90%;
+      text-align: center;
+      padding: 40px 30px;
+      margin-top: 80px;
+      animation: fadeIn 1s ease forwards;
+      opacity: 0;
+      transform: translateY(20px);
+      position: relative;
+    }
+
+    @keyframes fadeIn { to { opacity:1; transform:translateY(0);} }
+
+    .failure-container::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 6px;
+      background: linear-gradient(90deg, #f87171, #ef4444);
+      border-radius: 20px 20px 0 0;
+    }
+
+    .failure-icon { font-size: 3.5rem; margin-bottom: 20px; color:#dc2626; }
+    h1 { font-size: 1.6rem; color:#b91c1c; margin-bottom: 10px; }
+    p { color:#475569; line-height:1.6; font-size:1rem; }
+
     .info-card {
-      background:#fff; padding:25px; border-radius:15px; margin:20px 0;
-      box-shadow:0 5px 20px rgba(0,0,0,0.1); text-align:left;
+      background:#fff7ed;
+      border-radius:15px;
+      padding:20px;
+      margin:20px 0;
+      box-shadow:0 4px 15px rgba(0,0,0,0.05);
+      text-align:left;
     }
+    .info-card h3 { margin-bottom:10px; color:#9a3412; }
+
     .btn {
-      background:linear-gradient(135deg,#667eea,#764ba2); color:#fff; border:none;
-      padding:15px 30px; font-size:1.1rem; border-radius:50px; cursor:pointer;
-      transition:all 0.3s ease; width:100%;
+      background:linear-gradient(135deg, #3b82f6, #6366f1);
+      color:#fff;
+      border:none;
+      padding:15px 30px;
+      border-radius:50px;
+      cursor:pointer;
+      font-size:1rem;
+      font-weight:600;
+      transition:.3s;
+      flex:1;
     }
-    .btn:hover { transform:translateY(-2px); box-shadow:0 8px 25px rgba(102,126,234,.4); }
-    .btn-secondary { background:#e2e8f0; color:#4a5568; }
-    .actions { display:flex; gap:10px; margin-top:20px; flex-wrap:wrap; justify-content:center; }
-    .tip { margin-top:25px; padding:15px; background:#f7fafc; border-radius:10px; color:#718096; }
+    .btn:hover { transform:translateY(-2px); box-shadow:0 8px 25px rgba(99,102,241,.4); }
+
+    .btn-secondary {
+      background:#e2e8f0;
+      color:#374151;
+    }
+
+    #actions { display:flex; gap:10px; flex-wrap:wrap; margin-top:20px; }
+    #tip { background:#fef2f2; border-radius:10px; margin-top:25px; padding:12px; }
+    #tip small { color:#b91c1c; }
   </style>
 </head>
+
 <body>
-  <div class="container">
-    <div class="card">
-      <div class="failure-container">
-        <div class="icon">❌</div>
-        <h1>Pagamento não aprovado</h1>
-        <p class="subtitle">Seu pagamento não foi processado ou foi cancelado. Isso pode ocorrer por falha no cartão, expiração do link ou cancelamento manual.</p>
+  <!-- 🔹 NAVBAR -->
+  <nav class="mk-navbar">
+    <div class="mk-nav-inner">
+      <div class="mk-logo">🧠 MindKappa</div>
+      <div class="mk-status">💠 <span>0</span> K-Coins</div>
+    </div>
+  </nav>
 
-        <div class="info-card">
-          <h3 style="color:#2d3748; margin-bottom:10px;">Como resolver:</h3>
-          <div>💳 Tente novamente com outro método de pagamento</div>
-          <div>🔁 Gere um novo link de pagamento no relatório</div>
-          <div>📧 Verifique se há notificações do Mercado Pago</div>
-        </div>
+  <!-- 🔹 CARD PRINCIPAL -->
+  <div class="failure-container">
+    <div class="failure-icon">❌</div>
+    <h1>Pagamento não concluído</h1>
+    <p>
+      O campo de pagamento não se alinhou.<br/>
+      Nenhum valor foi cobrado e o processo foi interrompido com segurança.
+    </p>
 
-        <div class="actions">
-          <button class="btn" id="btnTryAgain">🔁 Tentar novamente</button>
-          <button class="btn btn-secondary" id="btnBasic">📊 Ver relatório básico</button>
-          <button class="btn btn-secondary" id="btnHome">🏠 Voltar ao início</button>
-        </div>
+    <div class="info-card">
+      <h3>📋 O que você pode fazer:</h3>
+      <div>🔁 Verifique se o pagamento foi finalizado no app ou site do seu banco.</div>
+      <div>💳 Caso tenha sido cancelado, você pode tentar novamente quando desejar.</div>
+      <div>📩 Em caso de dúvida, entre em contato com o suporte MindKappa.</div>
+    </div>
 
-        <div class="tip">Se o problema persistir, aguarde alguns minutos e gere um novo pagamento pelo relatório.</div>
-      </div>
+    <div id="actions">
+      <button class="btn" id="btnRetry">🔄 Tentar novamente</button>
+      <button class="btn btn-secondary" id="btnHome">🏠 Voltar ao Início</button>
+    </div>
+
+    <div id="tip">
+      <small>💡 Nenhuma transação foi registrada. Seu caminho permanece aberto para uma nova análise quando desejar.</small>
     </div>
   </div>
 
   <script>
-    // Preserva parâmetros do Mercado Pago (status, collection_status, etc.)
-    const qs = new URLSearchParams(window.location.search);
-
-    // Função utilitária: cria URLs mantendo os parâmetros originais
-    function buildUrlTo(page) {
-      const base = window.location.origin + (window.location.pathname.replace(/failure\.html$/,'') + page);
-      const url = new URL(base);
-      for (const [k,v] of qs.entries()) url.searchParams.set(k, v);
-      return url.toString();
-    }
-
-    // Botões principais
+    document.getElementById('btnRetry').addEventListener('click', () => {
+      window.location.href = 'pedido.html'; // volta à página de pedido
+    });
     document.getElementById('btnHome').addEventListener('click', () => {
       window.location.href = 'index.html';
-    });
-
-    document.getElementById('btnTryAgain').addEventListener('click', () => {
-      window.location.href = buildUrlTo('relatorio.html');
-    });
-
-    document.getElementById('btnBasic').addEventListener('click', () => {
-      window.location.href = buildUrlTo('relatorio.html');
     });
   </script>
 </body>

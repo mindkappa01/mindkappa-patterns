@@ -455,3 +455,8 @@ body {
 .mk-navbar:hover {
   background: linear-gradient(135deg, #8da5f5 0%, #386af3 100%);
 }
+
+button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(60, 78, 180, 0.35);
+}

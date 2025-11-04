@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pedido de Relatório Completo | MindKappa</title>
+
+  <style>
+    /* ===== RESET ===== */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: "Inter", Arial, sans-serif;
+      background: linear-gradient(120deg, #dbeafe, #e0e7ff, #f9fafb);
+      background-size: 400% 400%;
+      animation: moveGradient 12s ease infinite;
+      color: #1e293b;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    @keyframes moveGradient {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    /* ===== NAVBAR MINDKAPPA ===== */
+    .mk-navbar {
+      width: 100%;
+      background: linear-gradient(90deg, #3b82f6, #6366f1);
+      color: #ffffff;
+      padding: 12px 0;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+
+    .mk-nav-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+    }
+
+    .mk-logo {
+      font-weight: 700;
+      font-size: 1.3rem;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      opacity: 0.95;
+    }
+
+    .mk-status {
+      background: rgba(255,255,255,0.15);
+      border-radius: 25px;
+      padding: 6px 14px;
+      font-size: 0.95rem;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* ===== CONTAINER ===== */
+    .pedido-card {
+      background: #fff;
+      border-radius: 20px;
+      max-width: 520px;
+      width: 90%;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+      padding: 40px 30px;
+      text-align: center;
+      margin-top: 80px;
+      animation: fadeIn 1.2s ease forwards;
+      opacity: 0;
+      transform: translateY(20px);
+      position: relative;
+    }
+
+    @keyframes fadeIn {
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .pedido-card::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 6px;
+      background: linear-gradient(90deg, #6366f1, #10b981);
+      border-radius: 20px 20px 0 0;
+    }
+
+    /* ===== CONTEÚDO ===== */
+    h1 {
+      font-size: 1.6rem;
+      color: #1e40af;
+      margin-bottom: 15px;
+    }
+
+    h1 span {
+      display: block;
+      font-size: 2rem;
+      margin-bottom: 5px;
+    }
+
+    p {
+      color: #475569;
+      line-height: 1.6;
+      font-size: 1rem;
+      margin-bottom: 20px;
+    }
+
+    strong { color: #111827; }
+
+    /* ===== BOTÃO ===== */
+    .btn {
+      background: linear-gradient(135deg, #10b981, #059669);
+      color: #fff;
+      border: none;
+      padding: 16px 40px;
+      border-radius: 50px;
+      cursor: pointer;
+      font-size: 1.1rem;
+      font-weight: 700;
+      transition: all 0.4s ease;
+      box-shadow: 0 8px 25px rgba(16, 185, 129, 0.3);
+      margin-top: 10px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: rgba(255,255,255,0.25);
+      transition: left 0.7s ease;
+    }
+
+    .btn:hover::after { left: 100%; }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 30px rgba(16, 185, 129, 0.4);
+    }
+
+    /* ===== RODAPÉ ===== */
+    .footer {
+      font-size: 0.85rem;
+      color: #64748b;
+      margin-top: 35px;
+      border-top: 1px solid #e2e8f0;
+      padding-top: 15px;
+    }
+
+    @media (max-width: 480px) {
+      .pedido-card { padding: 30px 20px; }
+      h1 { font-size: 1.4rem; }
+      p { font-size: 0.95rem; }
+      .btn { width: 100%; }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- 🔹 NAVBAR MINDKAPPA (sem links clicáveis) -->
+  <nav class="mk-navbar">
+    <div class="mk-nav-inner">
+      <div class="mk-logo">🧠 MindKappa</div>
+      <div class="mk-status">💠 <span>0</span> K-Coins</div>
+    </div>
+  </nav>
+
+  <div class="pedido-card">
+    <h1><span>💎</span>Relatório Completo MindKappa</h1>
+
+    <p>
+      Um relatório <strong>personalizado</strong>, criado manualmente com apoio da IA <strong>MindKappa</strong>.<br><br>
+      Após o pagamento, você receberá por e-mail uma ficha exclusiva para escolher o foco da análise:
+      <strong>Criatividade</strong>, <strong>Foco</strong>, <strong>Raciocínio</strong> ou <strong>Equilíbrio</strong>.
+    </p>
+
+    <p>
+      Cada relatório é interpretado por nosso analisador humano-IA, revelando o padrão único do seu próprio <strong>K</strong>.
+    </p>
+
+    <button class="btn" onclick="startPremiumFlow()">✨ Pagar e Solicitar Relatório</button>
+
+    <div class="footer">
+      MindKappa © 2025 • Descubra o seu K
+    </div>
+  </div>
+
+  <script>
+    const API_URL = 'https://mindkappa-backend.onrender.com';
+    async function startPremiumFlow() {
+      try {
+        const res = await fetch(`${API_URL}/api/simple-subscription`, { 
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' }
+        });
+        const data = await res.json();
+        if (data.success && data.payment_link) {
+          window.location.href = data.payment_link;
+        } else {
+          throw new Error('Link de pagamento não gerado');
+        }
+      } catch (e) {
+        console.error('Erro no pagamento:', e);
+        alert('⚠️ Sistema de pagamento em manutenção. Tente novamente em alguns minutos.');
+      }
+    }
+  </script>
+</body>
+</html>

@@ -3,87 +3,189 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Pagamento Aprovado - MindKappa</title>
-  <link rel="stylesheet" href="assets/style.css" />
+  <title>Pagamento Aprovado | MindKappa</title>
+
   <style>
-    .success-container { text-align:center; padding:40px 20px; max-width:640px; margin:0 auto; }
-    .success-icon { font-size:4rem; margin-bottom:20px; }
-    .loading-bar { width:100%; height:6px; background:#e2e8f0; border-radius:3px; margin:30px 0; overflow:hidden; }
-    .loading-progress { height:100%; background:linear-gradient(90deg, #10b981, #059669); animation:loading 2s ease-in-out infinite; }
-    @keyframes loading { 0% { transform: translateX(-100%);} 100% { transform: translateX(100%);} }
-    .feature-card { background:#fff; padding:25px; border-radius:15px; margin:20px 0; box-shadow:0 5px 20px rgba(0,0,0,0.1); text-align:left; }
-    .btn { background:linear-gradient(135deg,#10b981,#059669); color:#fff; border:none; padding:15px 30px; font-size:1.1rem; border-radius:50px; cursor:pointer; transition:.3s; width:100%; margin-top:10px; }
+    * { margin:0; padding:0; box-sizing:border-box; }
+
+    body {
+      font-family: "Inter", sans-serif;
+      background: linear-gradient(120deg, #dbeafe, #e0e7ff, #f9fafb);
+      background-size: 400% 400%;
+      animation: moveGradient 12s ease infinite;
+      color: #1e293b;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    @keyframes moveGradient {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    /* ===== NAVBAR ===== */
+    .mk-navbar {
+      width: 100%;
+      background: linear-gradient(90deg, #3b82f6, #6366f1);
+      color: #fff;
+      padding: 12px 0;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+
+    .mk-nav-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+    }
+
+    .mk-logo { font-weight:700; font-size:1.3rem; display:flex; align-items:center; gap:6px; }
+    .mk-status {
+      background: rgba(255,255,255,0.15);
+      border-radius: 25px;
+      padding: 6px 14px;
+      font-size: 0.95rem;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* ===== CARD ===== */
+    .success-container {
+      background: #fff;
+      border-radius: 20px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+      max-width: 520px;
+      width: 90%;
+      text-align: center;
+      padding: 40px 30px;
+      margin-top: 80px;
+      animation: fadeIn 1s ease forwards;
+      opacity: 0;
+      transform: translateY(20px);
+      position: relative;
+    }
+
+    @keyframes fadeIn { to { opacity:1; transform:translateY(0);} }
+
+    .success-container::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 6px;
+      background: linear-gradient(90deg, #10b981, #059669);
+      border-radius: 20px 20px 0 0;
+    }
+
+    .success-icon { font-size: 3.5rem; margin-bottom: 20px; }
+    h1 { font-size: 1.6rem; color:#065f46; margin-bottom: 10px; }
+    p { color:#475569; line-height:1.6; font-size:1rem; }
+
+    .loading-bar {
+      width:100%; height:6px; background:#e2e8f0;
+      border-radius:3px; margin:30px 0; overflow:hidden;
+    }
+    .loading-progress {
+      height:100%;
+      background:linear-gradient(90deg, #10b981, #059669);
+      animation:loading 2s ease-in-out infinite;
+    }
+    @keyframes loading {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(100%); }
+    }
+
+    .feature-card {
+      background:#f8fafc;
+      border-radius:15px;
+      padding:20px;
+      margin:20px 0;
+      box-shadow:0 4px 15px rgba(0,0,0,0.05);
+      text-align:left;
+    }
+    .feature-card h3 { margin-bottom:10px; color:#1e40af; }
+
+    .btn {
+      background:linear-gradient(135deg, #10b981, #059669);
+      color:#fff;
+      border:none;
+      padding:15px 30px;
+      border-radius:50px;
+      cursor:pointer;
+      font-size:1rem;
+      font-weight:600;
+      transition:.3s;
+      flex:1;
+    }
     .btn:hover { transform:translateY(-2px); box-shadow:0 8px 25px rgba(16,185,129,.4); }
-    .btn-secondary { background:#e2e8f0; color:#4a5568; }
+
+    .btn-secondary {
+      background:#e2e8f0;
+      color:#374151;
+    }
+
+    #actions { display:flex; gap:10px; flex-wrap:wrap; margin-top:20px; }
+    #tip { background:#f0fdf4; border-radius:10px; margin-top:25px; padding:12px; }
+    #tip small { color:#16a34a; }
   </style>
 </head>
+
 <body>
-  <div class="container">
-    <div class="card">
-      <div class="success-container">
-        <div class="success-icon">✅</div>
-        <h1>Pagamento aprovado!</h1>
-        <p style="color:#4a5568; font-size:1.05rem; margin-bottom:20px;">
-          Estamos preparando seu <strong>Relatório Premium</strong>.
-        </p>
+  <!-- 🔹 NAVBAR -->
+  <nav class="mk-navbar">
+    <div class="mk-nav-inner">
+      <div class="mk-logo">🧠 MindKappa</div>
+      <div class="mk-status">💠 <span>0</span> K-Coins</div>
+    </div>
+  </nav>
 
-        <div class="loading-bar"><div class="loading-progress"></div></div>
+  <!-- 🔹 CARD PRINCIPAL -->
+  <div class="success-container">
+    <div class="success-icon">✅</div>
+    <h1>Pagamento confirmado!</h1>
+    <p>
+      Recebemos sua solicitação para o <strong>Relatório Completo MindKappa</strong>.<br><br>
+      Em instantes, você receberá por e-mail o <strong>formulário de personalização</strong> — é ele que nos permite preparar sua análise individual de coerência decisional.
+    </p>
 
-        <div class="feature-card">
-          <h3 style="color:#2d3748; margin-bottom:15px;">🎁 Você desbloqueou:</h3>
-          <div>📊 Análise profunda dos 3 testes</div>
-          <div>🧠 Insights e recomendações personalizadas</div>
-          <div>📄 Download do PDF Premium</div>
-        </div>
+    <div class="loading-bar"><div class="loading-progress"></div></div>
 
-        <div id="actions" style="display:flex; gap:10px; margin-top:20px; flex-wrap:wrap;">
-          <button class="btn" id="btnGoPremium">⚡ Ver Relatório Premium agora</button>
-          <button class="btn btn-secondary" id="btnHome">🏠 Voltar ao início</button>
-        </div>
+    <div class="feature-card">
+      <h3>🧩 Próximos passos:</h3>
+      <div>📨 Aguarde o e-mail com o link da sua ficha pessoal;</div>
+      <div>🧠 Responda conforme seu foco (criatividade, foco, raciocínio...);</div>
+      <div>📄 O relatório será produzido e enviado manualmente por nossa equipe.</div>
+    </div>
 
-        <div id="tip" style="margin-top:25px; padding:15px; background:#f7fafc; border-radius:10px;">
-          <small style="color:#718096;">
-            Dica: salve o PDF para acompanhar sua evolução no futuro.
-          </small>
-        </div>
-      </div>
+    <div id="actions">
+      <button class="btn" id="btnHome">🏠 Voltar ao Início</button>
+    </div>
+
+    <div id="tip">
+      <small>💡 Cada relatório é único — o seu K se tornará uma assinatura de coerência pessoal.</small>
     </div>
   </div>
 
   <script>
-    // Mantém os parâmetros que o Mercado Pago envia (ex.: collection_status=approved)
     const qs = new URLSearchParams(window.location.search);
     const approved = qs.get('collection_status') === 'approved' || qs.get('status') === 'approved';
 
-    // Monta uma URL de retorno para o relatorio.html preservando os parâmetros
-    function buildReportUrl() {
-      const url = new URL(window.location.origin + (window.location.pathname.replace(/success\.html$/,'') + 'relatorio.html'));
-      // Repassa todos os parâmetros recebidos (principalmente o approved)
-      for (const [k, v] of qs.entries()) url.searchParams.set(k, v);
-      // Em alguns casos o MP só manda status, garantimos um flag genérico também
-      if (approved) url.searchParams.set('paid', 'true');
-      return url.toString();
-    }
-
-    // Botões
-    document.getElementById('btnGoPremium').addEventListener('click', () => {
-      window.location.href = buildReportUrl();
-    });
     document.getElementById('btnHome').addEventListener('click', () => {
       window.location.href = 'index.html';
     });
 
-    // Se aprovado, faz redirecionamento automático depois de alguns segundos
     if (approved) {
-      // Feedback visual depois de 2s e redireciona em seguida
       setTimeout(() => {
         const bar = document.querySelector('.loading-bar');
         if (bar) bar.innerHTML = '<div style="height:100%; background:#10b981; border-radius:3px; width:100%;"></div>';
       }, 2000);
-
-      setTimeout(() => {
-        window.location.href = buildReportUrl();
-      }, 2800);
     }
   </script>
 </body>

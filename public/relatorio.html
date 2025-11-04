@@ -174,30 +174,56 @@
           </div>
 
           <button class="btn" onclick="generateReport()" style="font-size:1.2rem; padding:18px 40px;">
-            🧠 Gerar Meu Relatório. (Grátis)
+            🧠 Gerar Meu Relatório Básico
           </button>
 
           <div class="premium-cta">
-            <h3 style="margin:0 0 10px 0;">🚀 DESBLOQUEIE SUA ANÁLISE COMPLETA</h3>
-            <p style="margin:0 0 15px 0; opacity:.9;">Relatório completo em PDF para download imediato</p>
-            <button onclick="buyPremiumReport()"
-  style="background: linear-gradient(135deg, #10b981, #059669); color:#fff; border:none; padding:18px 40px; font-size:1.1rem; border-radius:50px; cursor:pointer; font-weight:700; transition: all .3s; width:100%; max-width:320px; box-shadow:0 8px 25px rgba(16,185,129,.3);">
-  💎 Gerar Relatório Completo
-</button>
+  <h3 style="margin:0 0 10px 0;">💎 PEÇA SUA ANÁLISE PERSONALIZADA</h3>
+  <p style="margin:0 0 15px 0; opacity:.9;">
+    Um relatório completo criado manualmente com IA MindKappa.<br>
+    Após o pedido, você receberá uma ficha para personalizar seu foco:<br>
+    <strong>Criatividade, Foco, Raciocínio ou Equilíbrio.</strong>
+  </p>
+  <div style="text-align:center; margin-top:25px;">
+  <button onclick="window.location.href='pedido.html'"
+          style="background: linear-gradient(135deg, #3b82f6, #7c3aed);
+                 color: #fff;
+                 border: none;
+                 padding: 16px 40px;
+                 border-radius: 50px;
+                 font-size: 1.05rem;
+                 font-weight: 600;
+                 cursor: pointer;
+                 box-shadow: 0 6px 20px rgba(60, 78, 180, 0.25);
+                 transition: all .3s ease;">
+    ✨ Pedir Relatório Completo
+  </button>
+  <p style="font-size:.85rem; color:#c8c8f1; margin-top:10px;">
+    Receba por e-mail uma ficha personalizada para análise avançada.
+  </p>
+</div>
             <div class="feature-list">
-              <div class="feature-item">Análise e cáuculo dos seus 3 testes</div>
-              <div class="feature-item">PDF para download e compartilhamento</div>
-              <div class="feature-item">Comparação e graficos com base matemática</div>
-              <div class="feature-item">Recomendações práticas personalizadas</div>
-            </div>
-          </div>
-        </div>
+  <div class="feature-item">📊 Análise completa das suas decisões</div>
+  <div class="feature-item">🧩 Conexão entre seus 3 testes mentais</div>
+  <div class="feature-item">🔮 Interpretação personalizada do seu K</div>
+  <div class="feature-item">💬 Recomendações práticas para o seu foco escolhido</div>
+  <div class="feature-item">📄 Relatório exclusivo enviado por e-mail em até 48 h</div>
+</div>
 
-        <div style="margin-top:25px; display:flex; gap:10px; justify-content:center;">
-          <button class="btn" onclick="window.location.href='index.html'"
-            style="background:#e2e8f0; color:#4a5568; flex:1;">🏠 Voltar ao Início</button>
-          <button class="btn" onclick="newAnalysis()" style="background:#63b3ed; color:#fff; flex:1;">🔄 Novo Cáuculo (k)</button>
-        </div>
+<p style="text-align:center; color:#c8c8f1; font-size:.9rem; margin-top:10px;">
+  Seu relatório completo é criado manualmente com apoio da IA MindKappa.  
+  Cada palavra reflete o padrão único do seu processo decisional.
+</p>
+
+</div>
+</div>
+
+<div style="margin-top:25px; display:flex; gap:10px; justify-content:center;">
+  <button class="btn" onclick="window.location.href='index.html'"
+    style="background:#e2e8f0; color:#4a5568; flex:1;">🏠 Voltar ao Início</button>
+  <button class="btn" onclick="newAnalysis()" 
+    style="background:#3b82f6; color:#fff; flex:1;">🔄 Novo Cálculo (K)</button>
+</div>
       `;
     }
 
@@ -242,41 +268,140 @@
     }
 
     function showFinalReport(gptResponse, userData) {
-      elements.reportContent.innerHTML = `
-        <div class="user-header">
-          <div style="font-size:1.3rem; margin-bottom:5px;">${userData.name || 'Explorador'}</div>
-          <div style="opacity:.9;">Relatório Personalizado • ${new Date().toLocaleDateString()}</div>
+  elements.reportContent.innerHTML = `
+    <div class="user-header">
+      <div style="font-size:1.3rem; margin-bottom:5px;">${userData.name || 'Explorador'}</div>
+      <div style="opacity:.9;">Relatório Personalizado • ${new Date().toLocaleDateString()}</div>
+    </div>
+
+    <div class="report-content">
+      <div style="color:#4a5568; line-height:1.7; white-space:pre-line;">
+        ${gptResponse.relatorio}
+      </div>
+
+      ${gptResponse.source === 'fallback_enhanced' ? `
+        <div style="margin-top:20px; padding:15px; background:#f0f9ff; border-radius:10px; border-left:4px solid #63b3ed;">
+          <strong>📊 Análise Científica MindKappa</strong><br/>
+          <small>Relatório gerado em modo básico. Para análise completa, use a versão Premium.</small>
         </div>
+      ` : ''}
 
-        <div class="report-content">
-          <div style="color:#4a5568; line-height:1.7; white-space:pre-line;">
-            ${gptResponse.relatorio}
-          </div>
+      <!-- Botão para download dos dados -->
+      <div id="download-area" style="text-align:center; margin-top: 20px;">
+        <button id="download-btn" 
+                style="padding:10px 20px; border:none; border-radius:8px; background:#3b82f6; color:white; font-size:16px; cursor:pointer; transition:.3s;">
+          ⬇️ Baixar minhas decisões (.csv)
+        </button>
+        <p style="font-size:12px; color:#777; margin-top:8px;">
+          O arquivo contém seu índice Kappa, vetor resultante e decisões analisadas pelo MCD.
+        </p>
+      </div>
 
-          ${gptResponse.source === 'fallback_enhanced' ? `
-            <div style="margin-top:20px; padding:15px; background:#f0f9ff; border-radius:10px; border-left:4px solid #63b3ed;">
-              <strong>📊 Análise Científica MindKappa</strong><br/>
-              <small>Relatório gerado em modo básico. Para análise completa, use a versão Premium.</small>
-            </div>
-          ` : ''}
+      <div class="premium-cta" 
+           style="margin-top:40px; background:#f8fafc; border-radius:18px; padding:35px 25px; text-align:center; box-shadow:0 8px 25px rgba(0,0,0,0.06);">
+        <h3 style="margin:0 0 12px 0; color:#1e3a8a; font-size:1.35rem;">
+          💎 Leve sua análise além do gráfico
+        </h3>
+        <p style="margin:0 0 18px 0; font-size:1rem; line-height:1.6; color:#475569;">
+          Seu relatório básico foi gerado com sucesso.<br>
+          Para expandir sua jornada de autoconhecimento,<br>
+          solicite o <strong>Relatório Completo MindKappa</strong> — uma análise detalhada e feita sob medida para o seu padrão decisional.
+        </p>
 
-          <div class="premium-cta">
-            <h3 style="margin:0 0 10px 0;">🚀 DESBLOQUEIE SUA ANÁLISE COMPLETA</h3>
-            <p style="margin:0 0 15px 0; opacity:.9;">Relatório Completo + PDF para download imediato</p>
-            <button onclick="startPremiumFlow()"
-              style="background: linear-gradient(135deg, #10b981, #059669); color:#fff; border:none; padding:18px 40px; font-size:1.1rem; border-radius:50px; cursor:pointer; font-weight:700; transition: all .3s; width:100%; max-width:320px; box-shadow:0 8px 25px rgba(16,185,129,.3);">
-              💎 Pagar e Gerar Relatório Completo
-            </button>
-          </div>
+        <div style="text-align:center; margin-top:20px;">
+          <button onclick="window.location.href='pedido.html'"
+                  style="background: linear-gradient(135deg, #3b82f6, #7c3aed);
+                         color: #fff;
+                         border: none;
+                         padding: 16px 42px;
+                         border-radius: 50px;
+                         font-size: 1.05rem;
+                         font-weight: 600;
+                         cursor: pointer;
+                         box-shadow: 0 6px 20px rgba(60, 78, 180, 0.25);
+                         transition: all .3s ease;">
+            ✨ Pedir Relatório Completo
+          </button>
+          <p style="font-size:.85rem; color:#475569; margin-top:10px;">
+            Receba por e-mail uma ficha personalizada para análise avançada.
+          </p>
         </div>
+      </div>
 
-        <div style="margin-top:25px; display:flex; gap:10px; justify-content:center;">
-          <button class="btn" onclick="window.location.href='index.html'"
-            style="background:#e2e8f0; color:#4a5568; flex:1;">🏠 Voltar ao Início</button>
-          <button class="btn" onclick="newAnalysis()" style="background:#63b3ed; color:#fff; flex:1;">🔄 Nova Análise</button>
-        </div>
-      `;
-    }
+      <div style="margin-top:25px; display:flex; gap:10px; justify-content:center;">
+        <button class="btn" onclick="window.location.href='index.html'"
+          style="background:#e2e8f0; color:#4a5568; flex:1;">🏠 Voltar ao Início</button>
+        <button class="btn" onclick="newAnalysis()" style="background:#63b3ed; color:#fff; flex:1;">🔄 Nova Análise</button>
+      </div>
+    </div>
+  `;
+
+  // === Ativa o botão de download do CSV ===
+  const btn = document.getElementById("download-btn");
+  if (!btn) {
+    console.error("❌ Botão de download não encontrado.");
+    return;
+  }
+
+  btn.addEventListener("click", () => {
+    const userDataReal = JSON.parse(localStorage.getItem('mindkappa_user'));
+
+    // Extrai coerência média
+    const k1 = Number(userDataReal?.teste1?.coherence?.kappa || 0);
+    const k2 = Number(userDataReal?.teste2?.coherence?.kappa || 0);
+    const k3 = Number(userDataReal?.teste3?.coherence?.kappa || 0);
+    const kappa = ((k1 + k2 + k3) / 3).toFixed(3);
+
+    // Vetor resultante médio
+    const R1 = Number(userDataReal?.teste1?.coherence?.R || 0);
+    const R2 = Number(userDataReal?.teste2?.coherence?.R || 0);
+    const R3 = Number(userDataReal?.teste3?.coherence?.R || 0);
+    const R = ((R1 + R2 + R3) / 3).toFixed(3);
+
+    const n = (userDataReal?.teste1?.decisions?.length || 0)
+            + (userDataReal?.teste2?.decisions?.length || 0)
+            + (userDataReal?.teste3?.decisions?.length || 0);
+
+    const thetaList = [];
+    ['teste1', 'teste2', 'teste3'].forEach(t => {
+      (userDataReal?.[t]?.decisions || []).forEach(d => {
+        if (d.choice === 'azul') thetaList.push(0);
+        else if (d.choice === 'vermelho') thetaList.push(180);
+      });
+    });
+
+    const mediaPopulacional = 0.476;
+    const referenciaLion = 0.413;
+
+    let csv = "DADOS DO MCD - MINDKAPPA\n";
+    csv += "Descoberta por,Lion N1 (2025)\n";
+    csv += "Índice Kappa Médio (κ)," + kappa + "\n";
+    csv += "Vetor Resultante Médio (R)," + R + "\n";
+    csv += "Total de Decisões (n)," + n + "\n";
+    csv += "Média Populacional (κ)," + mediaPopulacional + "\n";
+    csv += "Referência Histórica (Lion N1)," + referenciaLion + "\n\n";
+    csv += "Decisões Individuais (θ em graus)\n";
+
+    thetaList.forEach((angle, i) => {
+      csv += "Decisão " + (i + 1) + "," + angle + "\n";
+    });
+
+    csv += "\nObservação,Esse arquivo representa seus dados reais calculados pelo MCD (Medidor de Coerência Decisional).\n";
+
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "mindkappa_dados.csv";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+
+    console.log("✅ CSV real do usuário gerado com sucesso:", userDataReal);
+  });
+}
+
 
     function showErrorState() {
       elements.reportContent.innerHTML = `
@@ -533,7 +658,7 @@ ${analysis.teste3.kappa ? `⏰ PRESSÃO: κ ${analysis.teste3.kappa} (${analysis
         alert('📄 Erro ao gerar PDF. Tente novamente.');
       }
     }
-
+    
     // ===== LGPD =====
     function checkLGPD() {
       if (!localStorage.getItem('lgpd_accepted_v1')) {
