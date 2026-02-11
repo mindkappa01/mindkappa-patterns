@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Instinto — MindKappa</title>
+
+<link rel="stylesheet" href="/assets/global.css">
+
+<style>
+/* Fundo roxo padrão */
+body {
+  background: linear-gradient(180deg, #4C1D95, #2E1065);
+}
+
+/* Container */
+.instinto-container {
+  display: flex;
+  justify-content: center;
+  padding: 60px 20px 120px;
+  animation: fadeIn .6s ease-out forwards;
+  opacity: 0;
+}
+
+@keyframes fadeIn { to { opacity: 1; } }
+
+.instinto-card {
+  background: white;
+  border-radius: 20px;
+  padding: 40px 28px;
+  width: 100%;
+  max-width: 420px;
+  text-align: center;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+}
+
+/* Emoji (sem animação) */
+.instinto-emoji {
+  font-size: 2.2rem;
+  margin-bottom: 10px;
+}
+
+.instinto-title {
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: #4C1D95;
+  margin-bottom: 6px;
+}
+
+.instinto-sub {
+  color: #6b7280;
+  font-size: 1rem;
+  margin-bottom: 25px;
+}
+
+/* Contador */
+.instinto-counter {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #4C1D95;
+  margin-bottom: 25px;
+}
+
+/* Botões */
+.instinto-btn-area {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+
+.instinto-btn {
+  width: 130px;
+  height: 130px;
+  border-radius: 18px;
+  border: none;
+  cursor: pointer;
+  transition: .2s ease;
+  box-shadow: 0 12px 25px rgba(0,0,0,0.15);
+  color: white;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+.instinto-btn:hover {
+  transform: translateY(-3px);
+}
+
+.instinto-btn:active {
+  transform: scale(0.95);
+}
+
+.btn-azul {
+  background: linear-gradient(135deg, #60a5fa, #3b82f6);
+}
+
+.btn-vermelho {
+  background: linear-gradient(135deg, #f87171, #ef4444);
+}
+
+/* Próximo */
+.next-test-btn {
+  margin-top: 30px;
+  background: #8B5CF6;
+  color: white;
+  border: none;
+  padding: 14px 28px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 600;
+}
+</style>
+</head>
+
+<body>
+<body class="funil"></body>
+<!-- Navbar simplificada -->
+<nav class="mk-navbar">
+  <div class="mk-nav-inner">
+    
+  </div>
+</nav>
+
+<!-- TESTE -->
+<div class="instinto-container">
+  <div class="instinto-card">
+
+    <div class="instinto-emoji">⚡</div>
+
+    <div class="instinto-title">Instinto</div>
+    <div class="instinto-sub">
+      Escolha rapidamente. Sem pensar.
+    </div>
+
+
+    <div class="etapa-info">
+    Etapa 1 de 3 • Instinto
+    </div>
+
+    
+
+    <div id="contador" class="instinto-counter">1 / 40</div>
+
+    <div class="instinto-btn-area">
+      <button id="btnAzul" class="instinto-btn btn-azul" data-angle="0">
+        AZUL
+      </button>
+
+      <button id="btnVermelho" class="instinto-btn btn-vermelho" data-angle="180">
+        VERMELHO
+      </button>
+    </div>
+
+    <button id="btnNextTest" class="next-test-btn" style="display:none;">
+      Continuar →
+    </button>
+
+  </div>
+</div>
+
+<script src="/assets/instinto.js"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  // Proteção básica caso elementos não existam
+  const nextBtn = document.getElementById("btnNextTest");
+  if (nextBtn) {
+    nextBtn.onclick = () => {
+      window.location.href = "equilibrio.html";
+    };
+  }
+});
+</script>
+
+</body>
+</html>

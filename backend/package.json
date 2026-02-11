@@ -1,0 +1,21 @@
+{
+  "name": "mindkappa-backend",
+  "version": "1.0.0",
+  "description": "Backend para MindKappa Patterns com GPT-4",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.6.1",
+    "express": "^4.18.2",
+    "mercadopago": "^2.9.0",
+    "openai": "^4.0.0",
+    "pg": "^8.11.3"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

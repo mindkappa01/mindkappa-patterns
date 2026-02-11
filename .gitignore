@@ -1,0 +1,8 @@
+# Ignorar dependências em qualquer lugar
+**/node_modules/
+
+# Arquivos de ambiente
+**/.env
+
+# Logs
+npm-debug.log*

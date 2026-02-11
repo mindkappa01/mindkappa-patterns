@@ -1,0 +1,208 @@
+/* ======================================================
+   RESULTADO MINDKAPPA — Versão Conversão
+   Mobile-first • Científico • Premium
+   ====================================================== */
+
+/* Fundo do funil */
+body {
+  margin: 0;
+  padding: 30px 16px;
+  background: linear-gradient(180deg, #4C1D95, #2E1065);
+  font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  color: #0f172a;
+}
+
+/* Card principal */
+.resultado-wrapper {
+  max-width: 420px;
+  margin: 0 auto;
+  background: #ffffff;
+  padding: 32px 24px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.18);
+  border-radius: 18px;
+  text-align: center;
+}
+
+/* Emoji */
+.resultado-top-emoji {
+  font-size: 2rem;
+  margin-bottom: 8px;
+}
+
+/* Título */
+.resultado-title {
+  font-size: 1.6rem;
+  font-weight: 800;
+  margin-bottom: 24px;
+  color: #4C1D95;
+}
+
+/* =========================
+   BLOCO KAPPA
+   ========================= */
+
+.kappa-display {
+  margin-bottom: 28px;
+}
+
+.kappa-value {
+  font-size: 2.6rem;
+  font-weight: 900;
+  letter-spacing: -1px;
+  color: #4C1D95;
+}
+
+.kappa-range {
+  margin-top: 4px;
+  font-size: 0.95rem;
+  color: #64748b;
+}
+
+/* =========================
+   SEÇÕES
+   ========================= */
+
+section {
+  margin-top: 28px;
+  text-align: left;
+}
+
+section h2,
+section h3 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+  color: #4C1D95;
+}
+
+.iakappa-text {
+  font-size: 0.98rem;
+  line-height: 1.6;
+  color: #334155;
+  }
+
+/* Mapa */
+.resumo-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.resumo-list li {
+  padding: 6px 0;
+  font-size: 0.95rem;
+  color: #334155;
+}
+
+/* =========================
+   BLOQUEIO PREMIUM
+   ========================= */
+
+   body:not(.paid) .premium-content {
+  filter: blur(6px);
+  pointer-events: none;
+}
+
+.locked {
+  filter: blur(6px);
+  pointer-events: none;
+  user-select: none;
+}
+
+.lock-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(255,255,255,0.9);
+  border-radius: 14px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 20px;
+}
+
+.lock-overlay h3 {
+  margin-bottom: 6px;
+  color: #4C1D95;
+}
+
+.lock-overlay p {
+  font-size: 0.9rem;
+  color: #64748b;
+  margin-bottom: 14px;
+}
+
+/* Botão desbloquear */
+.lock-overlay button {
+  background: linear-gradient(135deg, #8B5CF6, #6366F1);
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 600;
+  box-shadow: 0 10px 25px rgba(99,102,241,0.35);
+}
+
+.lock-overlay button:hover {
+  transform: translateY(-2px);
+}
+
+/* =========================
+   BOTÕES
+   ========================= */
+
+.resultado-buttons {
+  margin-top: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.resultado-btn {
+  padding: 12px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  border-radius: 10px;
+  cursor: pointer;
+  border: 1px solid #e5e7eb;
+  background: #ffffff;
+  transition: all 0.2s ease;
+}
+
+.resultado-btn:hover {
+  background: #f8fafc;
+}
+
+/* =========================
+   DESKTOP (opcional)
+   ========================= */
+
+@media (min-width: 768px) {
+  .resultado-wrapper {
+    max-width: 480px;
+    padding: 40px 32px;
+  }
+}
+
+.premium-cta {
+  margin-top: 40px;
+  padding: 20px;
+  background: #f8fafc;
+  border-radius: 10px;
+  border: 1px solid #e2e8f0;
+}
+
+.premium-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.premium-sub {
+  font-size: 0.9rem;
+  color: #64748b;
+  margin-bottom: 14px;
+}

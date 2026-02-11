@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Seu K — MindKappa</title>
+
+<link rel="stylesheet" href="/assets/resultado.css">
+
+<style>
+/* Fundo */
+body {
+  background: linear-gradient(180deg, #4C1D95, #2E1065);
+}
+
+/* Card principal */
+.resultado-wrapper {
+  max-width: 480px;
+  margin: 40px auto;
+  padding: 30px 24px;
+  background: white;
+  border-radius: 20px;
+  text-align: center;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+}
+
+/* Área bloqueada */
+.locked {
+  position: relative;
+  filter: blur(6px);
+  pointer-events: none;
+}
+
+.lock-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: rgba(255,255,255,0.85);
+  border-radius: 12px;
+}
+
+.lock-overlay h3 {
+  color: #4C1D95;
+  margin-bottom: 10px;
+}
+
+.lock-overlay button {
+  background: #8B5CF6;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 600;
+}
+</style>
+</head>
+<body>
+<body class="funil"></body>
+<div class="resultado-wrapper">
+
+  <!-- Emoji -->
+  <div class="resultado-top-emoji">🧠</div>
+
+  <!-- Título -->
+  <h1 class="resultado-title">
+    Como está sua mente para decidir agora
+  </h1>
+
+  <!-- K principal (GRÁTIS) -->
+  <div class="kappa-display">
+    <div id="kappaValor" class="kappa-value">—</div>
+    <div id="kappaFaixa" class="kappa-range">—</div>
+  </div>
+
+  <!-- PREVIEW gratuito -->
+  <p style="margin-top:10px; color:#6b7280; text-align:center;">
+    Este é o seu padrão de coerência decisional neste momento.<br>
+    Ele indica o quão seguro pode ser decidir nas próximas horas.
+  </p>
+
+  <!-- INTERPRETAÇÃO COMPLETA (BLOQUEADA) -->
+  <section id="premiumArea" style="margin-top:30px; position:relative;">
+
+    <div id="premiumContent" class="locked">
+
+      <h2 style="color:#4C1D95;">
+        O que este estado indica para decidir agora
+      </h2>
+
+      <p style="margin-top:10px;">
+        Sua mente apresenta um padrão de coerência que influencia diretamente
+        a estabilidade das decisões tomadas neste momento.
+      </p>
+
+      <p style="margin-top:10px;">
+        Dependendo desse estado, decidir agora pode trazer clareza —
+        ou aumentar o risco de arrependimento, oscilação ou mudança de direção.
+      </p>
+
+      <p id="iaTexto" class="iakappa-text"></p>
+
+    </div>
+
+    <!-- Overlay de bloqueio -->
+    <div id="lockOverlay" class="lock-overlay">
+
+  <h3>Sua mente está pronta para decidir?</h3>
+
+  <p style="font-size:14px; color:#6b7280; margin-bottom:10px;">
+Seu K revela o nível de estabilidade mental neste momento.<br><br>
+
+A leitura completa mostra:<br>
+• O risco de arrependimento ou mudança de ideia<br>
+• Se sua mente está estável ou oscilando<br>
+• A recomendação para as próximas 24 horas
+</p>
+
+<button id="premiumBtn">
+Verificar minha janela de decisão · R$9,90
+</button>
+
+</div>
+
+  </section>
+
+  <!-- Mapa das escolhas -->
+  <section class="resumo-section" style="margin-top:30px;">
+    <h3 class="resumo-title">Mapa das suas escolhas</h3>
+    <ul class="resumo-list">
+      <li>⚡ Instinto: <span id="t1Count">—</span></li>
+      <li>⚖️ Equilíbrio: <span id="t2Count">—</span></li>
+      <li>🔥 Pressão: <span id="t3Count">—</span></li>
+    </ul>
+  </section>
+
+  <!-- Botões -->
+  <div class="resultado-buttons" style="margin-top:30px;">
+
+    <button id="refazerBtn" class="resultado-btn refazer">
+      Refazer
+    </button>
+
+    <button id="inicioBtn" class="resultado-btn inicio">
+      Início
+    </button>
+
+  </div>
+
+</div>
+
+<script src="/assets/mcd-core-browser.js"></script>
+<script src="/assets/resultado.js"></script>
+
+</body>
+</html>

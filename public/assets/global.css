@@ -1,0 +1,377 @@
+/* ============================================================
+   MINDKAPPA — GLOBAL STYLES v1.0
+   Design unificado para toda a plataforma
+   ============================================================ */
+
+/* ------------------------------------------------------------
+   RESET + BASE
+------------------------------------------------------------ */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
+               Roboto, Arial, sans-serif;
+  min-height: 100vh;
+  background: var(--mk-bg);
+  color: var(--mk-text);
+  overflow-x: hidden;
+}
+
+/* ------------------------------------------------------------
+   VARIÁVEIS OFICIAIS MINDKAPPA
+------------------------------------------------------------ */
+:root {
+  --mk-primary: #1e3a8a;
+  --mk-accent: #7c3aed;
+  --mk-soft: #eef2ff;
+
+  --mk-text: #1f2937;
+  --mk-text-light: #6b7280;
+
+  --mk-card-bg: #ffffff;
+  --mk-card-shadow: rgba(0, 0, 0, 0.12);
+
+  --mk-gradient-hero: linear-gradient(
+      120deg,
+      #f1f5ff,
+      #eef2ff,
+      #fafafa
+  );
+
+  --mk-button-gradient: linear-gradient(135deg, var(--mk-accent), var(--mk-primary));
+  --mk-button-shadow: rgba(124, 58, 237, 0.35);
+
+  --mk-radius: 18px;
+}
+
+/* ------------------------------------------------------------
+   FUNDO ANIMADO — assinatura MindKappa
+------------------------------------------------------------ */
+body {
+  background: var(--mk-gradient-hero);
+  background-size: 400% 400%;
+  animation: mkBgFlow 14s ease infinite;
+}
+
+@keyframes mkBgFlow {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* ------------------------------------------------------------
+   NAVBAR MINIMALISTA
+------------------------------------------------------------ */
+.mk-navbar {
+  width: 100%;
+  background: linear-gradient(90deg, #ac71f0, #5f32c9);
+  padding: 12px 0;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  color: #fff;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.mk-nav-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Logo */
+.mk-logo {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 1.3rem;
+}
+
+/* Links */
+.mk-links {
+  display: flex;
+  gap: 25px;
+}
+
+.mk-link {
+  color: #e0e7ff;
+  text-decoration: none;
+  font-weight: 500;
+  transition: 0.2s;
+}
+
+.mk-link:hover {
+  color: white;
+}
+
+/* Status */
+.mk-status {
+  background: rgba(255,255,255,0.15);
+  padding: 6px 14px;
+  border-radius: 25px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.95rem;
+}
+
+.funil .mk-logo {
+  pointer-events: none;
+  cursor: default;
+}
+
+@media (max-width: 720px) {
+  .mk-links { display: none; }
+}
+
+/* ------------------------------------------------------------
+   CARD CENTRAL — HERO / TESTES / RESULTADO
+------------------------------------------------------------ */
+.mk-card {
+  background: var(--mk-card-bg);
+  border-radius: var(--mk-radius);
+  box-shadow: 0 8px 35px var(--mk-card-shadow);
+  padding: 50px 40px;
+  max-width: 640px;
+  width: 100%;
+  margin: auto;
+  animation: mkCardIn 0.7s ease both;
+  text-align: center;
+}
+
+@keyframes mkCardIn {
+  from { opacity: 0; transform: translateY(15px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ------------------------------------------------------------
+   TIPOGRAFIA DO HERO
+------------------------------------------------------------ */
+.mk-hero-title {
+  font-size: 2.4rem;
+  font-weight: 800;
+  color: var(--mk-primary);
+  margin-bottom: 10px;
+}
+
+.mk-hero-sub {
+  font-size: 1.1rem;
+  color: var(--mk-text-light);
+  margin-bottom: 35px;
+  line-height: 1.55;
+}
+
+/* ------------------------------------------------------------
+   BOTÕES PRINCIPAIS
+------------------------------------------------------------ */
+.mk-btn {
+  background: var(--mk-button-gradient);
+  color: #fff;
+  border: none;
+  padding: 16px 42px;
+  border-radius: 50px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all .3s ease;
+  box-shadow: 0 8px 25px var(--mk-button-shadow);
+}
+
+.mk-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 32px var(--mk-button-shadow);
+}
+
+.mk-btn-secondary {
+  background: transparent;
+  border: 2px solid var(--mk-accent);
+  color: var(--mk-accent);
+  padding: 12px 32px;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: .25s ease;
+}
+
+.mk-btn-secondary:hover {
+  background: var(--mk-accent);
+  color: white;
+}
+
+/* ------------------------------------------------------------
+   GRID DE BENEFÍCIOS
+------------------------------------------------------------ */
+.mk-benefits {
+  display: grid;
+  gap: 20px;
+  text-align: left;
+  margin-top: 35px;
+}
+
+.mk-benefit-item {
+  background: #f8fafc;
+  padding: 20px;
+  border-radius: 14px;
+  border-left: 4px solid var(--mk-accent);
+  box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+  transition: .2s ease;
+}
+
+.mk-benefit-item:hover {
+  transform: translateY(-2px);
+}
+
+.mk-benefit-title {
+  color: var(--mk-primary);
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.mk-benefit-desc {
+  color: var(--mk-text-light);
+  line-height: 1.55;
+}
+
+/* ------------------------------------------------------------
+   DISCLAMER
+------------------------------------------------------------ */
+.mk-disclaimer {
+  margin-top: 40px;
+  padding: 15px;
+  background: #f3f4f6;
+  border-radius: 10px;
+  font-size: .9rem;
+  color: var(--mk-text-light);
+}
+
+/* ------------------------------------------------------------
+   RESPONSIVIDADE
+------------------------------------------------------------ */
+@media (max-width: 480px) {
+  .mk-card { padding: 35px 24px; }
+  .mk-hero-title { font-size: 2rem; }
+  .mk-btn { width: 100%; }
+}
+
+/* ============================= */
+/* NAVBAR MOBILE — MindKappa     */
+/* ============================= */
+
+.mk-mobile-toggle {
+    display: none;
+    background: transparent;
+    border: none;
+    font-size: 1.8rem;
+    color: var(--mk-primary);
+    cursor: pointer;
+}
+
+@media (max-width: 768px) {
+    .mk-links,
+    .mk-status {
+        display: none;
+    }
+    .mk-mobile-toggle {
+        display: block;
+    }
+}
+
+/* Overlay */
+.mk-mobile-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.45);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .25s ease;
+}
+
+.mk-mobile-overlay.open {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+/* Menu lateral */
+.mk-mobile-menu {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 260px;
+    height: 100vh;
+    background: #ffffff;
+    box-shadow: -4px 0 20px rgba(0,0,0,0.15);
+    transform: translateX(100%);
+    transition: transform .3s ease;
+    padding: 25px;
+    z-index: 999;
+}
+
+.mk-mobile-menu.open {
+    transform: translateX(0);
+}
+
+.mk-mobile-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.mk-mobile-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+.mk-close-btn {
+    background: transparent;
+    border: none;
+    font-size: 1.6rem;
+    cursor: pointer;
+}
+
+.mk-mobile-links {
+    margin-top: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.mk-mobile-links a {
+    text-decoration: none;
+    color: var(--mk-primary);
+    font-weight: 600;
+    font-size: 1.05rem;
+}
+
+.next-test-btn {
+  margin-top: 25px;
+  padding: 14px 28px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  border-radius: 10px;
+  background: linear-gradient(90deg, #4f46e5, #6366f1);
+  color: white;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 10px 25px rgba(79,70,229,0.3);
+  transition: .25s;
+}
+
+.next-test-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 15px 35px rgba(79,70,229,0.45);
+}
+
+.etapa-info {
+  font-size: 0.9rem;
+  color: #64748b;
+  margin-bottom: 10px;
+  text-align: center;
+}

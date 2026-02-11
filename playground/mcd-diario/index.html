@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MCD Diário — MindKappa</title>
+
+  <style>
+    :root {
+      --primary: #2c3e50;
+      --secondary: #3498db;
+      --accent1: #e74c3c;
+      --accent2: #2980b9;
+      --light: #ecf0f1;
+      --dark: #2c3e50;
+      --success: #27ae60;
+      --warning: #f39c12;
+      --danger: #e74c3c;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      line-height: 1.6;
+      color: #333;
+      background-color: #f5f7fa;
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    header {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+      color: white;
+      padding: 1.8rem;
+      border-radius: 8px;
+      margin: 1.5rem 0 2rem;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    h1, h2, h3 {
+      margin-top: 0;
+    }
+
+    .header-sub {
+      margin-top: .4rem;
+      opacity: .9;
+    }
+
+    .dashboard {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 20px;
+      margin-bottom: 2rem;
+    }
+
+    .card {
+      background: white;
+      border-radius: 8px;
+      padding: 1.5rem;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .decision-interface {
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+
+    .info-text {
+      font-size: 0.95rem;
+      color: #7f8c8d;
+    }
+
+    .buttons-container {
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+      margin: 2rem 0 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    .decision-btn {
+      padding: 1.5rem 3rem;
+      font-size: 1.2rem;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-weight: bold;
+      min-width: 130px;
+    }
+
+    .blue-btn {
+      background-color: var(--secondary);
+      color: white;
+      box-shadow: 0 4px 12px rgba(41, 128, 185, 0.4);
+    }
+
+    .blue-btn:hover {
+      background-color: var(--accent2);
+      transform: translateY(-2px);
+    }
+
+    .red-btn {
+      background-color: var(--accent1);
+      color: white;
+      box-shadow: 0 4px 12px rgba(231, 76, 60, 0.4);
+    }
+
+    .red-btn:hover {
+      background-color: #c0392b;
+      transform: translateY(-2px);
+    }
+
+    .decision-count {
+      font-size: 0.95rem;
+      color: #7f8c8d;
+    }
+
+    .progress-bar-container {
+      width: 100%;
+      height: 8px;
+      background: #e2e8f0;
+      border-radius: 10px;
+      margin: 12px 0 4px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #3498db, #9b59b6);
+      border-radius: 10px;
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+
+    .coherence-display {
+      text-align: center;
+    }
+
+    .kappa-main {
+      font-size: 2.2rem;
+      font-weight: bold;
+      margin: .5rem 0 .2rem;
+    }
+
+    .coherence-label {
+      font-weight: 600;
+      margin-bottom: 0.8rem;
+    }
+
+    .coherence-indicator {
+      height: 16px;
+      background: #eee;
+      border-radius: 999px;
+      margin: 0.5rem 0 1rem;
+      overflow: hidden;
+    }
+
+    .coherence-level {
+      height: 100%;
+      border-radius: 999px;
+      transition: width 0.4s ease, background-color 0.3s ease;
+      width: 0%;
+      background-color: #95a5a6;
+    }
+
+    .stats-container {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-top: 1rem;
+    }
+
+    .stat-box {
+      background: #f8fafc;
+      padding: 0.8rem;
+      border-radius: 8px;
+      text-align: center;
+      border: 1px solid #e2e8f0;
+    }
+
+    .stat-label {
+      font-size: 0.85rem;
+      color: #7f8c8d;
+    }
+
+    .stat-value {
+      font-size: 1.2rem;
+      font-weight: bold;
+      margin-top: 0.3rem;
+    }
+
+    .interpretation {
+      margin-top: 1.5rem;
+      padding: 1.2rem 1.4rem;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06);
+    }
+
+    .interpretation-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: .7rem;
+    }
+
+    .interpretation-title {
+      font-weight: 600;
+    }
+
+    .interpretation-text {
+      font-size: 0.95rem;
+      color: #4b5563;
+      margin-top: .4rem;
+      white-space: pre-line;
+    }
+
+    .ia-button {
+      background-color: var(--secondary);
+      color: white;
+      border: none;
+      padding: 0.6rem 1.3rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .ia-button:hover {
+      background-color: var(--accent2);
+    }
+
+    .ia-button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .decision-history-card {
+      margin-top: 1.5rem;
+    }
+
+    .decision-history {
+      margin-top: 0.8rem;
+      max-height: 200px;
+      overflow-y: auto;
+      border: 1px solid #eee;
+      border-radius: 8px;
+      padding: 0.8rem;
+      background: white;
+    }
+
+    .history-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.4rem 0.2rem;
+      border-bottom: 1px solid #f0f0f0;
+      font-size: 0.9rem;
+    }
+
+    .history-item:last-child {
+      border-bottom: none;
+    }
+
+    .history-placeholder {
+      color: #7f8c8d;
+      font-style: italic;
+      font-size: 0.9rem;
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 2.5rem;
+      padding: 1.2rem;
+      background: var(--dark);
+      color: white;
+      border-radius: 8px;
+      font-size: 0.9rem;
+    }
+
+    @media (max-width: 900px) {
+      .dashboard {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .decision-btn {
+        width: 100%;
+        padding: 1.2rem;
+      }
+
+      .buttons-container {
+        gap: 0.8rem;
+      }
+    }
+
+    /* ====== NAVBAR MINDKAPPA (MESMA DO COLETOR) ====== */
+    .mk-navbar {
+      width: 100%;
+      background: linear-gradient(90deg, #1e40af, #3b82f6);
+      color: #fff;
+      padding: 12px 0;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+    .mk-nav-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+    }
+    .mk-logo {
+      font-weight: 700;
+      font-size: 1.3rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: opacity .2s;
+    }
+    .mk-logo:hover { opacity: 0.9; }
+
+    .mk-links {
+      display: flex;
+      gap: 25px;
+    }
+    .mk-link {
+      color: #e0e7ff;
+      text-decoration: none;
+      font-weight: 500;
+      transition: color .2s;
+    }
+    .mk-link:hover {
+      color: #fff;
+    }
+    .mk-status {
+      background: rgba(255,255,255,0.15);
+      border-radius: 25px;
+      padding: 6px 14px;
+      font-size: 0.95rem;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    @media (max-width: 720px) {
+      .mk-links { display: none; }
+      .mk-status { font-size: 0.85rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 🔹 NAVBAR MINDKAPPA -->
+  <nav class="mk-navbar">
+    <div class="mk-nav-inner">
+      <div class="mk-logo" onclick="window.location.href='index.html'">
+        🧠 <span>MindKappa</span>
+      </div>
+      <div class="mk-links">
+        <a href="index.html" class="mk-link">Início</a>
+        <a href="coletor.html" class="mk-link">Medidor κ</a>
+        <a href="lab.html" class="mk-link">MindKappa Lab</a>
+        <a href="sobre.html" class="mk-link">Sobre</a>
+      </div>
+      <div class="mk-status">
+        💠 <span id="kcoinBalance">0</span> K-Coins
+      </div>
+    </div>
+  </nav>
+
+  <script>
+    // K-Coins (futuro)
+    document.addEventListener('DOMContentLoaded', () => {
+      const storedBalance = localStorage.getItem('kcoins_balance') || 0;
+      const el = document.getElementById('kcoinBalance');
+      if (el) el.textContent = storedBalance;
+    });
+  </script>
+
+  <div class="container">
+    <header>
+      <h1>MCD Diário</h1>
+      <p class="header-sub">
+        20 decisões rápidas Azul / Vermelho para medir seu κ atual de Coerência Decisional Humana.
+      </p>
+    </header>
+
+    <div class="dashboard">
+      <!-- 🔵 LADO ESQUERDO: INTERFACE DE DECISÃO -->
+      <div class="card">
+        <h2>Interface de decisão</h2>
+        <p class="info-text">
+          Clique nos botões conforme seu impulso ou escolha consciente. Os botões trocam de posição a cada decisão.
+        </p>
+
+        <div class="decision-interface">
+          <div class="buttons-container" id="buttonsContainer">
+            <!-- Botões são inseridos via JS -->
+          </div>
+
+          <div class="decision-count">
+            Decisões: <span id="decisionCount">0</span>/20
+          </div>
+
+          <div class="progress-bar-container">
+            <div class="progress-fill" id="progressFill"></div>
+          </div>
+
+          <p class="info-text" id="statusText">
+            Complete as 20 decisões para ver seu κ e pedir interpretação da IA-Kappa.
+          </p>
+        </div>
+      </div>
+
+      <!-- 🔵 LADO DIREITO: κ E ESTATÍSTICAS -->
+      <div class="card">
+        <h2>Seu κ hoje</h2>
+
+        <div class="coherence-display">
+          <div class="kappa-main" id="kappaValue">–</div>
+          <div class="coherence-label" id="coherenceLabel">Aguardando decisões…</div>
+
+          <div class="coherence-indicator">
+            <div class="coherence-level" id="coherenceBar"></div>
+          </div>
+        </div>
+
+        <div class="stats-container">
+          <div class="stat-box">
+            <div class="stat-label">N (decisões)</div>
+            <div class="stat-value" id="statN">0</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-label">Vetor R</div>
+            <div class="stat-value" id="statR">0.00</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-label">% Azul</div>
+            <div class="stat-value" id="statAzul">0%</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-label">% Vermelho</div>
+            <div class="stat-value" id="statVermelho">0%</div>
+          </div>
+        </div>
+
+        <div class="interpretation">
+          <div class="interpretation-header">
+            <div class="interpretation-title">Interpretação IA-Kappa</div>
+            <button class="ia-button" id="iaButton" disabled>
+              🤖 Interpretar κ
+            </button>
+          </div>
+          <div class="interpretation-text" id="interpretationText">
+            Quando as 20 decisões forem concluídas, você poderá enviar o κ para a IA-Kappa e receber uma leitura matemática da sessão.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 🔵 HISTÓRICO RESUMIDO -->
+    <div class="card decision-history-card">
+      <h2>Histórico desta sessão</h2>
+      <p class="info-text">As 10 decisões mais recentes desta rodada de MCD Diário.</p>
+      <div class="decision-history" id="decisionHistory">
+        <div class="history-placeholder">
+          Nenhuma decisão registrada ainda.
+        </div>
+      </div>
+    </div>
+
+    <footer>
+      MindKappa © 2025 — MCD Diário é um experimento de auto-observação decisional. κ é métrica estatística, não diagnóstico.
+    </footer>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

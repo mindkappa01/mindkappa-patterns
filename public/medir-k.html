@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Análise de decisão — MindKappa</title>
+
+<link rel="stylesheet" href="/assets/global.css">
+
+<style>
+/* Fundo roxo padrão */
+body {
+  background: linear-gradient(180deg, #4C1D95, #2E1065);
+}
+
+/* HERO */
+.hero-medir {
+  text-align: center;
+  padding: 80px 20px 40px;
+  animation: fadeIn .8s ease-out forwards;
+  opacity: 0;
+  color: white;
+}
+
+@keyframes fadeIn {
+  to { opacity: 1; }
+}
+
+.hero-medir h1 {
+  font-size: 2.2rem;
+  font-weight: 800;
+  margin-bottom: 10px;
+}
+
+.hero-medir p {
+  font-size: 1.05rem;
+  max-width: 600px;
+  margin: 0 auto;
+  line-height: 1.5;
+  opacity: 0.9;
+}
+
+/* CARDS */
+.funil-container {
+  max-width: 900px;
+  margin: 40px auto;
+  padding: 0 20px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 20px;
+}
+
+.funil-card {
+  background: white;
+  border-radius: 18px;
+  padding: 25px;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+  text-align: center;
+}
+
+.funil-card .emoji {
+  font-size: 2rem;
+  margin-bottom: 8px;
+}
+
+.funil-card h3 {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #4C1D95;
+  margin-bottom: 8px;
+}
+
+.funil-card p {
+  font-size: .95rem;
+  color: #6b7280;
+}
+
+/* CTA */
+.cta-start {
+  text-align: center;
+  margin: 40px 0 80px;
+}
+
+.cta-start button {
+  background: #8B5CF6;
+  color: white;
+  border: none;
+  padding: 18px 48px;
+  font-size: 1.1rem;
+  border-radius: 50px;
+  cursor: pointer;
+  font-weight: 600;
+  box-shadow: 0 10px 30px rgba(139,92,246,.35);
+}
+
+.cta-info {
+  font-size: 0.9rem;
+  color: #64748b;
+  margin-bottom: 12px;
+}
+
+.cta-sub {
+  font-size: 0.85rem;
+  color: #94a3b8;
+  margin-top: 10px;
+}
+</style>
+
+</head>
+<body>
+<body class="funil"></body>
+<!-- NAVBAR (simplificada para não distrair) -->
+<nav class="mk-navbar">
+  <div class="mk-nav-inner">
+    
+    </div>
+
+    <button class="mk-mobile-toggle" id="mkMenuBtn">☰</button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero-medir">
+  <div style="font-size: 2.5rem; margin-bottom: 10px;">🧠</div>
+  <h1>Vamos analisar o seu estado de decisão</h1>
+  <p>
+    Você passará por três situações rápidas.<br><br>
+    Elas mostram como sua mente reage no impulso, na reflexão e sob pressão.<br><br>
+    Leva menos de 2 minutos e reflete como sua mente está agora.
+  </p>
+</section>
+
+<!-- ETAPAS -->
+<div class="funil-container">
+
+  <div class="funil-card">
+    <div class="emoji">⚡</div>
+    <h3>Instinto</h3>
+    <p>Decisões rápidas mostram sua reação natural.</p>
+  </div>
+
+  <div class="funil-card">
+    <div class="emoji">⚖️</div>
+    <h3>Reflexão</h3>
+    <p>Observamos sua consistência ao pensar com calma.</p>
+  </div>
+
+  <div class="funil-card">
+    <div class="emoji">🔥</div>
+    <h3>Pressão</h3>
+    <p>Tempo limitado revela sua estabilidade emocional.</p>
+  </div>
+
+</div>
+
+<!-- CTA -->
+<div class="cta-start">
+
+  <div class="cta-info">
+    Duração: ~2 minutos<br>
+    Sem cadastro • Resultado imediato
+  </div>
+
+  <button onclick="location.href='instinto.html'">
+    Iniciar Medição
+  </button>
+
+  <div class="cta-sub">
+    Mais de 120 decisões rápidas para revelar seu estado mental atual.
+  </div>
+
+</div>
+
+<!-- SCRIPTS -->
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+
+  // Atualizar KCoins
+  const storedBalance = localStorage.getItem('kcoins_balance') || 0;
+  const balanceEl = document.getElementById('kcoinBalance');
+  if(balanceEl) balanceEl.textContent = storedBalance;
+
+  // Menu seguro
+  const mkMenuBtn = document.getElementById("mkMenuBtn");
+  if (mkMenuBtn) {
+    mkMenuBtn.addEventListener("click", () => {
+      alert("Menu em breve");
+    });
+  }
+
+});
+</script>
+
+</body>
+</html>
