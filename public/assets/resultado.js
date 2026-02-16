@@ -140,34 +140,24 @@ O que precisaria acontecer para você reconsiderar essa decisão?
   document.getElementById("iaTexto").innerHTML = texto;
 
 // ===============================
-// 5. Sistema de desbloqueio via Mercado Pago
+// 4. Sistema de desbloqueio
 // ===============================
+
 const params = new URLSearchParams(window.location.search);
 
 const status = params.get("status");
+const isPaid = status === "approved";
+
 const premiumContent = document.getElementById("premiumContent");
 const lockOverlay = document.getElementById("lockOverlay");
 
-if (status === "approved") {
-  console.log("Pagamento aprovado - desbloqueando conteúdo");
-
+if (isPaid) {
+  console.log("Pagamento aprovado via retorno Mercado Pago");
+  
   if (premiumContent) premiumContent.classList.remove("locked");
   if (lockOverlay) lockOverlay.style.display = "none";
 }
 
-else if (status === "pending") {
-  console.log("Pagamento pendente");
-
-  if (lockOverlay) {
-    lockOverlay.innerHTML = `
-      <h3>Pagamento em processamento</h3>
-      <p style="font-size:14px; color:#6b7280;">
-        Estamos aguardando a confirmação do Pix.
-        Assim que for aprovado, volte para esta página.
-      </p>
-    `;
-  }
-}
 
 else if (status === "rejected") {
   console.log("Pagamento recusado");
