@@ -140,65 +140,52 @@ O que precisaria acontecer para você reconsiderar essa decisão?
   document.getElementById("iaTexto").innerHTML = texto;
 
 // ===============================
-// 4. Sistema de desbloqueio por status real
+// 4. Sistema de desbloqueio via Mercado Pago
 // ===============================
 const params = new URLSearchParams(window.location.search);
 
 const status = params.get("status");
-const collectionStatus = params.get("collection_status");
-
 const premiumContent = document.getElementById("premiumContent");
 const lockOverlay = document.getElementById("lockOverlay");
 
-const isApproved =
-  status === "approved" ||
-  collectionStatus === "approved";
+if (status === "approved") {
+  console.log("Pagamento aprovado - desbloqueando conteúdo");
 
-if (isApproved) {
-  console.log("Pagamento aprovado — desbloqueando");
   if (premiumContent) premiumContent.classList.remove("locked");
   if (lockOverlay) lockOverlay.style.display = "none";
-} else {
-  console.log("Pagamento ainda não aprovado");
 }
 
+else if (status === "pending") {
+  console.log("Pagamento pendente");
 
-  // ===============================
-  // 6. Botão Premium (MVP)
-  // ===============================
-  const premiumBtn = document.getElementById("premiumBtn");
-
-  if (premiumBtn) {
-  premiumBtn.onclick = async () => {
-
-    try {
-
-      premiumBtn.disabled = true;
-      premiumBtn.innerText = "Redirecionando...";
-
-      const response = await fetch("https://mindkappa-backend-eseo.onrender.com/api/payments/create", {
-        method: "POST"
-      });
-
-      const data = await response.json();
-
-      if (data.success && data.link) {
-        window.location.href = data.link;
-      } else {
-        alert("Erro ao iniciar pagamento.");
-        premiumBtn.disabled = false;
-        premiumBtn.innerText = "Verificar segurança decisional · R$9,90";
-      }
-
-    } catch (error) {
-      console.error("Erro:", error);
-      alert("Erro ao conectar com servidor.");
-      premiumBtn.disabled = false;
-      premiumBtn.innerText = "Verificar segurança decisional · R$9,90";
-    }
-
-  };
+  if (lockOverlay) {
+    lockOverlay.innerHTML = `
+      <h3>Pagamento em processamento</h3>
+      <p style="font-size:14px; color:#6b7280;">
+        Estamos aguardando a confirmação do Pix.
+        Assim que for aprovado, volte para esta página.
+      </p>
+    `;
+  }
 }
+
+else if (status === "rejected") {
+  console.log("Pagamento recusado");
+
+  if (lockOverlay) {
+    lockOverlay.innerHTML = `
+      <h3>Pagamento não aprovado</h3>
+      <p style="font-size:14px; color:#6b7280;">
+        O pagamento não foi concluído.
+        Você pode tentar novamente.
+      </p>
+      <button id="premiumBtn">
+        Tentar novamente · R$9,90
+      </button>
+    `;
+  }
+}
+
 
   // ===============================
   // 7. Navegação
