@@ -140,41 +140,40 @@ O que precisaria acontecer para você reconsiderar essa decisão?
   document.getElementById("iaTexto").innerHTML = texto;
 
 // ===============================
-// 4. Sistema de desbloqueio
+// Verificação real via backend
 // ===============================
 
 const params = new URLSearchParams(window.location.search);
-
-const status = params.get("status");
-const isPaid = status === "approved";
+const paymentId = params.get("payment_id");
 
 const premiumContent = document.getElementById("premiumContent");
 const lockOverlay = document.getElementById("lockOverlay");
 
-if (isPaid) {
-  console.log("Pagamento aprovado via retorno Mercado Pago");
-  
-  if (premiumContent) premiumContent.classList.remove("locked");
-  if (lockOverlay) lockOverlay.style.display = "none";
-}
+async function checkPayment() {
 
+  if (!paymentId) return;
 
-else if (status === "rejected") {
-  console.log("Pagamento recusado");
+  try {
 
-  if (lockOverlay) {
-    lockOverlay.innerHTML = `
-      <h3>Pagamento não aprovado</h3>
-      <p style="font-size:14px; color:#6b7280;">
-        O pagamento não foi concluído.
-        Você pode tentar novamente.
-      </p>
-      <button id="premiumBtn">
-        Tentar novamente · R$9,90
-      </button>
-    `;
+    const response = await fetch(
+      `https://mindkappa-backend-eseo.onrender.com/api/webhook/status?payment_id=${paymentId}`
+    );
+
+    const data = await response.json();
+
+    if (data.approved) {
+      console.log("Pagamento confirmado pelo backend");
+
+      premiumContent.classList.remove("locked");
+      lockOverlay.style.display = "none";
+    }
+
+  } catch (err) {
+    console.error("Erro ao verificar pagamento:", err);
   }
 }
+
+checkPayment();
 
 // ===============================
 // 5. Botão Premium (Fluxo real backend)
