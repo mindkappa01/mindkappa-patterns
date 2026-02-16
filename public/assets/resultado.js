@@ -140,7 +140,7 @@ O que precisaria acontecer para você reconsiderar essa decisão?
   document.getElementById("iaTexto").innerHTML = texto;
 
 // ===============================
-// 4. Sistema de desbloqueio via Mercado Pago
+// 5. Sistema de desbloqueio via Mercado Pago
 // ===============================
 const params = new URLSearchParams(window.location.search);
 
@@ -186,6 +186,43 @@ else if (status === "rejected") {
   }
 }
 
+// ===============================
+// 5. Botão Premium (Fluxo real backend)
+// ===============================
+
+const premiumBtn = document.getElementById("premiumBtn");
+
+if (premiumBtn) {
+  premiumBtn.onclick = async () => {
+    try {
+      premiumBtn.disabled = true;
+      premiumBtn.innerText = "Gerando pagamento...";
+
+      const response = await fetch("https://mindkappa-backend-eseo.onrender.com/api/payments/create", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        }
+      });
+
+      const data = await response.json();
+
+      if (data.success && data.link) {
+        window.location.href = data.link;
+      } else {
+        alert("Erro ao gerar pagamento.");
+        premiumBtn.disabled = false;
+        premiumBtn.innerText = "Verificar segurança decisional · R$9,90";
+      }
+
+    } catch (err) {
+      console.error("Erro:", err);
+      alert("Erro ao conectar com o servidor.");
+      premiumBtn.disabled = false;
+      premiumBtn.innerText = "Verificar segurança decisional · R$9,90";
+    }
+  };
+}
 
   // ===============================
   // 7. Navegação
