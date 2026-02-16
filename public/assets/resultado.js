@@ -139,23 +139,27 @@ O que precisaria acontecer para você reconsiderar essa decisão?
 
   document.getElementById("iaTexto").innerHTML = texto;
 
-  // ===============================
-// Sistema de bloqueio Premium (MVP)
+// ===============================
+// 4. Sistema de desbloqueio por status real
 // ===============================
 const params = new URLSearchParams(window.location.search);
-const isPaid = params.get("paid") === "true";
+
+const status = params.get("status");
+const collectionStatus = params.get("collection_status");
 
 const premiumContent = document.getElementById("premiumContent");
 const lockOverlay = document.getElementById("lockOverlay");
 
-if (isPaid) {
-  console.log("🔓 Conteúdo premium liberado");
+const isApproved =
+  status === "approved" ||
+  collectionStatus === "approved";
+
+if (isApproved) {
+  console.log("Pagamento aprovado — desbloqueando");
   if (premiumContent) premiumContent.classList.remove("locked");
   if (lockOverlay) lockOverlay.style.display = "none";
 } else {
-  console.log("🔒 Conteúdo premium bloqueado");
-  if (premiumContent) premiumContent.classList.add("locked");
-  if (lockOverlay) lockOverlay.style.display = "block";
+  console.log("Pagamento ainda não aprovado");
 }
 
 
