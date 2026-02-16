@@ -165,26 +165,36 @@ if (isPaid) {
   const premiumBtn = document.getElementById("premiumBtn");
 
   if (premiumBtn) {
-    premiumBtn.onclick = () => {
+  premiumBtn.onclick = async () => {
 
-  // Registro local (MVP)
-  let clicks = Number(localStorage.getItem("mk_premium_clicks") || 0);
-  localStorage.setItem("mk_premium_clicks", clicks + 1);
+    try {
 
-  console.log("💰 Clique Premium:", clicks + 1);
+      premiumBtn.disabled = true;
+      premiumBtn.innerText = "Redirecionando...";
 
-  // Futuro: Google Analytics
-  if (typeof gtag === "function") {
-    gtag("event", "premium_click", {
-      event_category: "conversion",
-      event_label: "MindKappa Premium"
-    });
-  }
+      const response = await fetch("https://mindkappa-backend-eseo.onrender.com/api/payments/create", {
+        method: "POST"
+      });
 
-  // Redireciona para pagamento
-  window.location.href = "https://mpago.la/2xWEaV1";
-};
-  }
+      const data = await response.json();
+
+      if (data.success && data.link) {
+        window.location.href = data.link;
+      } else {
+        alert("Erro ao iniciar pagamento.");
+        premiumBtn.disabled = false;
+        premiumBtn.innerText = "Verificar segurança decisional · R$9,90";
+      }
+
+    } catch (error) {
+      console.error("Erro:", error);
+      alert("Erro ao conectar com servidor.");
+      premiumBtn.disabled = false;
+      premiumBtn.innerText = "Verificar segurança decisional · R$9,90";
+    }
+
+  };
+}
 
   // ===============================
   // 7. Navegação
