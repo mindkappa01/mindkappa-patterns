@@ -39,7 +39,7 @@ html, body {
       120deg,
       #3e434b,
       #315783,
-      #fc0808
+      #e71313
   );
 
   --mk-button-gradient: linear-gradient(135deg, var(--mk-accent), var(--mk-primary));
