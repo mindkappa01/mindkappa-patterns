@@ -1,189 +1,284 @@
 /* ======================================================
-   RESULTADO MINDKAPPA — Versão Conversão
-   Mobile-first • Científico • Premium
+   RESULTADO MINDKAPPA — Nova Estrutura
+   Mantém fundo e efeitos do global.css
    ====================================================== */
 
-/* Fundo do funil */
-body {
-  margin: 0;
-  padding: 30px 16px;
-  background: linear-gradient(180deg, #4C1D95, #2E1065);
-  font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-  color: #0f172a;
+/* Não sobrescrever body/global */
+
+.resultado-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 16px;
 }
 
-/* Card principal */
 .resultado-wrapper {
-  max-width: 420px;
-  margin: 0 auto;
-  background: #ffffff;
-  padding: 32px 24px;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.18);
-  border-radius: 18px;
-  text-align: center;
-}
-
-/* Emoji */
-.resultado-top-emoji {
-  font-size: 2rem;
-  margin-bottom: 8px;
-}
-
-/* Título */
-.resultado-title {
-  font-size: 1.6rem;
-  font-weight: 800;
-  margin-bottom: 24px;
-  color: #4C1D95;
-}
-
-/* =========================
-   BLOCO KAPPA
-   ========================= */
-
-.kappa-display {
-  margin-bottom: 28px;
-}
-
-.kappa-value {
-  font-size: 2.6rem;
-  font-weight: 900;
-  letter-spacing: -1px;
-  color: #4C1D95;
-}
-
-.kappa-range {
-  margin-top: 4px;
-  font-size: 0.95rem;
-  color: #64748b;
-}
-
-/* =========================
-   SEÇÕES
-   ========================= */
-
-section {
-  margin-top: 28px;
+  max-width: 720px;
+  width: 100%;
   text-align: left;
 }
 
-section h2,
-section h3 {
-  font-size: 1.1rem;
-  font-weight: 700;
-  margin-bottom: 8px;
-  color: #4C1D95;
-}
-
-.iakappa-text {
-  font-size: 0.98rem;
-  line-height: 1.6;
-  color: #334155;
-  }
-
-/* Mapa */
-.resumo-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.resumo-list li {
-  padding: 6px 0;
-  font-size: 0.95rem;
-  color: #334155;
-}
-
-/* =========================
-   BLOQUEIO PREMIUM
-   ========================= */
-
-   body:not(.paid) .premium-content {
-  filter: blur(6px);
-  pointer-events: none;
-}
-
-.locked {
-  filter: blur(6px);
-  pointer-events: none;
-  user-select: none;
-}
-
-.lock-overlay {
-  position: absolute;
-  inset: 0;
-  background: rgba(255,255,255,0.9);
-  border-radius: 14px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
+.resultado-top {
   text-align: center;
-  padding: 20px;
+  margin-bottom: 28px;
 }
 
-.lock-overlay h3 {
-  margin-bottom: 6px;
-  color: #4C1D95;
+.resultado-top-emoji {
+  font-size: 2.2rem;
+  margin-bottom: 8px;
 }
 
-.lock-overlay p {
+.resultado-kicker {
   font-size: 0.9rem;
-  color: #64748b;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--mk-accent);
+  margin-bottom: 10px;
+}
+
+.resultado-title {
+  font-size: 2rem;
+  line-height: 1.15;
+  font-weight: 800;
+  color: var(--mk-primary);
+  margin-bottom: 10px;
+}
+
+.resultado-subtitle {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--mk-text-light);
+  max-width: 560px;
+  margin: 0 auto;
+}
+
+.resultado-section {
+  margin-top: 24px;
+}
+
+.section-title {
+  font-size: 1.08rem;
+  font-weight: 700;
+  color: var(--mk-primary);
+  margin-bottom: 10px;
+}
+
+.section-text {
+  font-size: 1rem;
+  line-height: 1.7;
+  color: var(--mk-text);
+}
+
+.estado-card {
+  background: #f8fafc;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  padding: 18px;
+}
+
+.estado-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
   margin-bottom: 14px;
 }
 
-/* Botão desbloquear */
-.lock-overlay button {
-  background: linear-gradient(135deg, #8B5CF6, #6366F1);
-  color: white;
-  border: none;
-  padding: 12px 24px;
-  border-radius: 10px;
-  cursor: pointer;
-  font-size: 0.95rem;
+.estado-label {
+  font-size: 0.92rem;
   font-weight: 600;
-  box-shadow: 0 10px 25px rgba(99,102,241,0.35);
+  color: var(--mk-text-light);
 }
 
-.lock-overlay button:hover {
-  transform: translateY(-2px);
+.estado-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 12px;
+  border-radius: 999px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  background: var(--mk-soft);
+  color: var(--mk-primary);
 }
 
-/* =========================
-   BOTÕES
-   ========================= */
+.estado-main {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.estado-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--mk-primary);
+  margin-bottom: 6px;
+}
+
+.estado-text {
+  font-size: 0.98rem;
+  line-height: 1.65;
+  color: var(--mk-text);
+}
+
+.estado-meta {
+  min-width: 120px;
+  text-align: right;
+  padding-left: 8px;
+}
+
+.estado-meta-label {
+  display: block;
+  font-size: 0.82rem;
+  color: var(--mk-text-light);
+  margin-bottom: 4px;
+}
+
+.estado-kappa {
+  font-size: 1.25rem;
+  color: var(--mk-primary);
+  font-weight: 800;
+}
+
+.acao-box {
+  background: linear-gradient(135deg, #eff6ff, #eef2ff);
+  border: 1px solid #c7d2fe;
+  color: var(--mk-primary);
+  border-radius: 14px;
+  padding: 16px 18px;
+  font-size: 1rem;
+  line-height: 1.6;
+  font-weight: 600;
+}
+
+.teste-card {
+  background: #f8fafc;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  padding: 16px;
+  margin-top: 14px;
+}
+
+.teste-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.teste-tag {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--mk-primary);
+}
+
+.teste-k {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--mk-text-light);
+}
+
+.teste-text {
+  font-size: 0.97rem;
+  line-height: 1.65;
+  color: var(--mk-text);
+}
+
+.teste-meta {
+  font-size: 0.88rem;
+  color: var(--mk-text-light);
+  margin-top: 8px;
+}
+
+.cta-box {
+  background: linear-gradient(135deg, #1e3a8a, #3a88ed);
+  color: white;
+  border-radius: 18px;
+  padding: 22px;
+  text-align: center;
+  box-shadow: 0 10px 30px rgba(30, 58, 138, 0.2);
+}
+
+.cta-title {
+  font-size: 1.2rem;
+  font-weight: 800;
+  margin-bottom: 8px;
+}
+
+.cta-text {
+  font-size: 0.96rem;
+  line-height: 1.65;
+  color: rgba(255, 255, 255, 0.92);
+  margin-bottom: 18px;
+}
+
+.cta-btn {
+  width: 100%;
+}
 
 .resultado-buttons {
-  margin-top: 28px;
+  margin-top: 22px;
   display: flex;
-  flex-direction: column;
-  gap: 10px;
+  gap: 12px;
 }
 
 .resultado-btn {
-  padding: 12px;
-  font-size: 0.9rem;
-  font-weight: 600;
-  border-radius: 10px;
+  flex: 1;
+  padding: 13px 16px;
+  border-radius: 12px;
+  font-size: 0.95rem;
+  font-weight: 700;
   cursor: pointer;
-  border: 1px solid #e5e7eb;
-  background: #ffffff;
   transition: all 0.2s ease;
 }
 
-.resultado-btn:hover {
-  background: #f8fafc;
+.resultado-btn-secondary {
+  border: 1px solid #d1d5db;
+  background: white;
+  color: var(--mk-primary);
 }
 
-/* =========================
-   DESKTOP (opcional)
-   ========================= */
+.resultado-btn-secondary:hover {
+  background: #f8fafc;
+  transform: translateY(-1px);
+}
 
-@media (min-width: 768px) {
-  .resultado-wrapper {
-    max-width: 480px;
-    padding: 40px 32px;
+.resultado-note {
+  margin-top: 18px;
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--mk-text-light);
+  line-height: 1.5;
+}
+
+@media (max-width: 640px) {
+  .resultado-page {
+    padding: 20px 12px;
+  }
+
+  .resultado-title {
+    font-size: 1.65rem;
+  }
+
+  .estado-main {
+    flex-direction: column;
+  }
+
+  .estado-meta {
+    text-align: left;
+    min-width: unset;
+    padding-left: 0;
+  }
+
+  .resultado-buttons {
+    flex-direction: column;
+  }
+
+  .mk-card.resultado-wrapper {
+    padding: 28px 20px;
   }
 }
-

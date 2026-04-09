@@ -26,7 +26,7 @@ html, body {
 ------------------------------------------------------------ */
 :root {
   --mk-primary: #1e3a8a;
-  --mk-accent: #7c3aed;
+  --mk-accent: #3a88ed;
   --mk-soft: #eef2ff;
 
   --mk-text: #1f2937;
@@ -37,9 +37,9 @@ html, body {
 
   --mk-gradient-hero: linear-gradient(
       120deg,
-      #f1f5ff,
-      #eef2ff,
-      #fafafa
+      #3e434b,
+      #315783,
+      #fc0808
   );
 
   --mk-button-gradient: linear-gradient(135deg, var(--mk-accent), var(--mk-primary));
@@ -68,7 +68,7 @@ body {
 ------------------------------------------------------------ */
 .mk-navbar {
   width: 100%;
-  background: linear-gradient(90deg, #ac71f0, #5f32c9);
+  background: linear-gradient(90deg, #20357a, #2c5dc5);
   padding: 12px 0;
   position: sticky;
   top: 0;
@@ -142,7 +142,7 @@ body {
   box-shadow: 0 8px 35px var(--mk-card-shadow);
   padding: 50px 40px;
   max-width: 640px;
-  width: 100%;
+  width: 90%;
   margin: auto;
   animation: mkCardIn 0.7s ease both;
   text-align: center;

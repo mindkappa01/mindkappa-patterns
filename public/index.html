@@ -1,181 +1,312 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-<title>MindKappa — Clareza para decisões importantes</title>
+  <title>MindKappa — Veja como sua mente está decidindo agora</title>
 
-<link rel="stylesheet" href="/assets/global.css" />
+  <link rel="stylesheet" href="./assets/global.css" />
 
-<style>
-/* Fundo roxo principal (identidade MindKappa) */
-body {
-    background: linear-gradient(180deg, #4C1D95, #2E1065);
-    min-height: 100vh;
-}
-</style>
+  <style>
+    .mk-page {
+      min-height: 100vh;
+      padding: 28px 16px 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .mk-home {
+      max-width: 760px;
+      width: 100%;
+      text-align: center;
+      color: var(--mk-text);
+    }
+
+    .mk-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: var(--mk-soft);
+      color: var(--mk-primary);
+      font-size: 0.85rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      margin-bottom: 18px;
+    }
+
+    .mk-home-title {
+      font-size: 2.35rem;
+      line-height: 1.1;
+      font-weight: 800;
+      color: var(--mk-primary);
+      margin-bottom: 14px;
+    }
+
+    .mk-home-sub {
+      max-width: 620px;
+      margin: 0 auto;
+      font-size: 1.05rem;
+      line-height: 1.75;
+      color: var(--mk-text);
+    }
+
+    .mk-home-highlight {
+      margin-top: 18px;
+      font-size: 0.98rem;
+      line-height: 1.6;
+      color: var(--mk-text-light);
+      font-weight: 600;
+    }
+
+    .mk-home-cta {
+      margin-top: 28px;
+    }
+
+    .mk-home-cta .mk-btn {
+      min-width: 290px;
+    }
+
+    .mk-home-cta-sub {
+      margin-top: 12px;
+      font-size: 0.88rem;
+      color: var(--mk-text-light);
+      line-height: 1.5;
+    }
+
+    .mk-proof {
+      margin-top: 30px;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+      text-align: left;
+    }
+
+    .mk-proof-item {
+      background: #f8fafc;
+      border-radius: 16px;
+      padding: 18px 16px;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+    }
+
+    .mk-proof-title {
+      font-size: 1rem;
+      font-weight: 800;
+      color: var(--mk-primary);
+      margin-bottom: 8px;
+    }
+
+    .mk-proof-desc {
+      font-size: 0.95rem;
+      line-height: 1.6;
+      color: var(--mk-text-light);
+    }
+
+    .mk-usecases {
+      margin-top: 22px;
+      background: #f8fafc;
+      border: 1px solid #e5e7eb;
+      border-radius: 16px;
+      padding: 18px;
+      text-align: left;
+    }
+
+    .mk-usecases-title {
+      font-size: 1rem;
+      font-weight: 800;
+      color: var(--mk-primary);
+      margin-bottom: 10px;
+    }
+
+    .mk-usecases-list {
+      display: grid;
+      gap: 10px;
+      color: var(--mk-text-light);
+      font-size: 0.96rem;
+      line-height: 1.6;
+    }
+
+    .mk-bottom-cta {
+      margin-top: 26px;
+      padding-top: 8px;
+    }
+
+    .mk-bottom-note {
+      margin-top: 20px;
+      font-size: 0.84rem;
+      color: var(--mk-text-light);
+      line-height: 1.55;
+    }
+
+    @media (max-width: 760px) {
+      .mk-home-title {
+        font-size: 1.9rem;
+      }
+
+      .mk-proof {
+        grid-template-columns: 1fr;
+      }
+
+      .mk-home-cta .mk-btn {
+        width: 100%;
+        min-width: 0;
+      }
+
+      .mk-card.mk-home {
+        padding: 32px 22px;
+      }
+    }
+  </style>
 </head>
-
 <body>
 
-<!-- ========================= -->
-<!-- NAVBAR -->
-<!-- ========================= -->
-<nav class="mk-navbar">
+  <nav class="mk-navbar">
     <div class="mk-nav-inner">
+      <div class="mk-logo" onclick="window.location.href='index.html'">
+        🧠 MindKappa
+      </div>
 
-        <div class="mk-logo" onclick="window.location.href='index.html'">
-            🧠 MindKappa
-        </div>
+      <div class="mk-links">
+        <a href="sobre.html" class="mk-link">Sobre</a>
+      </div>
 
-        <div class="mk-links">
-            
-        <div class="mk-status">
-            💠 <span id="kcoinBalance">0</span> K-Coins
-        </div>
+      <div class="mk-status">
+        💠 <span id="kcoinBalance">0</span> K-Coins
+      </div>
 
-        <button class="mk-mobile-toggle" id="mkMenuBtn">☰</button>
+      <button class="mk-mobile-toggle" id="mkMenuBtn">☰</button>
     </div>
 
     <div class="mk-mobile-overlay" id="mkOverlay"></div>
 
     <div class="mk-mobile-menu" id="mkMobileMenu">
-        <div class="mk-mobile-header">
-            <span class="mk-mobile-title">Menu</span>
-            <button class="mk-close-btn" id="mkCloseBtn">✕</button>
-        </div>
+      <div class="mk-mobile-header">
+        <span class="mk-mobile-title">Menu</span>
+        <button class="mk-close-btn" id="mkCloseBtn">✕</button>
+      </div>
 
-        <div class="mk-mobile-links">
-            <a href="sobre.html">Sobre</a>
-        </div>
+      <div class="mk-mobile-links">
+        <a href="sobre.html">Sobre</a>
+      </div>
     </div>
-</nav>
+  </nav>
 
+  <main class="mk-page">
+    <section class="mk-card mk-home">
 
-<!-- ========================= -->
-<!-- HERO PRINCIPAL -->
-<!-- ========================= -->
-<div class="container">
-    <div class="mk-card">
+      <div class="mk-badge">
+        Antes de decidir
+      </div>
 
-        <div style="margin-bottom: 20px;">
-            <div style="font-size: 2.4rem;">🧠</div>
-            <div style="font-size: 1.7rem; font-weight: 700; color: var(--mk-primary); margin-top: 5px;">
-                MindKappa
-            </div>
-        </div>
+      <h1 class="mk-home-title">
+        Veja como sua mente está decidindo agora
+      </h1>
 
-        <h1 class="mk-hero-title">
-            Está em dúvida sobre uma decisão importante?
-        </h1>
+      <p class="mk-home-sub">
+        Em poucos cliques, você observa o padrão da sua decisão neste momento.
+        Sem teoria, só o que aparece na prática.
+      </p>
 
-        <p class="mk-hero-sub">
-            Em poucos minutos, o MindKappa analisa seu estado mental e mostra se sua mente está em clareza, pressão ou oscilação.<br><br>
-            Antes de decidir o caminho, entenda como sua mente está agora.
-        </p>
+      <p class="mk-home-highlight">
+        Às vezes a decisão já está acontecendo antes de você perceber.
+      </p>
 
-        <!-- BOTÃO PRINCIPAL -->
+      <div class="mk-home-cta">
         <button class="mk-btn" onclick="startMeasurement()">
-            Analisar minha decisão
+          Ver como estou decidindo
         </button>
 
-        <br><br>
+        <div class="mk-home-cta-sub">
+          Leva cerca de 2 minutos • Sem cadastro • Resultado imediato
+        </div>
+      </div>
 
-        <!-- IDENTIFICAÇÃO EMOCIONAL -->
-        <div class="mk-benefits">
+      <div class="mk-proof">
+        <article class="mk-proof-item">
+          <div class="mk-proof-title">Clareza momentânea</div>
+          <div class="mk-proof-desc">
+            Veja se sua mente está mais estável, oscilando ou sob pressão neste momento.
+          </div>
+        </article>
 
-            <div class="mk-benefit-item">
-                <div class="mk-benefit-title">Continuar ou mudar?</div>
-                <div class="mk-benefit-desc">Quando a mente oscila, qualquer escolha parece arriscada.</div>
-            </div>
+        <article class="mk-proof-item">
+          <div class="mk-proof-title">Padrão de decisão</div>
+          <div class="mk-proof-desc">
+            Observe como sua escolha aparece na prática, antes de explicações ou justificativas.
+          </div>
+        </article>
 
-            <div class="mk-benefit-item">
-                <div class="mk-benefit-title">Falar ou esperar?</div>
-                <div class="mk-benefit-desc">Decisões sob pressão nem sempre refletem o que você realmente quer.</div>
-            </div>
+        <article class="mk-proof-item">
+          <div class="mk-proof-title">Leitura imediata</div>
+          <div class="mk-proof-desc">
+            Três testes rápidos mostram como sua mente respondeu agora.
+          </div>
+        </article>
+      </div>
 
-            <div class="mk-benefit-item">
-                <div class="mk-benefit-title">Agir ou evitar?</div>
-                <div class="mk-benefit-desc">O MindKappa revela o que está influenciando sua decisão agora.</div>
-            </div>
-
+      <div class="mk-usecases">
+        <div class="mk-usecases-title">
+          Você pode usar isso quando estiver:
         </div>
 
-        <!-- O QUE A PESSOA RECEBE -->
-        <div class="mk-benefits" style="margin-top: 30px;">
-
-            <div class="mk-benefit-item">
-                <div class="mk-benefit-title">Clareza mental</div>
-                <div class="mk-benefit-desc">Descubra se sua mente está em equilíbrio, pressão ou conflito.</div>
-            </div>
-
-            <div class="mk-benefit-item">
-                <div class="mk-benefit-title">Padrão emocional</div>
-                <div class="mk-benefit-desc">Entenda se a decisão está sendo guiada por medo, impulso ou alinhamento.</div>
-            </div>
-
-            <div class="mk-benefit-item">
-                <div class="mk-benefit-title">Base científica</div>
-                <div class="mk-benefit-desc">O MindKappa observa padrões reais de coerência nas decisões.</div>
-            </div>
-
+        <div class="mk-usecases-list">
+          <div>• em dúvida entre continuar ou mudar</div>
+          <div>• prestes a conversar, responder ou agir</div>
+          <div>• sentindo pressão para decidir rápido</div>
+          <div>• querendo entender melhor o que está influenciando sua escolha</div>
         </div>
+      </div>
 
-        <!-- CTA FINAL -->
-        <div style="margin-top: 30px;">
-            <button class="mk-btn" onclick="startMeasurement()">
-                Verificar meu estado decisional
-            </button>
-        </div>
+      <div class="mk-bottom-cta">
+        <button class="mk-btn" onclick="startMeasurement()">
+          Fazer o teste agora
+        </button>
+      </div>
 
-        <!-- DISCLAIMER -->
-        <div class="mk-disclaimer">
-            ⚖️ O MindKappa é uma ferramenta de auto-observação e clareza decisional.<br>
-            Não substitui aconselhamento profissional ou avaliação clínica.
-        </div>
+      <div class="mk-bottom-note">
+        O MindKappa é uma ferramenta de auto-observação e clareza decisional.
+        Não substitui avaliação clínica, aconselhamento psicológico ou orientação profissional.
+      </div>
 
-    </div>
-</div>
+    </section>
+  </main>
 
-
-<!-- ========================= -->
-<!-- SCRIPTS -->
-<!-- ========================= -->
-<script>
-function startMeasurement() {
-    window.location.href = "medir-k.html";
-}
-
-document.addEventListener("DOMContentLoaded", () => {
-
-    // K-Coins
-    const stored = localStorage.getItem("kcoins_balance") || 0;
-    const balanceEl = document.getElementById("kcoinBalance");
-    if (balanceEl) balanceEl.textContent = stored;
-
-    // Menu Mobile (proteção)
-    const mkMenuBtn = document.getElementById("mkMenuBtn");
-    const mkCloseBtn = document.getElementById("mkCloseBtn");
-    const mkMobileMenu = document.getElementById("mkMobileMenu");
-    const mkOverlay = document.getElementById("mkOverlay");
-
-    if (mkMenuBtn) {
-        mkMenuBtn.addEventListener("click", () => {
-            mkMobileMenu.classList.add("open");
-            mkOverlay.classList.add("open");
-        });
+  <script>
+    function startMeasurement() {
+      window.location.href = "medir-k.html";
     }
 
-    if (mkCloseBtn) mkCloseBtn.addEventListener("click", closeMenu);
-    if (mkOverlay) mkOverlay.addEventListener("click", closeMenu);
+    document.addEventListener("DOMContentLoaded", () => {
+      const stored = localStorage.getItem("kcoins_balance") || 0;
+      const balanceEl = document.getElementById("kcoinBalance");
+      if (balanceEl) balanceEl.textContent = stored;
 
-    function closeMenu() {
+      const mkMenuBtn = document.getElementById("mkMenuBtn");
+      const mkCloseBtn = document.getElementById("mkCloseBtn");
+      const mkMobileMenu = document.getElementById("mkMobileMenu");
+      const mkOverlay = document.getElementById("mkOverlay");
+
+      if (mkMenuBtn) {
+        mkMenuBtn.addEventListener("click", () => {
+          mkMobileMenu.classList.add("open");
+          mkOverlay.classList.add("open");
+        });
+      }
+
+      if (mkCloseBtn) mkCloseBtn.addEventListener("click", closeMenu);
+      if (mkOverlay) mkOverlay.addEventListener("click", closeMenu);
+
+      function closeMenu() {
         mkMobileMenu.classList.remove("open");
         mkOverlay.classList.remove("open");
-    }
-});
-</script>
+      }
+    });
+  </script>
 
 </body>
 </html>

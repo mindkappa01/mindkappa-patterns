@@ -1,155 +1,166 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Seu K — MindKappa</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Seu Resultado — MindKappa</title>
 
-<link rel="stylesheet" href="/assets/resultado.css">
-
-<style>
-/* Fundo */
-body {
-  background: linear-gradient(180deg, #4C1D95, #2E1065);
-}
-
-/* Card principal */
-.resultado-wrapper {
-  max-width: 480px;
-  margin: 40px auto;
-  padding: 30px 24px;
-  background: white;
-  border-radius: 20px;
-  text-align: center;
-  box-shadow: 0 20px 40px rgba(0,0,0,0.15);
-}
-
-/* Área bloqueada */
-.locked {
-  position: relative;
-  filter: blur(6px);
-  pointer-events: none;
-}
-
-.lock-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  background: rgba(255,255,255,0.85);
-  border-radius: 12px;
-}
-
-.lock-overlay h3 {
-  color: #4C1D95;
-  margin-bottom: 10px;
-}
-
-
-
-</style>
+  <link rel="stylesheet" href="./assets/global.css" />
+  <link rel="stylesheet" href="./assets/resultado.css" />
 </head>
-<body>
-<body class="funil"></body>
-<div class="resultado-wrapper">
+<body class="funil">
 
-  <!-- Emoji -->
-  <div class="resultado-top-emoji">🧠</div>
+  <main class="resultado-page">
+    <section class="resultado-wrapper mk-card">
 
-  <!-- Título -->
-  <h1 class="resultado-title">
-    Como está sua mente para decidir agora
-  </h1>
+      <!-- Topo -->
+      <div class="resultado-top">
+        <div id="resultadoEmoji" class="resultado-top-emoji">🧠</div>
+        <p class="resultado-kicker">Resultado do seu estado decisional</p>
 
-  <!-- K principal (GRÁTIS) -->
-  <div class="kappa-display">
-    <div id="kappaValor" class="kappa-value">—</div>
-    <div id="kappaFaixa" class="kappa-range">—</div>
-  </div>
+        <h1 id="resultadoFrase" class="resultado-title">
+          Sua mente está oscilando agora.
+        </h1>
 
-  <!-- PREVIEW gratuito -->
-  <p style="margin-top:10px; color:#6b7280; text-align:center;">
-    Este é o seu padrão de coerência decisional neste momento.<br>
-    Ele indica o quão seguro pode ser decidir nas próximas horas.
-  </p>
+        <p id="resultadoSub" class="resultado-subtitle">
+          Este resultado mostra como sua mente respondeu ao conjunto dos 3 testes.
+        </p>
+      </div>
 
-  <!-- INTERPRETAÇÃO COMPLETA (BLOQUEADA) -->
-  <section id="premiumArea" style="margin-top:30px; position:relative;">
+      <!-- Estado geral -->
+      <section class="resultado-section resultado-estado">
+        <div class="estado-card">
+          <div class="estado-header">
+            <span class="estado-label">Estado atual</span>
+            <span id="estadoBadge" class="estado-badge">—</span>
+          </div>
 
-    <div id="premiumContent" class="locked">
+          <div class="estado-main">
+            <div>
+              <p class="estado-title">Leitura geral</p>
+              <p id="estadoResumo" class="estado-text">
+                Sua mente mostrou um padrão que indica como você tende a responder antes de decidir.
+              </p>
+            </div>
 
-      <h2 style="color:#4C1D95;">
-        O que este estado indica para decidir agora
-      </h2>
+            <div class="estado-meta">
+              <span class="estado-meta-label">Índice interno</span>
+              <strong id="kappaValor" class="estado-kappa">—</strong>
+            </div>
+          </div>
+        </div>
+      </section>
 
-      <p style="margin-top:10px;">
-        Sua mente apresenta um padrão de coerência que influencia diretamente
-        a estabilidade das decisões tomadas neste momento.
+      <!-- O que isso pode indicar -->
+      <section class="resultado-section">
+        <h2 class="section-title">O que isso pode indicar</h2>
+        <p id="resultadoEspelho" class="section-text">
+          Durante o teste, sua mente revelou um padrão de resposta que pode influenciar a forma como você decide neste momento.
+        </p>
+      </section>
+
+      <!-- Risco / implicação -->
+      <section class="resultado-section">
+        <h2 class="section-title">Se você decidir agora</h2>
+        <p id="resultadoRisco" class="section-text">
+          Dependendo do seu estado, a decisão pode sair com mais clareza — ou ser puxada por pressão, impulso ou oscilação.
+        </p>
+      </section>
+
+      <!-- Direção -->
+      <section class="resultado-section resultado-direcao">
+        <h2 class="section-title">Melhor direção agora</h2>
+        <div id="resultadoAcao" class="acao-box">
+          Evite agir no impulso. Observe se essa mesma direção continua fazendo sentido mais tarde.
+        </div>
+      </section>
+
+      <!-- Resumo dos 3 testes -->
+      <section class="resultado-section">
+        <h2 class="section-title">Como sua mente respondeu</h2>
+
+        <div class="teste-card">
+          <div class="teste-head">
+            <span class="teste-tag">⚡ Instinto</span>
+            <span id="t1Kappa" class="teste-k">—</span>
+          </div>
+          <p id="t1Resumo" class="teste-text">
+            Sua resposta automática aparecerá aqui.
+          </p>
+          <p id="t1Contagem" class="teste-meta">
+            Vermelho: — · Azul: —
+          </p>
+        </div>
+
+        <div class="teste-card">
+          <div class="teste-head">
+            <span class="teste-tag">⚖️ Equilíbrio</span>
+            <span id="t2Kappa" class="teste-k">—</span>
+          </div>
+          <p id="t2Resumo" class="teste-text">
+            Sua tendência em estado mais estável aparecerá aqui.
+          </p>
+          <p id="t2Contagem" class="teste-meta">
+            Vermelho: — · Azul: —
+          </p>
+        </div>
+
+        <div class="teste-card">
+          <div class="teste-head">
+            <span class="teste-tag">🔥 Pressão</span>
+            <span id="t3Kappa" class="teste-k">—</span>
+          </div>
+          <p id="t3Resumo" class="teste-text">
+            Sua resposta sob tensão aparecerá aqui.
+          </p>
+          <p id="t3Contagem" class="teste-meta">
+            Vermelho: — · Azul: —
+          </p>
+        </div>
+      </section>
+
+      <!-- Fechamento -->
+      <section class="resultado-section resultado-fechamento">
+        <h2 class="section-title">Conclusão</h2>
+        <p id="resultadoConclusao" class="section-text">
+          Seu resultado sugere um padrão momentâneo de decisão. Ele não define quem você é, mas mostra como sua mente está funcionando agora.
+        </p>
+      </section>
+
+      <!-- CTA completo -->
+      <section class="resultado-section cta-final">
+        <div class="cta-box">
+          <h3 class="cta-title">Quer ir além do resultado rápido?</h3>
+          <p class="cta-text">
+            Receba uma leitura mais completa do seu padrão de decisão, com interpretação dos 3 testes e direção prática para este momento.
+          </p>
+
+          <button id="premiumBtn" class="mk-btn cta-btn">
+            Ver análise completa
+          </button>
+        </div>
+      </section>
+
+      <!-- Navegação -->
+      <div class="resultado-buttons">
+        <button id="refazerBtn" class="resultado-btn resultado-btn-secondary">
+          Refazer testes
+        </button>
+
+        <button id="inicioBtn" class="resultado-btn resultado-btn-secondary">
+          Voltar ao início
+        </button>
+      </div>
+
+      <!-- Observação -->
+      <p class="resultado-note">
+        Este resultado é uma leitura de padrão momentâneo, não um diagnóstico.
       </p>
 
-      <p style="margin-top:10px;">
-        Dependendo desse estado, decidir agora pode trazer clareza —
-        ou aumentar o risco de arrependimento, oscilação ou mudança de direção.
-      </p>
+    </section>
+  </main>
 
-      <p id="iaTexto" class="iakappa-text"></p>
-
-    </div>
-
-    <!-- Overlay de bloqueio -->
-    <div id="lockOverlay" class="lock-overlay">
-
-  <h3>Sua mente está pronta para decidir?</h3>
-
-  <p style="font-size:14px; color:#6b7280; margin-bottom:10px;">
-Seu K revela o nível de estabilidade mental neste momento.<br><br>
-
-A leitura completa mostra:<br>
-• O risco de arrependimento ou mudança de ideia<br>
-• Se sua mente está estável ou oscilando<br>
-• A recomendação para as próximas 24 horas
-</p>
-
-<button id="premiumBtn">
-Verificar minha janela de decisão · R$9,90
-</button>
-
-</div>
-
-  </section>
-
-  <!-- Mapa das escolhas -->
-  <section class="resumo-section" style="margin-top:30px;">
-    <h3 class="resumo-title">Mapa das suas escolhas</h3>
-    <ul class="resumo-list">
-      <li>⚡ Instinto: <span id="t1Count">—</span></li>
-      <li>⚖️ Equilíbrio: <span id="t2Count">—</span></li>
-      <li>🔥 Pressão: <span id="t3Count">—</span></li>
-    </ul>
-  </section>
-
-  <!-- Botões -->
-  <div class="resultado-buttons" style="margin-top:30px;">
-
-    <button id="refazerBtn" class="resultado-btn refazer">
-      Refazer
-    </button>
-
-    <button id="inicioBtn" class="resultado-btn inicio">
-      Início
-    </button>
-
-  </div>
-
-</div>
-
-<script src="/assets/mcd-core-browser.js"></script>
-<script src="/assets/resultado.js"></script>
-
+  <script src="./assets/mcd-core-browser.js"></script>
+  <script src="./assets/resultado.js"></script>
 </body>
 </html>

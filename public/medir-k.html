@@ -1,195 +1,255 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Análise de decisão — MindKappa</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MindKappa — Como sua mente está decidindo</title>
 
-<link rel="stylesheet" href="/assets/global.css">
+  <link rel="stylesheet" href="./assets/global.css" />
 
-<style>
-/* Fundo roxo padrão */
-body {
-  background: linear-gradient(180deg, #4C1D95, #2E1065);
-}
+  <style>
+    .medir-page {
+      min-height: 100vh;
+      padding: 28px 16px 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
 
-/* HERO */
-.hero-medir {
-  text-align: center;
-  padding: 80px 20px 40px;
-  animation: fadeIn .8s ease-out forwards;
-  opacity: 0;
-  color: white;
-}
+    .medir-wrapper {
+      max-width: 760px;
+      width: 100%;
+      text-align: center;
+      color: var(--mk-text);
+    }
 
-@keyframes fadeIn {
-  to { opacity: 1; }
-}
+    .medir-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: var(--mk-soft);
+      color: var(--mk-primary);
+      font-size: 0.85rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      margin-bottom: 18px;
+    }
 
-.hero-medir h1 {
-  font-size: 2.2rem;
-  font-weight: 800;
-  margin-bottom: 10px;
-}
+    .medir-title {
+      font-size: 2.15rem;
+      line-height: 1.12;
+      font-weight: 800;
+      color: var(--mk-primary);
+      margin-bottom: 14px;
+    }
 
-.hero-medir p {
-  font-size: 1.05rem;
-  max-width: 600px;
-  margin: 0 auto;
-  line-height: 1.5;
-  opacity: 0.9;
-}
+    .medir-subtitle {
+      max-width: 620px;
+      margin: 0 auto;
+      font-size: 1.04rem;
+      line-height: 1.75;
+      color: var(--mk-text);
+    }
 
-/* CARDS */
-.funil-container {
-  max-width: 900px;
-  margin: 40px auto;
-  padding: 0 20px;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 20px;
-}
+    .medir-highlight {
+      margin-top: 18px;
+      font-size: 0.98rem;
+      line-height: 1.6;
+      color: var(--mk-text-light);
+      font-weight: 600;
+    }
 
-.funil-card {
-  background: white;
-  border-radius: 18px;
-  padding: 25px;
-  box-shadow: 0 8px 25px rgba(0,0,0,0.15);
-  text-align: center;
-}
+    .etapas-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+      margin-top: 30px;
+      text-align: left;
+    }
 
-.funil-card .emoji {
-  font-size: 2rem;
-  margin-bottom: 8px;
-}
+    .etapa-card {
+      background: #f8fafc;
+      border-radius: 16px;
+      padding: 18px 16px;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+    }
 
-.funil-card h3 {
-  font-size: 1.2rem;
-  font-weight: 700;
-  color: #4C1D95;
-  margin-bottom: 8px;
-}
+    .etapa-icon {
+      font-size: 1.8rem;
+      margin-bottom: 10px;
+    }
 
-.funil-card p {
-  font-size: .95rem;
-  color: #6b7280;
-}
+    .etapa-title {
+      font-size: 1rem;
+      font-weight: 800;
+      color: var(--mk-primary);
+      margin-bottom: 8px;
+    }
 
-/* CTA */
-.cta-start {
-  text-align: center;
-  margin: 40px 0 80px;
-}
+    .etapa-desc {
+      font-size: 0.95rem;
+      line-height: 1.6;
+      color: var(--mk-text-light);
+    }
 
-.cta-start button {
-  background: #8B5CF6;
-  color: white;
-  border: none;
-  padding: 18px 48px;
-  font-size: 1.1rem;
-  border-radius: 50px;
-  cursor: pointer;
-  font-weight: 600;
-  box-shadow: 0 10px 30px rgba(139,92,246,.35);
-}
+    .medir-flow {
+      margin-top: 22px;
+      background: #f8fafc;
+      border: 1px solid #e5e7eb;
+      border-radius: 16px;
+      padding: 18px;
+      text-align: left;
+    }
 
-.cta-info {
-  font-size: 0.9rem;
-  color: #64748b;
-  margin-bottom: 12px;
-}
+    .medir-flow-title {
+      font-size: 1rem;
+      font-weight: 800;
+      color: var(--mk-primary);
+      margin-bottom: 10px;
+    }
 
-.cta-sub {
-  font-size: 0.85rem;
-  color: #94a3b8;
-  margin-top: 10px;
-}
-</style>
+    .medir-flow-list {
+      display: grid;
+      gap: 10px;
+      color: var(--mk-text-light);
+      font-size: 0.96rem;
+      line-height: 1.6;
+    }
 
+    .medir-cta {
+      margin-top: 28px;
+    }
+
+    .medir-cta .mk-btn {
+      min-width: 290px;
+    }
+
+    .medir-info {
+      font-size: 0.9rem;
+      color: var(--mk-text-light);
+      line-height: 1.6;
+      margin-bottom: 14px;
+    }
+
+    .medir-subinfo {
+      margin-top: 12px;
+      font-size: 0.84rem;
+      color: var(--mk-text-light);
+      line-height: 1.5;
+    }
+
+    .medir-note {
+      margin-top: 20px;
+      font-size: 0.83rem;
+      color: var(--mk-text-light);
+      line-height: 1.55;
+    }
+
+    @media (max-width: 760px) {
+      .medir-title {
+        font-size: 1.85rem;
+      }
+
+      .etapas-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .medir-cta .mk-btn {
+        width: 100%;
+        min-width: 0;
+      }
+
+      .mk-card.medir-wrapper {
+        padding: 32px 22px;
+      }
+    }
+  </style>
 </head>
-<body>
-<body class="funil"></body>
-<!-- NAVBAR (simplificada para não distrair) -->
-<nav class="mk-navbar">
-  <div class="mk-nav-inner">
-    
-    </div>
+<body class="funil">
 
-    <button class="mk-mobile-toggle" id="mkMenuBtn">☰</button>
-  </div>
-</nav>
+  <main class="medir-page">
+    <section class="mk-card medir-wrapper">
 
-<!-- HERO -->
-<section class="hero-medir">
-  <div style="font-size: 2.5rem; margin-bottom: 10px;">🧠</div>
-  <h1>Vamos analisar o seu estado de decisão</h1>
-  <p>
-    Você passará por três situações rápidas.<br><br>
-    Elas mostram como sua mente reage no impulso, na reflexão e sob pressão.<br><br>
-    Leva menos de 2 minutos e reflete como sua mente está agora.
-  </p>
-</section>
+      <div class="medir-badge">
+        Seu teste
+      </div>
 
-<!-- ETAPAS -->
-<div class="funil-container">
+      <h1 class="medir-title">
+        Veja como sua mente está decidindo agora
+      </h1>
 
-  <div class="funil-card">
-    <div class="emoji">⚡</div>
-    <h3>Instinto</h3>
-    <p>Decisões rápidas mostram sua reação natural.</p>
-  </div>
+      <p class="medir-subtitle">
+        Você vai passar por três momentos rápidos de escolha.
+        Juntos, eles mostram como sua mente responde no impulso, no equilíbrio e sob pressão.
+      </p>
 
-  <div class="funil-card">
-    <div class="emoji">⚖️</div>
-    <h3>Reflexão</h3>
-    <p>Observamos sua consistência ao pensar com calma.</p>
-  </div>
+      <p class="medir-highlight">
+        Não é sobre acertar. É sobre observar o padrão que aparece.
+      </p>
 
-  <div class="funil-card">
-    <div class="emoji">🔥</div>
-    <h3>Pressão</h3>
-    <p>Tempo limitado revela sua estabilidade emocional.</p>
-  </div>
+      <div class="etapas-grid">
+        <article class="etapa-card">
+          <div class="etapa-icon">⚡</div>
+          <h2 class="etapa-title">Instinto</h2>
+          <p class="etapa-desc">
+            A primeira resposta mostra sua tendência mais automática, antes de pensar demais.
+          </p>
+        </article>
 
-</div>
+        <article class="etapa-card">
+          <div class="etapa-icon">⚖️</div>
+          <h2 class="etapa-title">Equilíbrio</h2>
+          <p class="etapa-desc">
+            Aqui aparece como sua mente responde quando tenta manter mais controle e estabilidade.
+          </p>
+        </article>
 
-<!-- CTA -->
-<div class="cta-start">
+        <article class="etapa-card">
+          <div class="etapa-icon">🔥</div>
+          <h2 class="etapa-title">Pressão</h2>
+          <p class="etapa-desc">
+            Sob limite de tempo, o padrão fica mais visível e mostra como você sustenta uma escolha.
+          </p>
+        </article>
+      </div>
 
-  <div class="cta-info">
-    Duração: ~2 minutos<br>
-    Sem cadastro • Resultado imediato
-  </div>
+      <div class="medir-flow">
+        <div class="medir-flow-title">
+          Como funciona
+        </div>
 
-  <button onclick="location.href='instinto.html'">
-    Iniciar Medição
-  </button>
+        <div class="medir-flow-list">
+          <div>• você responde aos 3 testes em sequência</div>
+          <div>• o sistema observa o padrão das suas escolhas</div>
+          <div>• no final, você recebe uma leitura imediata do seu estado decisional</div>
+        </div>
+      </div>
 
-  <div class="cta-sub">
-    Mais de 120 decisões rápidas para revelar seu estado mental atual.
-  </div>
+      <div class="medir-cta">
+        <div class="medir-info">
+          Leva cerca de 2 minutos<br>
+          Sem cadastro • Resultado imediato
+        </div>
 
-</div>
+        <button class="mk-btn" onclick="location.href='instinto.html'">
+          Começar o teste
+        </button>
 
-<!-- SCRIPTS -->
-<script>
-document.addEventListener("DOMContentLoaded", () => {
+        <div class="medir-subinfo">
+          Faça agora, no estado em que você realmente está.
+        </div>
+      </div>
 
-  // Atualizar KCoins
-  const storedBalance = localStorage.getItem('kcoins_balance') || 0;
-  const balanceEl = document.getElementById('kcoinBalance');
-  if(balanceEl) balanceEl.textContent = storedBalance;
+      <div class="medir-note">
+        O MindKappa é uma ferramenta de auto-observação. Não substitui avaliação clínica ou aconselhamento profissional.
+      </div>
 
-  // Menu seguro
-  const mkMenuBtn = document.getElementById("mkMenuBtn");
-  if (mkMenuBtn) {
-    mkMenuBtn.addEventListener("click", () => {
-      alert("Menu em breve");
-    });
-  }
-
-});
-</script>
+    </section>
+  </main>
 
 </body>
 </html>
