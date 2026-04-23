@@ -11,6 +11,11 @@ document.addEventListener("DOMContentLoaded", () => {
     right_angle_deg: 180
   };
 
+  const API_BASE =
+    window.location.hostname === "127.0.0.1" || window.location.hostname === "localhost"
+      ? "http://localhost:3000"
+      : "";
+
   let index = 0;
   let locked = false;
   let trials = [];
@@ -40,7 +45,9 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function atualizarTimer(progress) {
-    timerCircle.style.setProperty("--p-progress", `${progress}deg`);
+    if (timerCircle) {
+      timerCircle.style.setProperty("--p-progress", `${progress}deg`);
+    }
   }
 
   function embaralharSeNecessario() {
@@ -96,7 +103,10 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
       }
 
-      timerText.textContent = tempoRestante.toFixed(1) + "s";
+      if (timerText) {
+        timerText.textContent = tempoRestante.toFixed(1) + "s";
+      }
+
       atualizarTimer((tempoRestante / tempoBase) * 360);
     }, 40);
   }
@@ -141,58 +151,62 @@ document.addEventListener("DOMContentLoaded", () => {
   iniciarTimer();
 
   async function finalizarTeste() {
-  clearInterval(timerInterval);
+    clearInterval(timerInterval);
 
-  const dados = {
-    test_type: TEST_TYPE,
-    started_at: testStartedAt,
-    finished_at: new Date().toISOString(),
-    trials
-  };
+    const dados = {
+      test_type: TEST_TYPE,
+      started_at: testStartedAt,
+      finished_at: new Date().toISOString(),
+      trials
+    };
 
-  localStorage.setItem("teste3_pressao", JSON.stringify(dados));
-  console.log("Pressão salvo:", dados);
+    localStorage.setItem("teste3_pressao", JSON.stringify(dados));
+    console.log("Pressão salvo:", dados);
 
-  // Recarrega os testes já salvos
-  const t1 = JSON.parse(localStorage.getItem("teste1_instinto") || "null");
-  const t2 = JSON.parse(localStorage.getItem("teste2_equilibrio") || "null");
-  const t3 = JSON.parse(localStorage.getItem("teste3_pressao") || "null");
+    const t1 = JSON.parse(localStorage.getItem("teste1_instinto") || "null");
+    const t2 = JSON.parse(localStorage.getItem("teste2_equilibrio") || "null");
+    const t3 = JSON.parse(localStorage.getItem("teste3_pressao") || "null");
 
-  console.log("Sessão antes do envio:", {
-    t1: t1?.trials?.length,
-    t2: t2?.trials?.length,
-    t3: t3?.trials?.length
-  });
-
-  const sessionPayload = {
-    started_at: t1?.started_at || dados.started_at,
-    finished_at: t3?.finished_at || dados.finished_at,
-    tests: [t1, t2, t3].filter(Boolean)
-  };
-
-  try {
-    const response = await fetch("/api/session", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(sessionPayload)
+    console.log("Sessão antes do envio:", {
+      t1: t1?.trials?.length,
+      t2: t2?.trials?.length,
+      t3: t3?.trials?.length
     });
 
-    const result = await response.json();
-    console.log("Resposta final do backend:", result);
-    localStorage.setItem("mk_session_response", JSON.stringify(result));
+    const sessionPayload = {
+      started_at: t1?.started_at || dados.started_at,
+      finished_at: t3?.finished_at || dados.finished_at,
+      tests: [t1, t2, t3].filter(Boolean)
+    };
 
-    area.style.display = "none";
+    try {
+      const response = await fetch(`${API_BASE}/api/session`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(sessionPayload)
+      });
 
-    if (btnProximo) {
-      btnProximo.style.display = "block";
-      btnProximo.onclick = () => {
-        window.location.href = "resultado.html";
-      };
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Erro ${response.status}: ${errorText}`);
+      }
+
+      const result = await response.json();
+      console.log("Resposta final do backend:", result);
+      localStorage.setItem("mk_session_response", JSON.stringify(result));
+
+      area.style.display = "none";
+
+      if (btnProximo) {
+        btnProximo.style.display = "block";
+        btnProximo.onclick = () => {
+          window.location.href = "resultado.html";
+        };
+      }
+    } catch (error) {
+      console.error("Erro ao enviar sessão final:", error);
     }
-  } catch (error) {
-    console.error("Erro ao enviar sessão final:", error);
   }
-}
 });

@@ -13,6 +13,11 @@ document.addEventListener("DOMContentLoaded", () => {
     right_angle_deg: 180
   };
 
+  const API_BASE =
+    window.location.hostname === "127.0.0.1" || window.location.hostname === "localhost"
+      ? "http://localhost:3000"
+      : "";
+
   let index = 0;
   let locked = false;
   let trials = [];
@@ -34,7 +39,6 @@ document.addEventListener("DOMContentLoaded", () => {
   function buildTrial(choiceSide) {
     const now = performance.now();
     const reactionTime = Math.round(now - trialStartedAt);
-
     const isLeft = choiceSide === "left";
 
     return {
@@ -81,48 +85,54 @@ document.addEventListener("DOMContentLoaded", () => {
   updateCounter();
 
   async function finalizarTeste() {
-  const dados = {
-    test_type: TEST_TYPE,
-    started_at: testStartedAt,
-    finished_at: new Date().toISOString(),
-    trials
-  };
-
-  localStorage.setItem("teste1_instinto", JSON.stringify(dados));
-  console.log("Instinto salvo:", dados);
-
-  const payload = {
-    started_at: dados.started_at,
-    finished_at: dados.finished_at,
-    tests: [dados]
-  };
-
-  try {
-    const response = await fetch("/api/session", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(payload)
-    });
-
-    const result = await response.json();
-    console.log("Resposta do backend:", result);
-    localStorage.setItem(
-      "teste1_instinto_backend_response",
-      JSON.stringify(result)
-    );
-  } catch (error) {
-    console.error("Erro ao enviar Instinto para o backend:", error);
-  }
-
-  btnArea.style.display = "none";
-
-  if (btnNext) {
-    btnNext.style.display = "block";
-    btnNext.onclick = () => {
-      window.location.href = "equilibrio.html";
+    const dados = {
+      test_type: TEST_TYPE,
+      started_at: testStartedAt,
+      finished_at: new Date().toISOString(),
+      trials
     };
+
+    localStorage.setItem("teste1_instinto", JSON.stringify(dados));
+    console.log("Instinto salvo:", dados);
+
+    const payload = {
+      started_at: dados.started_at,
+      finished_at: dados.finished_at,
+      tests: [dados]
+    };
+
+    try {
+      const response = await fetch(`${API_BASE}/api/session`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(payload)
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Erro ${response.status}: ${errorText}`);
+      }
+
+      const result = await response.json();
+      console.log("Resposta do backend:", result);
+
+      localStorage.setItem(
+        "teste1_instinto_backend_response",
+        JSON.stringify(result)
+      );
+    } catch (error) {
+      console.error("Erro ao enviar Instinto para o backend:", error);
+    }
+
+    btnArea.style.display = "none";
+
+    if (btnNext) {
+      btnNext.style.display = "block";
+      btnNext.onclick = () => {
+        window.location.href = "equilibrio.html";
+      };
+    }
   }
-}
 });
