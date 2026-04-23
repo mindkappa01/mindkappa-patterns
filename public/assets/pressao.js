@@ -143,6 +143,56 @@ document.addEventListener("DOMContentLoaded", () => {
     iniciarTimer();
   }
 
+  function mostrarProcessando(texto = "Processando sua sessão...") {
+    area.style.display = "none";
+
+    let loadingBox = document.getElementById("mkLoadingBox");
+
+    if (!loadingBox) {
+      loadingBox = document.createElement("div");
+      loadingBox.id = "mkLoadingBox";
+      loadingBox.style.marginTop = "24px";
+      loadingBox.style.padding = "18px 16px";
+      loadingBox.style.borderRadius = "14px";
+      loadingBox.style.background = "rgba(255,255,255,0.92)";
+      loadingBox.style.color = "#1f2937";
+      loadingBox.style.textAlign = "center";
+      loadingBox.style.boxShadow = "0 6px 18px rgba(0,0,0,0.08)";
+      loadingBox.style.fontSize = "1rem";
+      loadingBox.style.lineHeight = "1.6";
+      loadingBox.style.fontWeight = "600";
+      area.parentNode.appendChild(loadingBox);
+    }
+
+    loadingBox.innerHTML = `
+      <div style="font-size: 1.15rem; margin-bottom: 6px;">⏳</div>
+      <div>${texto}</div>
+      <div style="font-size: 0.92rem; font-weight: 400; margin-top: 6px; color: #6b7280;">
+        Aguarde um instante...
+      </div>
+    `;
+  }
+
+  function atualizarProcessando(texto) {
+    const loadingBox = document.getElementById("mkLoadingBox");
+    if (loadingBox) {
+      loadingBox.innerHTML = `
+        <div style="font-size: 1.15rem; margin-bottom: 6px;">⏳</div>
+        <div>${texto}</div>
+        <div style="font-size: 0.92rem; font-weight: 400; margin-top: 6px; color: #6b7280;">
+          Aguarde um instante...
+        </div>
+      `;
+    }
+  }
+
+  function esconderProcessando() {
+    const loadingBox = document.getElementById("mkLoadingBox");
+    if (loadingBox) {
+      loadingBox.remove();
+    }
+  }
+
   azulBtn.addEventListener("click", () => registrar(getSideFromDom(azulBtn)));
   vermelhoBtn.addEventListener("click", () => registrar(getSideFromDom(vermelhoBtn)));
 
@@ -179,6 +229,8 @@ document.addEventListener("DOMContentLoaded", () => {
       tests: [t1, t2, t3].filter(Boolean)
     };
 
+    mostrarProcessando("Salvando sua sessão...");
+
     try {
       const response = await fetch(`${API_BASE}/api/session`, {
         method: "POST",
@@ -193,11 +245,13 @@ document.addEventListener("DOMContentLoaded", () => {
         throw new Error(`Erro ${response.status}: ${errorText}`);
       }
 
+      atualizarProcessando("Preparando seu resultado...");
+
       const result = await response.json();
       console.log("Resposta final do backend:", result);
       localStorage.setItem("mk_session_response", JSON.stringify(result));
 
-      area.style.display = "none";
+      esconderProcessando();
 
       if (btnProximo) {
         btnProximo.style.display = "block";
@@ -206,7 +260,32 @@ document.addEventListener("DOMContentLoaded", () => {
         };
       }
     } catch (error) {
+      esconderProcessando();
       console.error("Erro ao enviar sessão final:", error);
+
+      let errorBox = document.getElementById("mkErrorBox");
+
+      if (!errorBox) {
+        errorBox = document.createElement("div");
+        errorBox.id = "mkErrorBox";
+        errorBox.style.marginTop = "24px";
+        errorBox.style.padding = "18px 16px";
+        errorBox.style.borderRadius = "14px";
+        errorBox.style.background = "rgba(255,255,255,0.92)";
+        errorBox.style.color = "#7f1d1d";
+        errorBox.style.textAlign = "center";
+        errorBox.style.boxShadow = "0 6px 18px rgba(0,0,0,0.08)";
+        errorBox.style.lineHeight = "1.6";
+        area.parentNode.appendChild(errorBox);
+      }
+
+      errorBox.innerHTML = `
+        <div style="font-size: 1.15rem; margin-bottom: 6px;">⚠️</div>
+        <div style="font-weight: 600;">Não foi possível finalizar sua sessão agora.</div>
+        <div style="font-size: 0.94rem; margin-top: 6px; color: #6b7280;">
+          Tente novamente em alguns instantes.
+        </div>
+      `;
     }
   }
 });
