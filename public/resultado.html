@@ -1,19 +1,386 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
+
+  <!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-CTXWS5SE6G"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-CTXWS5SE6G');
+</script>
+
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Seu Resultado — MindKappa</title>
 
   <link rel="stylesheet" href="./assets/global.css" />
   <link rel="stylesheet" href="./assets/resultado.css" />
+
+  <style>
+    .resultado-page {
+      min-height: 100vh;
+      padding: 32px 16px 52px;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+    }
+
+    .resultado-wrapper {
+      max-width: 860px;
+      width: min(860px, 94%);
+      text-align: left;
+      padding: 42px 34px;
+    }
+
+    .resultado-top {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+
+    .resultado-top-emoji {
+      font-size: 2rem;
+      margin-bottom: 8px;
+    }
+
+    .resultado-kicker {
+      font-size: 0.92rem;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+      color: var(--mk-accent);
+      margin-bottom: 10px;
+    }
+
+    .resultado-title {
+      font-size: clamp(2rem, 3vw, 2.7rem);
+      font-weight: 800;
+      color: var(--mk-primary);
+      line-height: 1.12;
+      margin-bottom: 12px;
+      text-align: center;
+    }
+
+    .resultado-subtitle {
+      max-width: 64ch;
+      margin: 0 auto;
+      color: var(--mk-text-light);
+      line-height: 1.65;
+      font-size: 1.02rem;
+      text-align: center;
+    }
+
+    .resultado-section {
+      margin-top: 24px;
+    }
+
+    .section-title {
+      font-size: 1.16rem;
+      font-weight: 700;
+      color: var(--mk-primary);
+      margin-bottom: 12px;
+      line-height: 1.25;
+    }
+
+    .section-text,
+    .estado-text,
+    .teste-text,
+    .cta-text,
+    .resultado-note {
+      color: var(--mk-text);
+      line-height: 1.68;
+      font-size: 1rem;
+    }
+
+    .estado-card,
+    .teste-card,
+    .cta-box,
+    .acao-box {
+      border-radius: 16px;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.04);
+    }
+
+    .estado-card {
+      background: var(--mk-soft);
+      border-left: 4px solid var(--mk-accent);
+      padding: 18px;
+    }
+
+    .estado-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 14px;
+    }
+
+    .estado-label {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--mk-text-light);
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
+    }
+
+    .estado-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 7px 12px;
+      border-radius: 999px;
+      background: #ffffff;
+      color: var(--mk-accent);
+      border: 1px solid rgba(58, 136, 237, 0.16);
+      font-size: 0.84rem;
+      font-weight: 700;
+      line-height: 1.2;
+    }
+
+    .estado-main {
+      display: grid;
+      gap: 16px;
+    }
+
+    .estado-title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--mk-primary);
+      margin-bottom: 8px;
+    }
+
+    .estado-meta {
+      background: #ffffff;
+      border-radius: 14px;
+      border: 1px solid rgba(58, 136, 237, 0.12);
+      padding: 14px;
+      align-self: start;
+    }
+
+    .estado-meta-label {
+      display: block;
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--mk-text-light);
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
+      margin-bottom: 6px;
+    }
+
+    .estado-kappa {
+      display: inline-block;
+      color: var(--mk-primary);
+      font-size: 1rem;
+      font-weight: 800;
+      word-break: break-word;
+      line-height: 1.45;
+    }
+
+    .section-text {
+      color: var(--mk-text);
+    }
+
+    .acao-box {
+      background: var(--mk-soft);
+      border-left: 4px solid var(--mk-accent);
+      padding: 18px;
+      color: var(--mk-text);
+      line-height: 1.7;
+    }
+
+    .teste-card {
+      background: #f8fafc;
+      border: 1px solid rgba(58, 136, 237, 0.10);
+      padding: 18px;
+      margin-bottom: 14px;
+    }
+
+    .teste-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 10px;
+    }
+
+    .teste-tag {
+      color: var(--mk-primary);
+      font-weight: 700;
+      font-size: 1rem;
+    }
+
+    .teste-k {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 7px 12px;
+      border-radius: 999px;
+      background: #ffffff;
+      color: var(--mk-accent);
+      border: 1px solid rgba(58, 136, 237, 0.16);
+      font-size: 0.84rem;
+      font-weight: 700;
+      line-height: 1.2;
+    }
+
+    .teste-text {
+      color: var(--mk-text);
+    }
+
+    .teste-meta {
+      margin-top: 10px;
+      line-height: 1.55;
+      color: var(--mk-text-light);
+      font-size: 0.95rem;
+      word-break: break-word;
+    }
+
+    .cta-final {
+      margin-top: 28px;
+    }
+
+    .cta-box {
+      background: #f8fafc;
+      border: 1px solid rgba(58, 136, 237, 0.10);
+      padding: 22px 18px;
+      text-align: center;
+    }
+
+    .cta-title {
+      color: var(--mk-primary);
+      font-size: 1.12rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+      line-height: 1.25;
+    }
+
+    .cta-text {
+      color: var(--mk-text-light);
+      margin-bottom: 18px;
+    }
+
+    .cta-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    .cta-btn-main {
+      width: 100%;
+      min-height: 52px;
+      border-radius: 50px;
+    }
+
+    .cta-btn-secondary {
+      width: 100%;
+      min-height: 52px;
+      border-radius: 50px;
+      background: transparent;
+      border: 2px solid var(--mk-accent);
+      color: var(--mk-accent);
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.25s ease;
+    }
+
+    .cta-btn-secondary:hover {
+      background: var(--mk-accent);
+      color: #fff;
+    }
+
+    .resultado-buttons {
+      margin-top: 22px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      align-items: stretch;
+    }
+
+    .resultado-btn {
+      min-height: 50px;
+    }
+
+    .resultado-btn-secondary {
+      background: transparent;
+      border: 2px solid var(--mk-accent);
+      color: var(--mk-accent);
+      padding: 14px 22px;
+      border-radius: 50px;
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: 600;
+      transition: 0.25s ease;
+    }
+
+    .resultado-btn-secondary:hover {
+      background: var(--mk-accent);
+      color: white;
+    }
+
+    .resultado-note {
+      margin-top: 18px;
+      padding: 14px;
+      background: #f3f4f6;
+      border-radius: 10px;
+      text-align: center;
+      color: var(--mk-text-light);
+      font-size: 0.92rem;
+      line-height: 1.55;
+    }
+
+    @media (min-width: 720px) {
+      .resultado-page {
+        padding: 40px 20px 58px;
+      }
+
+      .resultado-wrapper {
+        padding: 46px 40px;
+      }
+
+      .estado-main {
+        grid-template-columns: 1.4fr 0.8fr;
+        align-items: start;
+      }
+
+      .cta-actions,
+      .resultado-buttons {
+        flex-direction: row;
+        justify-content: center;
+      }
+
+      .cta-actions > *,
+      .resultado-buttons > * {
+        flex: 1 1 0;
+      }
+    }
+
+    @media (max-width: 520px) {
+      .resultado-wrapper {
+        padding: 34px 22px;
+      }
+
+      .resultado-title {
+        font-size: 1.9rem;
+      }
+
+      .cta-btn-secondary,
+      .resultado-btn-secondary,
+      .mk-btn {
+        width: 100%;
+      }
+    }
+  </style>
 </head>
 <body class="funil">
 
   <main class="resultado-page">
     <section class="resultado-wrapper mk-card">
 
-      <!-- Topo -->
       <div class="resultado-top">
         <div id="resultadoEmoji" class="resultado-top-emoji">🧠</div>
         <p class="resultado-kicker">Resultado do seu estado decisional</p>
@@ -27,7 +394,6 @@
         </p>
       </div>
 
-      <!-- Estado geral -->
       <section class="resultado-section resultado-estado">
         <div class="estado-card">
           <div class="estado-header">
@@ -51,7 +417,6 @@
         </div>
       </section>
 
-      <!-- O que isso pode indicar -->
       <section class="resultado-section">
         <h2 class="section-title">O que isso pode indicar</h2>
         <p id="resultadoEspelho" class="section-text">
@@ -59,7 +424,6 @@
         </p>
       </section>
 
-      <!-- Risco / implicação -->
       <section class="resultado-section">
         <h2 class="section-title">Se você decidir agora</h2>
         <p id="resultadoRisco" class="section-text">
@@ -67,7 +431,6 @@
         </p>
       </section>
 
-      <!-- Direção -->
       <section class="resultado-section resultado-direcao">
         <h2 class="section-title">Melhor direção agora</h2>
         <div id="resultadoAcao" class="acao-box">
@@ -75,7 +438,6 @@
         </div>
       </section>
 
-      <!-- Resumo dos 3 testes -->
       <section class="resultado-section">
         <h2 class="section-title">Como sua mente respondeu</h2>
 
@@ -119,7 +481,6 @@
         </div>
       </section>
 
-      <!-- Fechamento -->
       <section class="resultado-section resultado-fechamento">
         <h2 class="section-title">Conclusão</h2>
         <p id="resultadoConclusao" class="section-text">
@@ -127,21 +488,25 @@
         </p>
       </section>
 
-      <!-- CTA completo -->
       <section class="resultado-section cta-final">
         <div class="cta-box">
-          <h3 class="cta-title">Quer ir além do resultado rápido?</h3>
+          <h3 class="cta-title">Quer ir além deste resultado?</h3>
           <p class="cta-text">
-            Receba uma leitura mais completa do seu padrão de decisão, com interpretação dos 3 testes e direção prática para este momento.
+            Você pode aprofundar a leitura do seu padrão de decisão ou simplesmente colocar em palavras o que está ocupando sua mente agora.
           </p>
 
-          <button id="premiumBtn" class="mk-btn cta-btn">
-            Ver análise completa
-          </button>
+          <div class="cta-actions">
+            <button id="premiumBtn" class="mk-btn cta-btn-main">
+              Ver análise completa
+            </button>
+
+            <button id="alivioBtn" class="cta-btn-secondary">
+              Escrever e aliviar a mente
+            </button>
+          </div>
         </div>
       </section>
 
-      <!-- Navegação -->
       <div class="resultado-buttons">
         <button id="refazerBtn" class="resultado-btn resultado-btn-secondary">
           Refazer testes
@@ -152,7 +517,6 @@
         </button>
       </div>
 
-      <!-- Observação -->
       <p class="resultado-note">
         Este resultado é uma leitura de padrão momentâneo, não um diagnóstico.
       </p>
@@ -160,7 +524,6 @@
     </section>
   </main>
 
-  <script src="./assets/mcd-core-browser.js"></script>
   <script src="./assets/resultado.js"></script>
 </body>
 </html>

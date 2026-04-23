@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-CTXWS5SE6G"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-CTXWS5SE6G');
+</script>
+
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Análise Completa — MindKappa</title>
+
+  <link rel="stylesheet" href="./assets/global.css" />
+
+  <style>
+    .mk-analysis-page {
+      min-height: 100vh;
+      padding: 32px 16px 52px;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+    }
+
+    .mk-analysis-card {
+      max-width: 980px;
+      width: min(980px, 94%);
+      text-align: left;
+      padding: 42px 34px;
+    }
+
+    .mk-analysis-top {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+
+    .mk-analysis-kicker {
+      font-size: 0.92rem;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+      color: var(--mk-accent);
+      margin-bottom: 10px;
+    }
+
+    .mk-analysis-title {
+      font-size: clamp(2rem, 3vw, 2.7rem);
+      font-weight: 800;
+      color: var(--mk-primary);
+      line-height: 1.12;
+      margin-bottom: 12px;
+    }
+
+    .mk-analysis-subtitle {
+      max-width: 66ch;
+      margin: 0 auto;
+      color: var(--mk-text-light);
+      line-height: 1.65;
+      font-size: 1.02rem;
+    }
+
+    .mk-analysis-section {
+      margin-top: 24px;
+    }
+
+    .mk-analysis-section-title {
+      font-size: 1.18rem;
+      font-weight: 700;
+      color: var(--mk-primary);
+      margin-bottom: 12px;
+    }
+
+    .mk-analysis-highlight {
+      background: var(--mk-soft);
+      border-left: 4px solid var(--mk-accent);
+      border-radius: 14px;
+      padding: 18px 18px;
+      color: var(--mk-text);
+      line-height: 1.7;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.04);
+    }
+
+    .mk-analysis-stats {
+      display: grid;
+      gap: 12px;
+    }
+
+    .mk-analysis-stat {
+      background: #f8fafc;
+      border: 1px solid rgba(58, 136, 237, 0.10);
+      border-radius: 14px;
+      padding: 14px 14px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    }
+
+    .mk-analysis-stat-label {
+      display: block;
+      font-size: 0.84rem;
+      font-weight: 700;
+      color: var(--mk-text-light);
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
+    }
+
+    .mk-analysis-stat-value {
+      color: var(--mk-text);
+      font-size: 1rem;
+      line-height: 1.5;
+      font-weight: 700;
+      word-break: break-word;
+    }
+
+    .mk-analysis-grid {
+      display: grid;
+      gap: 16px;
+    }
+
+    .mk-analysis-test {
+      background: #f8fafc;
+      border-radius: 16px;
+      border: 1px solid rgba(58, 136, 237, 0.10);
+      padding: 18px;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.04);
+    }
+
+    .mk-analysis-test-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 10px;
+    }
+
+    .mk-analysis-test-name {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--mk-primary);
+      margin: 0;
+    }
+
+    .mk-analysis-test-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 7px 12px;
+      border-radius: 999px;
+      background: rgba(58, 136, 237, 0.10);
+      color: var(--mk-accent);
+      font-size: 0.84rem;
+      font-weight: 700;
+      border: 1px solid rgba(58, 136, 237, 0.16);
+    }
+
+    .mk-analysis-test-text {
+      color: var(--mk-text);
+      line-height: 1.65;
+      margin-bottom: 14px;
+    }
+
+    .mk-analysis-metric-grid {
+      display: grid;
+      gap: 10px;
+    }
+
+    .mk-analysis-metric {
+      background: #ffffff;
+      border-radius: 12px;
+      border: 1px solid rgba(0,0,0,0.06);
+      padding: 12px;
+    }
+
+    .mk-analysis-metric small {
+      display: block;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--mk-text-light);
+      margin-bottom: 5px;
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
+    }
+
+    .mk-analysis-metric strong {
+      color: var(--mk-text);
+      font-size: 0.96rem;
+      line-height: 1.45;
+      word-break: break-word;
+    }
+
+    .mk-analysis-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .mk-analysis-line {
+      background: #f8fafc;
+      border-left: 4px solid var(--mk-accent);
+      border-radius: 14px;
+      padding: 14px 16px;
+      color: var(--mk-text);
+      line-height: 1.68;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    }
+
+    .mk-analysis-conclusion-box {
+      background: var(--mk-soft);
+      border-radius: 14px;
+      padding: 18px;
+      color: var(--mk-text);
+      line-height: 1.72;
+      border: 1px solid rgba(58, 136, 237, 0.10);
+    }
+
+    .mk-analysis-cta {
+      background: #f8fafc;
+      border-radius: 16px;
+      padding: 20px 18px;
+      border: 1px solid rgba(58, 136, 237, 0.10);
+      box-shadow: 0 3px 10px rgba(0,0,0,0.04);
+      text-align: center;
+    }
+
+    .mk-analysis-cta-title {
+      color: var(--mk-primary);
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    .mk-analysis-cta-text {
+      color: var(--mk-text-light);
+      line-height: 1.65;
+      margin-bottom: 16px;
+    }
+
+    .mk-analysis-actions,
+    .mk-analysis-footer {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      align-items: stretch;
+    }
+
+    .mk-analysis-btn-secondary {
+      background: transparent;
+      border: 2px solid var(--mk-accent);
+      color: var(--mk-accent);
+      padding: 14px 22px;
+      border-radius: 50px;
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: 600;
+      transition: 0.25s ease;
+    }
+
+    .mk-analysis-btn-secondary:hover {
+      background: var(--mk-accent);
+      color: #fff;
+    }
+
+    .mk-analysis-note {
+      margin-top: 18px;
+      padding: 14px;
+      background: #f3f4f6;
+      border-radius: 10px;
+      font-size: 0.92rem;
+      color: var(--mk-text-light);
+      text-align: center;
+      line-height: 1.55;
+    }
+
+    @media (min-width: 720px) {
+      .mk-analysis-page {
+        padding: 40px 20px 60px;
+      }
+
+      .mk-analysis-card {
+        padding: 46px 40px;
+      }
+
+      .mk-analysis-stats {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .mk-analysis-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .mk-analysis-metric-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .mk-analysis-actions,
+      .mk-analysis-footer {
+        flex-direction: row;
+        justify-content: center;
+      }
+    }
+
+    @media (max-width: 520px) {
+      .mk-analysis-card {
+        padding: 34px 22px;
+      }
+
+      .mk-analysis-title {
+        font-size: 1.9rem;
+      }
+
+      .mk-analysis-btn-secondary,
+      .mk-btn {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body class="funil">
+  <main class="mk-analysis-page">
+    <section class="mk-card mk-analysis-card">
+
+      <header class="mk-analysis-top">
+        <p class="mk-analysis-kicker">MindKappa · leitura aprofundada</p>
+        <h1 id="analysisTitle" class="mk-analysis-title">Análise completa da sua sessão</h1>
+        <p id="analysisSubtitle" class="mk-analysis-subtitle">
+          Aqui a leitura não fica só no resultado rápido. Esta página compara os 3 contextos e mostra onde seu padrão se sustentou, onde oscilou e onde apareceu mais atrito.
+        </p>
+      </header>
+
+      <section class="mk-analysis-section">
+        <div id="analysisMainText" class="mk-analysis-highlight">
+          Sua sessão foi processada. Agora o foco está em comparar como sua mente respondeu em Instinto, Equilíbrio e Pressão.
+        </div>
+      </section>
+
+      <section class="mk-analysis-section">
+        <h2 class="mk-analysis-section-title">Leitura geral da sessão</h2>
+        <div class="mk-analysis-stats">
+          <div class="mk-analysis-stat">
+            <span class="mk-analysis-stat-label">Decisões analisadas</span>
+            <div id="statTrials" class="mk-analysis-stat-value">—</div>
+          </div>
+          <div class="mk-analysis-stat">
+            <span class="mk-analysis-stat-label">Kappa geral</span>
+            <div id="statKappa" class="mk-analysis-stat-value">—</div>
+          </div>
+          <div class="mk-analysis-stat">
+            <span class="mk-analysis-stat-label">R geral</span>
+            <div id="statR" class="mk-analysis-stat-value">—</div>
+          </div>
+          <div class="mk-analysis-stat">
+            <span class="mk-analysis-stat-label">Teste mais estável</span>
+            <div id="statStable" class="mk-analysis-stat-value">—</div>
+          </div>
+          <div class="mk-analysis-stat">
+            <span class="mk-analysis-stat-label">Teste mais oscilante</span>
+            <div id="statUnstable" class="mk-analysis-stat-value">—</div>
+          </div>
+          <div class="mk-analysis-stat">
+            <span class="mk-analysis-stat-label">Maior atrito de tempo</span>
+            <div id="statSlowest" class="mk-analysis-stat-value">—</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="mk-analysis-section">
+        <h2 class="mk-analysis-section-title">Comparação dos 3 testes</h2>
+        <div class="mk-analysis-grid">
+
+          <article class="mk-analysis-test">
+            <div class="mk-analysis-test-head">
+              <h3 class="mk-analysis-test-name">⚡ Instinto</h3>
+              <span id="instintoBadge" class="mk-analysis-test-badge">—</span>
+            </div>
+            <p id="instintoText" class="mk-analysis-test-text">Sua leitura detalhada de Instinto aparece aqui.</p>
+            <div class="mk-analysis-metric-grid">
+              <div class="mk-analysis-metric">
+                <small>Kappa</small>
+                <strong id="instintoKappa">—</strong>
+              </div>
+              <div class="mk-analysis-metric">
+                <small>R</small>
+                <strong id="instintoR">—</strong>
+              </div>
+              <div class="mk-analysis-metric">
+                <small>Tempo médio</small>
+                <strong id="instintoTempo">—</strong>
+              </div>
+              <div class="mk-analysis-metric">
+                <small>Reversões</small>
+                <strong id="instintoReversoes">—</strong>
+              </div>
+              <div class="mk-analysis-metric">
+                <small>Maior sequência</small>
+                <strong id="instintoRun">—</strong>
+              </div>
+              <div class="mk-analysis-metric">
+                <small>Distribuição</small>
+                <strong id="instintoDistribuicao">—</strong>
+              </div>
+            </div>
+          </article>
+
+          <article class="mk-analysis-test">
+            <div class="mk-analysis-test-head">
+              <h3 class="mk-analysis-test-name">⚖️ Equilíbrio</h3>
+              <span id="equilibrioBadge" class="mk-analysis-test-badge">—</span>
+            </div>
+            <p id="equilibrioText" class="mk-analysis-test-text">Sua leitura detalhada de Equilíbrio aparece aqui.</p>
+            <div class="mk-analysis-metric-grid">
+              <div class="mk-analysis-metric">
+                <small>Kappa</small>
+                <strong id="equilibrioKappa">—</strong>
+              </div>
+              <div class="mk-analysis-metric">
+                <small>R</small>
+                <strong id="equilibrioR">—</strong>
+              </div>
+              <div class="mk-analysis-metric">
+                <small>Tempo médio</small>
+                <strong id="equilibrioTempo">—</strong>
+              </div>
+              <div class="mk-analysis-metric">
+                <small>Reversões</small>
+                <strong id="equilibrioReversoes">—</strong>
+              </div>
+              <div class="mk-analysis-metric">
+                <small>Maior sequência</small>
+                <strong id="equilibrioRun">—</strong>
+              </div>
+              <div class="mk-analysis-metric">
+                <small>Distribuição</small>
+                <strong id="equilibrioDistribuicao">—</strong>
+              </div>
+            </div>
+          </article>
+
+          <article class="mk-analysis-test">
+            <div class="mk-analysis-test-head">
+              <h3 class="mk-analysis-test-name">🔥 Pressão</h3>
+              <span id="pressaoBadge" class="mk-analysis-test-badge">—</span>
+            </div>
+            <p id="pressaoText" class="mk-analysis-test-text">Sua leitura detalhada de Pressão aparece aqui.</p>
+            <div class="mk-analysis-metric-grid">
+              <div class="mk-analysis-metric">
+                <small>Kappa</small>
+                <strong id="pressaoKappa">—</strong>
+              </div>
+              <div class="mk-analysis-metric">
+                <small>R</small>
+                <strong id="pressaoR">—</strong>
+              </div>
+              <div class="mk-analysis-metric">
+                <small>Tempo médio</small>
+                <strong id="pressaoTempo">—</strong>
+              </div>
+              <div class="mk-analysis-metric">
+                <small>Reversões</small>
+                <strong id="pressaoReversoes">—</strong>
+              </div>
+              <div class="mk-analysis-metric">
+                <small>Maior sequência</small>
+                <strong id="pressaoRun">—</strong>
+              </div>
+              <div class="mk-analysis-metric">
+                <small>Distribuição</small>
+                <strong id="pressaoDistribuicao">—</strong>
+              </div>
+            </div>
+          </article>
+
+        </div>
+      </section>
+
+      <section class="mk-analysis-section">
+        <h2 class="mk-analysis-section-title">Leitura comparativa</h2>
+        <div class="mk-analysis-list">
+          <div id="compareLine1" class="mk-analysis-line">—</div>
+          <div id="compareLine2" class="mk-analysis-line">—</div>
+          <div id="compareLine3" class="mk-analysis-line">—</div>
+        </div>
+      </section>
+
+      <section class="mk-analysis-section">
+        <h2 class="mk-analysis-section-title">Conclusão</h2>
+        <div id="analysisConclusion" class="mk-analysis-conclusion-box">
+          Esta sessão não define quem você é. Ela mostra como sua mente respondeu neste momento, em contextos diferentes.
+        </div>
+      </section>
+
+      <section class="mk-analysis-section">
+        <div class="mk-analysis-cta">
+          <h3 class="mk-analysis-cta-title">O que fazer com isso agora?</h3>
+          <p class="mk-analysis-cta-text">
+            Você pode descarregar o que ainda está pesando antes de decidir qualquer coisa, ou refazer os testes em outro momento para comparar a mudança do seu padrão.
+          </p>
+
+          <div class="mk-analysis-actions">
+            <button id="alivioBtn" class="mk-btn">Ir para alívio mental</button>
+            <button id="refazerBtn" class="mk-analysis-btn-secondary">Refazer testes</button>
+          </div>
+        </div>
+      </section>
+
+      <div class="mk-analysis-footer">
+        <button id="resultadoBtn" class="mk-analysis-btn-secondary">Voltar ao resultado</button>
+        <button id="inicioBtn" class="mk-analysis-btn-secondary">Voltar ao início</button>
+      </div>
+
+      <div class="mk-analysis-note">
+        Esta leitura é observacional e momentânea. Não é diagnóstico.
+      </div>
+
+    </section>
+  </main>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const response = JSON.parse(localStorage.getItem("mk_session_response") || "null");
+
+      const byId = (id) => document.getElementById(id);
+
+      const setText = (id, value) => {
+        const el = byId(id);
+        if (el) el.textContent = value;
+      };
+
+      const setHTML = (id, value) => {
+        const el = byId(id);
+        if (el) el.innerHTML = value;
+      };
+
+      const clearSession = () => {
+        localStorage.removeItem("teste1_instinto");
+        localStorage.removeItem("teste2_equilibrio");
+        localStorage.removeItem("teste3_pressao");
+        localStorage.removeItem("mk_session_response");
+        localStorage.removeItem("mk_session_response_manual");
+        localStorage.removeItem("teste1_instinto_backend_response");
+        localStorage.removeItem("mk_paid_result");
+        localStorage.removeItem("mk_result_views");
+      };
+
+      function formatMs(ms) {
+        if (ms === null || ms === undefined || !Number.isFinite(ms)) return "—";
+        if (ms < 1000) return `${ms} ms`;
+        return `${(ms / 1000).toFixed(2)} s`;
+      }
+
+      function formatNumber(value, digits = 2) {
+        if (value === null || value === undefined || !Number.isFinite(value)) return "—";
+        return Number(value).toFixed(digits);
+      }
+
+      function formatTestName(testType) {
+        const names = {
+          instinto: "Instinto",
+          equilibrio: "Equilíbrio",
+          pressao: "Pressão"
+        };
+        return names[testType] || testType || "Teste";
+      }
+
+      function buildBadge(report) {
+        if (!report) return "Sem dados";
+        const parts = [];
+        if (report.consistency_label) parts.push(report.consistency_label);
+        if (report.speed_label && report.speed_label !== "Sem dados") parts.push(report.speed_label);
+        return parts.join(" · ") || "Processado";
+      }
+
+      function buildDistribution(report) {
+        if (!report) return "—";
+        return `Esquerda: ${report.left_count ?? "—"} · Direita: ${report.right_count ?? "—"}`;
+      }
+
+      function buildTestNarrative(report, testType) {
+        if (!report) {
+          return `Não houve dados válidos suficientes para ${formatTestName(testType)}.`;
+        }
+
+        const consistency = report.consistency_label || "Sem dados";
+        const speed = report.speed_label || "Sem dados";
+        const continuity = report.continuity_label || "Sem dados";
+
+        let intro = "";
+
+        if (testType === "instinto") {
+          intro = "Aqui aparece como sua resposta mais direta se organizou.";
+        } else if (testType === "equilibrio") {
+          intro = "Aqui aparece como sua mente respondeu em uma condição mais estável.";
+        } else if (testType === "pressao") {
+          intro = "Aqui aparece como seu padrão reagiu quando o contexto apertou.";
+        } else {
+          intro = "Aqui aparece como seu padrão se organizou.";
+        }
+
+        const chunks = [intro];
+
+        if (consistency === "Muito consistente") {
+          chunks.push("A direção ficou muito estável ao longo das escolhas.");
+        } else if (consistency === "Consistente") {
+          chunks.push("Houve uma linha relativamente estável neste contexto.");
+        } else if (consistency === "Oscilante") {
+          chunks.push("Seu padrão alternou mais neste contexto.");
+        } else if (consistency === "Disperso") {
+          chunks.push("As escolhas ficaram mais espalhadas, com menor concentração.");
+        }
+
+        if (speed === "Rápido") {
+          chunks.push("O ritmo de resposta foi rápido.");
+        } else if (speed === "Moderado") {
+          chunks.push("O ritmo ficou em uma faixa intermediária.");
+        } else if (speed === "Hesitante") {
+          chunks.push("Houve mais atrito no tempo de resposta.");
+        }
+
+        if (continuity === "Sustentado") {
+          chunks.push("Você sustentou a mesma linha por mais tempo.");
+        } else if (continuity === "Quebrado") {
+          chunks.push("Houve várias quebras de direção ao longo do teste.");
+        } else if (continuity === "Intermediário") {
+          chunks.push("A continuidade ficou entre sustentação e quebra.");
+        }
+
+        return chunks.join(" ");
+      }
+
+      function buildMainText(sessionMetrics) {
+        const stable = sessionMetrics?.most_stable_test;
+        const unstable = sessionMetrics?.least_stable_test;
+        const slowest = sessionMetrics?.slowest_test;
+
+        if (stable && unstable && stable !== unstable) {
+          return `Nesta sessão, sua mente não respondeu do mesmo jeito nos três contextos. Houve mais estabilidade em <strong>${formatTestName(stable)}</strong> e mais oscilação em <strong>${formatTestName(unstable)}</strong>. O maior atrito de tempo apareceu em <strong>${formatTestName(slowest)}</strong>.`;
+        }
+
+        return "Sua sessão foi processada e mostra como o padrão de escolha se distribuiu ao longo de Instinto, Equilíbrio e Pressão.";
+      }
+
+      function buildCompareLines(sessionMetrics, tests) {
+        const lines = [];
+        const stable = sessionMetrics?.most_stable_test;
+        const unstable = sessionMetrics?.least_stable_test;
+        const fastest = sessionMetrics?.fastest_test;
+        const slowest = sessionMetrics?.slowest_test;
+        const longestRunTest = sessionMetrics?.longest_run_test;
+
+        if (stable && unstable && stable !== unstable) {
+          lines.push(
+            `<strong>Estabilidade vs oscilação:</strong> o contexto mais firme foi ${formatTestName(stable)}, enquanto a maior dispersão apareceu em ${formatTestName(unstable)}.`
+          );
+        } else {
+          lines.push(
+            `<strong>Comparação principal:</strong> não houve contraste forte o bastante entre os testes para marcar uma separação muito clara entre estabilidade e oscilação.`
+          );
+        }
+
+        if (fastest && slowest && fastest !== slowest) {
+          lines.push(
+            `<strong>Ritmo de resposta:</strong> a resposta mais rápida apareceu em ${formatTestName(fastest)}, enquanto o maior atrito apareceu em ${formatTestName(slowest)}.`
+          );
+        } else {
+          lines.push(
+            `<strong>Ritmo de resposta:</strong> o tempo de resposta não se separou tanto entre os contextos nesta sessão.`
+          );
+        }
+
+        if (longestRunTest) {
+          const report = tests.find((t) => t.test_type === longestRunTest);
+          const runValue = report?.longest_run ?? "—";
+          lines.push(
+            `<strong>Continuidade:</strong> a maior sequência contínua apareceu em ${formatTestName(longestRunTest)} com ${runValue} decisões seguidas na mesma linha.`
+          );
+        } else {
+          lines.push(
+            `<strong>Continuidade:</strong> a sessão foi processada, mas ainda sem destaque claro de permanência prolongada em um único teste.`
+          );
+        }
+
+        return lines;
+      }
+
+      function buildConclusion(sessionMetrics) {
+        const stable = sessionMetrics?.most_stable_test;
+        const unstable = sessionMetrics?.least_stable_test;
+
+        if (stable && unstable && stable !== unstable) {
+          return `Sua sessão sugere um padrão momentâneo com contraste entre contextos. O ponto central não foi apenas o lado escolhido, mas o fato de sua mente sustentar melhor uma direção em ${formatTestName(stable)} e ceder mais em ${formatTestName(unstable)}. Isso não define quem você é, mas mostra como sua resposta apareceu agora.`;
+        }
+
+        return "Sua sessão sugere um padrão momentâneo de decisão. O valor aqui não está em rotular quem você é, mas em observar como sua mente respondeu neste momento e comparar isso com outras sessões no futuro.";
+      }
+
+      function fillTest(prefix, report, testType) {
+        setText(`${prefix}Badge`, buildBadge(report));
+        setText(`${prefix}Text`, buildTestNarrative(report, testType));
+        setText(`${prefix}Kappa`, formatNumber(report?.kappa, 2));
+        setText(`${prefix}R`, formatNumber(report?.r, 2));
+        setText(`${prefix}Tempo`, formatMs(report?.mean_reaction_time_ms));
+        setText(`${prefix}Reversoes`, report?.reversals ?? "—");
+        setText(`${prefix}Run`, report?.longest_run ?? "—");
+        setText(`${prefix}Distribuicao`, buildDistribution(report));
+      }
+
+      if (!response || !response.success) {
+        setText("analysisTitle", "Não foi possível abrir a análise completa");
+        setText("analysisSubtitle", "Complete os 3 testes novamente para gerar uma leitura detalhada.");
+        setText("analysisMainText", "Não encontramos uma sessão válida salva no momento.");
+        setText("statTrials", "—");
+        setText("statKappa", "—");
+        setText("statR", "—");
+        setText("statStable", "—");
+        setText("statUnstable", "—");
+        setText("statSlowest", "—");
+        setHTML("compareLine1", "Sem dados suficientes para comparação.");
+        setHTML("compareLine2", "Refaça os testes para gerar uma nova leitura.");
+        setHTML("compareLine3", "Depois disso, esta página mostrará a comparação detalhada.");
+        setText("analysisConclusion", "Sua análise completa não pôde ser calculada nesta tentativa.");
+      } else {
+        const sessionMetrics = response.session_metrics || {};
+        const testMetrics = response.test_metrics || [];
+
+        const instinto = testMetrics.find((t) => t.test_type === "instinto");
+        const equilibrio = testMetrics.find((t) => t.test_type === "equilibrio");
+        const pressao = testMetrics.find((t) => t.test_type === "pressao");
+
+        setHTML("analysisMainText", buildMainText(sessionMetrics));
+
+        setText("statTrials", `${sessionMetrics.total_trials ?? "—"} decisões`);
+        setText("statKappa", `K ${formatNumber(sessionMetrics.overall_kappa, 2)}`);
+        setText("statR", `R ${formatNumber(sessionMetrics.overall_r, 2)}`);
+        setText("statStable", formatTestName(sessionMetrics.most_stable_test));
+        setText("statUnstable", formatTestName(sessionMetrics.least_stable_test));
+        setText("statSlowest", formatTestName(sessionMetrics.slowest_test));
+
+        fillTest("instinto", instinto, "instinto");
+        fillTest("equilibrio", equilibrio, "equilibrio");
+        fillTest("pressao", pressao, "pressao");
+
+        const lines = buildCompareLines(sessionMetrics, testMetrics);
+        setHTML("compareLine1", lines[0] || "—");
+        setHTML("compareLine2", lines[1] || "—");
+        setHTML("compareLine3", lines[2] || "—");
+
+        setText("analysisConclusion", buildConclusion(sessionMetrics));
+      }
+
+      const alivioBtn = byId("alivioBtn");
+      if (alivioBtn) {
+        alivioBtn.onclick = () => {
+          window.location.href = "alivio.html";
+        };
+      }
+
+      const refazerBtn = byId("refazerBtn");
+      if (refazerBtn) {
+        refazerBtn.onclick = () => {
+          clearSession();
+          window.location.href = "instinto.html";
+        };
+      }
+
+      const resultadoBtn = byId("resultadoBtn");
+      if (resultadoBtn) {
+        resultadoBtn.onclick = () => {
+          window.location.href = "resultado.html";
+        };
+      }
+
+      const inicioBtn = byId("inicioBtn");
+      if (inicioBtn) {
+        inicioBtn.onclick = () => {
+          window.location.href = "index.html";
+        };
+      }
+    });
+  </script>
+</body>
+</html>
